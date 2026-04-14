@@ -61,7 +61,6 @@ Route::middleware(['auth.panel'])->group(function () {
 
     // ── Bases de données ──────────────────────────────────────────────────────
     Route::get('/database',                [DatabaseController::class, 'index'])->name('database.index')->middleware('permission:view_db');
-    Route::get('/database/phpmyadmin',     [DatabaseController::class, 'phpMyAdmin'])->name('database.phpmyadmin')->middleware('permission:view_db');
     Route::post('/database/db',            [DatabaseController::class, 'createDatabase'])->name('database.create-db')->middleware('permission:create_db');
     Route::post('/database/user',          [DatabaseController::class, 'createUser'])->name('database.create-user')->middleware('permission:create_db');
     Route::post('/database/privileges',    [DatabaseController::class, 'assignPrivileges'])->name('database.privileges')->middleware('permission:create_db');

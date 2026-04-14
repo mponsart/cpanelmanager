@@ -82,17 +82,14 @@ class CpanelService
     }
 
     /**
-     * Crée une session cPanel authentifiée et retourne l'URL phpMyAdmin avec le token de session.
+     * Retourne l'URL phpMyAdmin via le proxy cPanel.
      */
     public function getPhpMyAdminUrl(): string
     {
-        $securityToken = $this->createCpanelSession();
-
         return sprintf(
-            'https://%s:%d%s/3rdparty/phpMyAdmin/index.php',
+            'https://%s:%d/3rdparty/phpMyAdmin/index.php',
             $this->host,
-            $this->port,
-            $securityToken
+            $this->port
         );
     }
 
@@ -102,30 +99,6 @@ class CpanelService
     public function getCpanelBaseUrl(): string
     {
         return sprintf('https://%s:%d', $this->host, $this->port);
-    }
-
-    /**
-     * Crée une session cPanel via le endpoint login et retourne le security_token (ex: /cpsessXXXXXX).
-     */
-    private function createCpanelSession(): string
-    {
-        $url = sprintf('https://%s:%d/login/?login_only=1', $this->host, $this->port);
-
-        $response = Http::withoutVerifying()
-            ->timeout(15)
-            ->asForm()
-            ->post($url, [
-                'user' => $this->username,
-                'pass' => $this->token,
-            ]);
-
-        $data = $response->json();
-
-        if (! empty($data['security_token'])) {
-            return $data['security_token'];
-        }
-
-        throw new RuntimeException('Impossible de créer une session cPanel.');
     }
 
     private function parseResponse(Response $response, string $module, string $function): array
