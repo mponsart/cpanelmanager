@@ -433,11 +433,7 @@
 
     <div class="sidebar-footer">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            @if(auth()->user()->avatar)
-                <img src="{{ auth()->user()->avatar }}" alt="" style="width:32px;height:32px;border-radius:50%;" referrerpolicy="no-referrer">
-            @else
-                <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700;font-size:14px;">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-            @endif
+            <img src="{{ auth()->user()->gravatar(32) }}" alt="" style="width:32px;height:32px;border-radius:50%;">
             <div>
                 <span class="user-name">{{ auth()->user()->name }}</span>
                 <span class="text-sm">{{ auth()->user()->email }}</span>

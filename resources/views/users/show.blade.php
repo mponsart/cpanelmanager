@@ -46,9 +46,7 @@
         <table>
             <tr><td class="text-muted" style="width:140px;">Méthode</td><td>Google OAuth</td></tr>
             <tr><td class="text-muted">Google ID</td><td class="text-muted">{{ $user->google_id ?? 'Non encore lié (première connexion en attente)' }}</td></tr>
-            @if($user->avatar)
-            <tr><td class="text-muted">Avatar</td><td><img src="{{ $user->avatar }}" alt="" style="width:40px;height:40px;border-radius:50%;" referrerpolicy="no-referrer"></td></tr>
-            @endif
+            <tr><td class="text-muted">Avatar</td><td><img src="{{ $user->gravatar(40) }}" alt="" style="width:40px;height:40px;border-radius:50%;"></td></tr>
         </table>
     </div>
 </div>

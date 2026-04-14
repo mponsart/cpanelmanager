@@ -15,7 +15,6 @@ class User extends Authenticatable
         'email',
         'password',
         'google_id',
-        'avatar',
         'status',
         'is_super_admin',
         'last_login_at',
@@ -47,6 +46,13 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasMany(ActionLog::class);
+    }
+
+    public function gravatar(int $size = 80): string
+    {
+        $hash = md5(strtolower(trim($this->email)));
+
+        return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d=mp";
     }
 
     public function isActive(): bool

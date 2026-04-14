@@ -64,7 +64,6 @@ class AuthController extends Controller
             $user->google_id = $googleUser->getId();
         }
 
-        $user->avatar = $googleUser->getAvatar();
         $user->last_login_at = now();
         $user->last_login_ip = $request->ip();
         $user->save();
