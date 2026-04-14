@@ -81,6 +81,27 @@ class CpanelService
         return $this->parseResponse($response, $module, $function);
     }
 
+    /**
+     * Génère l'URL phpMyAdmin via le proxy cPanel.
+     * L'utilisateur sera redirigé vers cPanel, qui gère l'authentification.
+     */
+    public function getPhpMyAdminUrl(): string
+    {
+        return sprintf(
+            'https://%s:%d/3rdparty/phpMyAdmin/index.php',
+            $this->host,
+            $this->port
+        );
+    }
+
+    /**
+     * Retourne l'URL de base cPanel (pour liens directs).
+     */
+    public function getCpanelBaseUrl(): string
+    {
+        return sprintf('https://%s:%d', $this->host, $this->port);
+    }
+
     private function parseResponse(Response $response, string $module, string $function): array
     {
         if ($response->failed()) {

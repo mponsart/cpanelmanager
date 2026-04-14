@@ -35,6 +35,13 @@ class DatabaseController extends Controller
         return view('database.index', compact('databases', 'dbUsers'));
     }
 
+    public function phpMyAdmin()
+    {
+        $url = $this->cpanel->getPhpMyAdminUrl();
+
+        return redirect()->away($url);
+    }
+
     public function createDatabase(Request $request)
     {
         $data = $request->validate([

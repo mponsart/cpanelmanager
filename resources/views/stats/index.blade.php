@@ -34,16 +34,32 @@
     <div class="card">
         <div class="card-title">Utilisation disque</div>
         @if(!empty($diskUsage))
-            <div class="table-wrap">
-                <table>
-                    <thead><tr><th>Quota utilisé</th><th>Quota total</th></tr></thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ $diskUsage['megabytes_used'] ?? '—' }} Mo</td>
-                            <td>{{ isset($diskUsage['megabyte_limit']) && $diskUsage['megabyte_limit'] ? $diskUsage['megabyte_limit'].' Mo' : 'Illimité' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            @php
+                $used  = $diskUsage['megabytes_used'] ?? 0;
+                $limit = $diskUsage['megabyte_limit'] ?? 0;
+                $unlimited = !$limit || $limit == 0;
+                $percent = $unlimited ? 0 : round(($used / $limit) * 100, 1);
+            @endphp
+            <div style="display:flex;align-items:center;gap:20px;padding:8px 0;">
+                <div style="flex:1;">
+                    <div style="font-size:1.5rem;font-weight:700;color:var(--text);">
+                        {{ number_format($used, 1) }} Mo
+                    </div>
+                    <div class="text-muted text-sm" style="margin-top:4px;">
+                        @if($unlimited)
+                            Quota : <strong style="color:var(--success);">Illimité</strong>
+                        @else
+                            sur {{ number_format($limit, 0) }} Mo ({{ $percent }}%)
+                        @endif
+                    </div>
+                </div>
+                @unless($unlimited)
+                <div style="flex:1;max-width:200px;">
+                    <div style="background:var(--border);border-radius:6px;height:10px;overflow:hidden;">
+                        <div style="width:{{ min($percent, 100) }}%;height:100%;background:{{ $percent > 90 ? 'var(--danger)' : ($percent > 70 ? 'var(--warning)' : 'var(--success)') }};border-radius:6px;transition:width .3s;"></div>
+                    </div>
+                </div>
+                @endunless
             </div>
         @else
             <p class="text-muted">Non disponible.</p>
@@ -51,18 +67,32 @@
     </div>
 
     <div class="card">
-        <div class="card-title">Bande passante</div>
+        <div class="card-title">Bande passante par domaine</div>
         @if(!empty($bandwidth))
+            @php
+                $maxBytes = is_array($bandwidth) ? max(array_values($bandwidth) ?: [1]) : 1;
+            @endphp
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Domaine</th><th>Consommation</th></tr></thead>
+                    <thead><tr><th>Domaine</th><th style="width:120px;text-align:right;">Consommation</th><th style="width:180px;"></th></tr></thead>
                     <tbody>
                         @foreach($bandwidth as $domain => $bytes)
+                            @php
+                                $mb = round($bytes / 1048576, 2);
+                                $display = $mb >= 1024 ? round($mb/1024, 2).' Go' : $mb.' Mo';
+                                $barPercent = $maxBytes > 0 ? round(($bytes / $maxBytes) * 100) : 0;
+                            @endphp
                             <tr>
-                                <td class="text-sm">{{ $domain }}</td>
-                                <td class="text-muted">
-                                    @php $mb = round($bytes / 1048576, 2); @endphp
-                                    {{ $mb >= 1024 ? round($mb/1024, 2).' Go' : $mb.' Mo' }}
+                                <td>
+                                    <a href="{{ route('stats.domain', $domain) }}" style="color:var(--accent);text-decoration:none;font-weight:500;">
+                                        {{ $domain }}
+                                    </a>
+                                </td>
+                                <td style="text-align:right;font-variant-numeric:tabular-nums;">{{ $display }}</td>
+                                <td style="padding-left:12px;">
+                                    <div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden;">
+                                        <div style="width:{{ $barPercent }}%;height:100%;background:var(--accent);border-radius:4px;transition:width .3s;"></div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

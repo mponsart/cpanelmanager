@@ -5,6 +5,17 @@
 
 @section('content')
 
+<div class="card mb-3" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:16px 20px;">
+    <div>
+        <div style="font-weight:600;font-size:1rem;">phpMyAdmin</div>
+        <div class="text-muted" style="font-size:0.85rem;">Accéder à l'interface de gestion des bases de données</div>
+    </div>
+    <a href="{{ route('database.phpmyadmin') }}" target="_blank" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3H3v10h10v-3"/><path d="M9 2h5v5"/><path d="M14 2L7 9"/></svg>
+        Ouvrir phpMyAdmin
+    </a>
+</div>
+
 <div class="form-row form-row-2 mb-3">
     <div class="card">
         <div class="card-title">Créer une base de données</div>
