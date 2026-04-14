@@ -33,6 +33,10 @@ class PermissionSeeder extends Seeder
 
         // Stats
         ['key' => 'view_stats',     'label' => 'Voir les statistiques',       'module' => 'stats',    'description' => 'Consulter les statistiques disque et bande passante'],
+
+        // Associations MonAsso
+        ['key' => 'view_associations',   'label' => 'Voir les associations',        'module' => 'association', 'description' => 'Lister les dossiers des associations'],
+        ['key' => 'manage_associations', 'label' => 'Gérer les associations',       'module' => 'association', 'description' => 'Créer, renommer et supprimer des associations'],
     ];
 
     public function run(): void

@@ -29,4 +29,9 @@ return [
      * Utilisé comme valeur par défaut dans les formulaires
      */
     'domain' => env('CPANEL_DOMAIN', ''),
+
+    /*
+     * Chemin absolu vers le répertoire des associations MonAsso
+     */
+    'monasso_path' => env('MONASSO_PATH', ''),
 ];

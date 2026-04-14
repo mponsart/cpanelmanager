@@ -91,6 +91,12 @@ class CpanelService
 
     private function parseResponse(Response $response, string $module, string $function): array
     {
+        if ($response->status() === 403) {
+            throw new RuntimeException(
+                sprintf('Le token API n\'a pas la permission d\'accéder au module %s. Vérifiez les permissions du token dans cPanel.', $module)
+            );
+        }
+
         if ($response->failed()) {
             throw new RuntimeException(
                 sprintf('Erreur HTTP cPanel [%s::%s] — statut %d', $module, $function, $response->status())

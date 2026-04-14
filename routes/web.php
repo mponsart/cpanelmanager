@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\CronController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseController;
@@ -83,4 +84,10 @@ Route::middleware(['auth.panel'])->group(function () {
     // ── Statistiques ──────────────────────────────────────────────────────────
     Route::get('/stats',          [StatsController::class, 'index'])->name('stats.index')->middleware('permission:view_stats');
     Route::get('/stats/{domain}', [StatsController::class, 'domainDetail'])->name('stats.domain')->middleware('permission:view_stats')->where('domain', '[a-zA-Z0-9._-]+');
+
+    // ── Associations MonAsso ──────────────────────────────────────────────────
+    Route::get('/associations',           [AssociationController::class, 'index'])->name('association.index')->middleware('permission:view_associations');
+    Route::post('/associations',          [AssociationController::class, 'store'])->name('association.store')->middleware('permission:manage_associations');
+    Route::patch('/associations/rename',  [AssociationController::class, 'rename'])->name('association.rename')->middleware('permission:manage_associations');
+    Route::delete('/associations',        [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');
 });
