@@ -19,8 +19,8 @@ class CronController extends Controller
     public function index(Request $request)
     {
         try {
-            $result = $this->cpanel->call('Cron', 'list_cron');
-            $jobs   = $result['data'] ?? [];
+            $result = $this->cpanel->callApi2('CronJobs', 'fetchcron');
+            $jobs   = $result['cpanelresult']['data'] ?? [];
 
             usort($jobs, fn($a, $b) => strcasecmp($a['command'] ?? '', $b['command'] ?? ''));
 
@@ -51,7 +51,7 @@ class CronController extends Controller
         }
 
         try {
-            $this->cpanel->call('Cron', 'add_line', [
+            $this->cpanel->callApi2('CronJobs', 'add_line', [
                 'minute'  => $data['minute'],
                 'hour'    => $data['hour'],
                 'day'     => $data['day'],
@@ -81,7 +81,7 @@ class CronController extends Controller
         ]);
 
         try {
-            $this->cpanel->call('Cron', 'remove_line', ['linekey' => $data['line']]);
+            $this->cpanel->callApi2('CronJobs', 'remove_line', ['line' => $data['line']]);
 
             $this->logger->success('delete_cron', 'cron', (string) $data['line'], $data, $request);
 
