@@ -433,7 +433,7 @@
 
     <div class="sidebar-footer">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            <img src="{{ auth()->user()->gravatar(32) }}" alt="" style="width:32px;height:32px;border-radius:50%;">
+            <img src="{{ auth()->user()->avatarUrl(32) }}" alt="" style="width:32px;height:32px;border-radius:50%;">
             <div>
                 <span class="user-name">{{ auth()->user()->name }}</span>
                 <span class="text-sm">{{ auth()->user()->email }}</span>

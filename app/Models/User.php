@@ -48,20 +48,11 @@ class User extends Authenticatable
         return $this->hasMany(ActionLog::class);
     }
 
-    public function gravatar(int $size = 80): string
+    public function avatarUrl(int $size = 80): string
     {
-        $hash = md5(strtolower(trim($this->email)));
-        $initials = urlencode($this->initials());
-        $fallback = urlencode("https://ui-avatars.com/api/{$initials}/{$size}/8a4dfd/ffffff/2/0.4/true");
+        $name = urlencode(trim($this->name));
 
-        return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d={$fallback}";
-    }
-
-    public function initials(): string
-    {
-        $parts = explode(' ', trim($this->name));
-
-        return strtoupper(mb_substr($parts[0] ?? '', 0, 1) . mb_substr(end($parts), 0, 1));
+        return "https://ui-avatars.com/api/?name={$name}&size={$size}&background=8a4dfd&color=ffffff&bold=true&rounded=true";
     }
 
     public function isActive(): bool
