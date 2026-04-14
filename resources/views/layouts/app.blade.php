@@ -313,7 +313,7 @@
         .stat-value { font-size: 26px; font-weight: 700; margin-top: 6px; }
 
         /* PAGINATION */
-        .pagination { display: flex; gap: 6px; margin-top: 20px; }
+        .pagination { display: flex; align-items: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
         .pagination a, .pagination span {
             padding: 6px 12px;
             border-radius: var(--radius);
@@ -324,6 +324,7 @@
         }
         .pagination .active span { background: var(--accent); color: #fff; border-color: var(--accent); }
         .pagination a:hover { background: var(--bg3); color: var(--text); }
+        .pagination .disabled { opacity: 0.4; cursor: default; }
 
         /* MISC */
         .page-header {

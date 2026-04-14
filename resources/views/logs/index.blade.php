@@ -92,9 +92,7 @@
         </table>
     </div>
 
-    <div class="pagination">
-        {{ $logs->links() }}
-    </div>
+    {{ $logs->withQueryString()->links('vendor.pagination.default') }}
 </div>
 
 @endsection

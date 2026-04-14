@@ -62,7 +62,7 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination">{{ $users->links() }}</div>
+    {{ $users->withQueryString()->links('vendor.pagination.default') }}
 </div>
 
 @endsection
