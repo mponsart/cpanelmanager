@@ -48,11 +48,11 @@ class User extends Authenticatable
         return $this->hasMany(ActionLog::class);
     }
 
-    public function avatarUrl(int $size = 80): string
+    public function initials(): string
     {
-        $name = urlencode(trim($this->name));
+        $parts = explode(' ', trim($this->name));
 
-        return "https://ui-avatars.com/api/?name={$name}&size={$size}&background=8a4dfd&color=ffffff&bold=true&rounded=true";
+        return strtoupper(mb_substr($parts[0] ?? '', 0, 1) . mb_substr(end($parts), 0, 1));
     }
 
     public function isActive(): bool

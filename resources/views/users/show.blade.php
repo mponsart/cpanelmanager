@@ -46,7 +46,7 @@
         <table>
             <tr><td class="text-muted" style="width:140px;">Méthode</td><td>Google OAuth</td></tr>
             <tr><td class="text-muted">Google ID</td><td class="text-muted">{{ $user->google_id ?? 'Non encore lié (première connexion en attente)' }}</td></tr>
-            <tr><td class="text-muted">Avatar</td><td><img src="{{ $user->avatarUrl(40) }}" alt="" style="width:40px;height:40px;border-radius:50%;"></td></tr>
+            <tr><td class="text-muted">Avatar</td><td><div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;">{{ $user->initials() }}</div></td></tr>
         </table>
     </div>
 </div>
