@@ -32,9 +32,7 @@ class DatabaseController extends Controller
             session()->flash('error', e($e->getMessage()));
         }
 
-        $phpMyAdminUrl = $this->cpanel->getPhpMyAdminUrl();
-
-        return view('database.index', compact('databases', 'dbUsers', 'phpMyAdminUrl'));
+        return view('database.index', compact('databases', 'dbUsers'));
     }
 
     public function createDatabase(Request $request)

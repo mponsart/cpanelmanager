@@ -82,19 +82,6 @@ class CpanelService
     }
 
     /**
-     * Retourne l'URL de connexion cPanel avec redirection vers phpMyAdmin.
-     */
-    public function getPhpMyAdminUrl(): string
-    {
-        return sprintf(
-            'https://%s:%d/login/?goto_uri=%s',
-            $this->host,
-            $this->port,
-            urlencode('/3rdparty/phpMyAdmin/index.php')
-        );
-    }
-
-    /**
      * Retourne l'URL de base cPanel (pour liens directs).
      */
     public function getCpanelBaseUrl(): string
