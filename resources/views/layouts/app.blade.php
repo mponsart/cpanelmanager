@@ -322,7 +322,7 @@
             text-decoration: none;
             font-size: 13px;
         }
-        .pagination .active span { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .pagination .active { background: var(--accent); color: #fff; border-color: var(--accent); }
         .pagination a:hover { background: var(--bg3); color: var(--text); }
         .pagination .disabled { opacity: 0.4; cursor: default; }
 
