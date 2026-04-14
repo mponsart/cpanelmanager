@@ -22,6 +22,9 @@ class DatabaseController extends Controller
             $databases = $dbResult['data'] ?? [];
             $dbUsers   = $userResult['data'] ?? [];
 
+            usort($databases, fn($a, $b) => strcasecmp($a['database'] ?? '', $b['database'] ?? ''));
+            usort($dbUsers, fn($a, $b) => strcasecmp($a['user'] ?? '', $b['user'] ?? ''));
+
             $this->logger->success('list_databases', 'database', null, [], $request);
         } catch (\Throwable $e) {
             $this->logger->error('list_databases', 'database', $e->getMessage(), null, [], $request);

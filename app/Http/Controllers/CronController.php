@@ -22,6 +22,8 @@ class CronController extends Controller
             $result = $this->cpanel->callApi2('CronJobs', 'listcron');
             $jobs   = $result['cpanelresult']['data'] ?? [];
 
+            usort($jobs, fn($a, $b) => strcasecmp($a['command'] ?? '', $b['command'] ?? ''));
+
             $this->logger->success('list_cron', 'cron', null, [], $request);
         } catch (\Throwable $e) {
             $this->logger->error('list_cron', 'cron', $e->getMessage(), null, [], $request);

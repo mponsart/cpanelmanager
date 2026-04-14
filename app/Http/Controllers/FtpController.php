@@ -19,6 +19,8 @@ class FtpController extends Controller
             $result   = $this->cpanel->call('Ftp', 'list_ftp_with_disk');
             $accounts = $result['data'] ?? [];
 
+            usort($accounts, fn($a, $b) => strcasecmp($a['user'] ?? '', $b['user'] ?? ''));
+
             $this->logger->success('list_ftp', 'ftp', null, [], $request);
         } catch (\Throwable $e) {
             $this->logger->error('list_ftp', 'ftp', $e->getMessage(), null, [], $request);

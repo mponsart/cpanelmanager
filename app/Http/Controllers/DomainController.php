@@ -21,6 +21,9 @@ class DomainController extends Controller
             $domains    = $result['data']['addon_domains'] ?? [];
             $subdomains = $result['data']['sub_domains'] ?? [];
 
+            sort($domains);
+            sort($subdomains);
+
             $this->logger->success('list_domains', 'domain', null, [], $request);
         } catch (\Throwable $e) {
             $this->logger->error('list_domains', 'domain', $e->getMessage(), null, [], $request);

@@ -22,6 +22,8 @@ class EmailController extends Controller
 
             $emails = $result['data'] ?? [];
 
+            usort($emails, fn($a, $b) => strcasecmp($a['email'] ?? '', $b['email'] ?? ''));
+
             $this->logger->success('list_emails', 'email', null, [], $request);
         } catch (\Throwable $e) {
             $this->logger->error('list_emails', 'email', $e->getMessage(), null, [], $request);
