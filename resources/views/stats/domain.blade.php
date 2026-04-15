@@ -5,15 +5,15 @@
 
 @section('content')
 
-<div style="margin-bottom:20px;">
-    <a href="{{ route('stats.index') }}" style="color:var(--accent);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:6px;">
+<div class="back-link-wrap">
+    <a href="{{ route('stats.index') }}" class="back-link">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="10,2 4,8 10,14"/></svg>
         Retour aux statistiques
     </a>
 </div>
 
 <div class="card mb-3">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="domain-summary">
         <div>
             <div style="font-size:1.1rem;font-weight:700;color:var(--text);">{{ $domain }}</div>
             <div class="text-muted text-sm" style="margin-top:4px;">Détail de la consommation bande passante</div>
