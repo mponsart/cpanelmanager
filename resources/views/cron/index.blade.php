@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="card">
+<div class="card" id="create-cron-job">
     <div class="card-title">Créer une tâche cron</div>
     <form action="{{ route('cron.store') }}" method="POST">
         @csrf
@@ -65,7 +65,7 @@
     </form>
 </div>
 
-<div class="card">
+<div class="card" id="cron-jobs-list">
     <div class="card-title">Tâches cron ({{ count($jobs) }})</div>
     <div class="table-wrap">
         <table>

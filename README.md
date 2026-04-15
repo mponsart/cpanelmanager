@@ -21,6 +21,7 @@ Design **mode clair** avec la charte graphique **Groupe Speed Cloud** (police Ti
 | **Statistiques** | Disque, bande passante, ressources globales |
 | **Utilisateurs** | Créer des techniciens, gérer leurs permissions fine-grained |
 | **Journaux** | Historique complet de toutes les actions avec filtres avancés |
+| **Dashboard rapide** | Accès direct aux actions clés (objectif : 3 clics max par action) |
 
 ---
 
@@ -246,4 +247,3 @@ Configurer le serveur web (Nginx/Apache) pour pointer sur le dossier `public/`.
 - **cURL / Laravel HTTP Client** — Appels API cPanel via UAPI et API2
 - **Titillium Web** — Police de la charte Groupe Speed Cloud
 - **Interface mode clair** — Design épuré, couleur accent `#8a4dfd`
-

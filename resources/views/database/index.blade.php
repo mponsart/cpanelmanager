@@ -6,7 +6,7 @@
 @section('content')
 
 <div class="form-row form-row-2 mb-3">
-    <div class="card">
+    <div class="card" id="create-database">
         <div class="card-title">Créer une base de données</div>
         <form action="{{ route('database.create-db') }}" method="POST">
             @csrf
@@ -19,7 +19,7 @@
         </form>
     </div>
 
-    <div class="card">
+    <div class="card" id="create-database-user">
         <div class="card-title">Créer un utilisateur MySQL</div>
         <form action="{{ route('database.create-user') }}" method="POST">
             @csrf
@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="card">
+<div class="card" id="database-privileges">
     <div class="card-title">Assigner des privilèges</div>
     <form action="{{ route('database.privileges') }}" method="POST">
         @csrf
