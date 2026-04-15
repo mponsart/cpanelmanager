@@ -38,7 +38,7 @@
     .quick-card {
         border-radius: 14px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+        background: linear-gradient(180deg, #fff 0%, var(--panel-soft) 100%);
         padding: 14px;
         box-shadow: var(--shadow-sm);
     }
