@@ -25,7 +25,7 @@
                 <option value="0 0 1 * *">Le 1er du mois à minuit</option>
             </select>
         </div>
-        <div class="form-row" style="grid-template-columns: repeat(5, 1fr);">
+        <div class="form-row cron-grid">
             <div class="form-group">
                 <label>Minute</label>
                 <input type="text" name="minute" value="{{ old('minute', '*') }}" required maxlength="50">

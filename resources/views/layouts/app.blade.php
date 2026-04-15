@@ -28,6 +28,8 @@
             --text-muted:#6c6893;
             --radius:    8px;
             --sidebar-w: 240px;
+            --shadow-sm: 0 8px 24px rgba(30,30,47,0.06);
+            --shadow-md: 0 12px 30px rgba(30,30,47,0.08);
         }
 
         body {
@@ -37,6 +39,7 @@
             color: var(--text);
             min-height: 100vh;
             display: flex;
+            line-height: 1.45;
         }
 
         /* SIDEBAR */
@@ -50,11 +53,18 @@
             top: 0; left: 0; bottom: 0;
             overflow-y: auto;
             z-index: 100;
+            transition: transform 0.25s ease;
         }
 
         .sidebar-brand {
             padding: 20px 18px 18px;
             border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .sidebar-brand .sidebar-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
 
         .sidebar-brand img {
@@ -139,7 +149,23 @@
             position: sticky;
             top: 0;
             z-index: 50;
+            backdrop-filter: blur(8px);
         }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .menu-toggle, .sidebar-close {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            color: var(--text);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .menu-toggle:hover, .sidebar-close:hover { background: var(--bg3); }
 
         .topbar-title {
             font-size: 16px;
@@ -170,7 +196,7 @@
             border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: var(--shadow-sm);
         }
 
         .card-title {
@@ -252,6 +278,7 @@
 
         .form-row-2 { grid-template-columns: 1fr 1fr; }
         .form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .cron-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
         /* BUTTONS */
         .btn {
@@ -266,6 +293,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.15s;
+            white-space: nowrap;
         }
 
         .btn-primary { background: var(--accent);  color: #fff; }
@@ -332,6 +360,8 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 24px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .page-header h1 { font-size: 20px; font-weight: 700; }
@@ -379,9 +409,93 @@
         .btn-success:hover { opacity: 0.85; }
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-warning:hover { opacity: 0.85; }
-
-        /* CARD DEPTH */
-        .card { box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .inline-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .inline-form .form-group { flex: 1; margin-bottom: 0; min-width: 260px; }
+        .disk-usage-row { display:flex; align-items:center; gap:20px; padding:8px 0; }
+        .disk-usage-details { flex:1; }
+        .disk-usage-bar-wrap { flex:1; max-width:200px; }
+        .domain-summary { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .back-link-wrap { margin-bottom:20px; }
+        .back-link {
+            color:var(--accent);
+            text-decoration:none;
+            font-weight:500;
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+        }
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 16, 41, 0.4);
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        body.nav-open .sidebar-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+        @media (max-width: 1100px) {
+            .content { padding: 20px; }
+            .topbar { padding: 12px 20px; }
+        }
+        @media (max-width: 900px) {
+            .form-row,
+            .form-row-2,
+            .form-row-3 {
+                grid-template-columns: 1fr !important;
+            }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+            .input-group { flex-wrap: wrap; }
+            .input-group input {
+                border-radius: var(--radius);
+                border-right: 1px solid var(--border);
+                margin-bottom: 8px;
+            }
+            .input-addon {
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+            }
+            .disk-usage-row,
+            .domain-summary {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .disk-usage-bar-wrap { max-width: none; width: 100%; }
+            .inline-form .form-group { min-width: 100%; }
+            .btn { width: 100%; justify-content: center; }
+            .table-wrap .btn { width: auto; }
+            .pagination { gap: 4px; }
+            .pagination a, .pagination span { padding: 6px 10px; }
+        }
+        @media (max-width: 1200px) {
+            .cron-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (max-width: 1024px) {
+            .menu-toggle, .sidebar-close { display: inline-flex; }
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: var(--shadow-md);
+            }
+            body.nav-open .sidebar { transform: translateX(0); }
+            .main { margin-left: 0; }
+        }
+        @media (max-width: 640px) {
+            .content { padding: 14px; }
+            .topbar { padding: 10px 14px; }
+            .topbar-title { font-size: 15px; }
+            .card { padding: 14px; border-radius: 12px; }
+            th, td { padding: 9px 10px; }
+            .stat-value { font-size: 22px; }
+            .code { font-size: 11px; }
+        }
     </style>
     @stack('styles')
 </head>
@@ -390,6 +504,9 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-brand">
+        <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fermer le menu">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+        </button>
         <img src="/images/logo-dark.svg" alt="Groupe Speed Cloud">
         <span>Panel d'administration</span>
     </div>
@@ -455,7 +572,12 @@
 <!-- MAIN -->
 <div class="main">
     <div class="topbar">
-        <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+        <div class="topbar-left">
+            <button type="button" class="menu-toggle" data-sidebar-open aria-label="Ouvrir le menu">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
+            </button>
+            <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+        </div>
         <span class="text-muted text-sm">{{ now()->format('d/m/Y H:i') }}</span>
     </div>
 
@@ -475,6 +597,7 @@
         @yield('content')
     </div>
 </div>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
 
 <script>
 (function() {
@@ -496,6 +619,21 @@
             btn.innerHTML = show ? EYE_OFF : EYE;
         });
         wrap.appendChild(btn);
+    });
+})();
+(function() {
+    var body = document.body;
+    var openBtn = document.querySelector('[data-sidebar-open]');
+    var closeBtn = document.querySelector('[data-sidebar-close]');
+    var overlay = document.querySelector('[data-sidebar-overlay]');
+    if (!openBtn || !closeBtn || !overlay) return;
+    function closeNav() { body.classList.remove('nav-open'); }
+    function openNav() { body.classList.add('nav-open'); }
+    openBtn.addEventListener('click', openNav);
+    closeBtn.addEventListener('click', closeNav);
+    overlay.addEventListener('click', closeNav);
+    document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
+        link.addEventListener('click', closeNav);
     });
 })();
 </script>

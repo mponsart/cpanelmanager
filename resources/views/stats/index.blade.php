@@ -40,8 +40,8 @@
                 $unlimited = !$limit || $limit == 0;
                 $percent = $unlimited ? 0 : round(($used / $limit) * 100, 1);
             @endphp
-            <div style="display:flex;align-items:center;gap:20px;padding:8px 0;">
-                <div style="flex:1;">
+            <div class="disk-usage-row">
+                <div class="disk-usage-details">
                     <div style="font-size:1.5rem;font-weight:700;color:var(--text);">
                         {{ number_format($used, 1) }} Mo
                     </div>
@@ -54,7 +54,7 @@
                     </div>
                 </div>
                 @unless($unlimited)
-                <div style="flex:1;max-width:200px;">
+                <div class="disk-usage-bar-wrap">
                     <div style="background:var(--border);border-radius:6px;height:10px;overflow:hidden;">
                         <div style="width:{{ min($percent, 100) }}%;height:100%;background:{{ $percent > 90 ? 'var(--danger)' : ($percent > 70 ? 'var(--warning)' : 'var(--success)') }};border-radius:6px;transition:width .3s;"></div>
                     </div>

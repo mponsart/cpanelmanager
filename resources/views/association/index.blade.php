@@ -7,9 +7,9 @@
 
 <div class="card mb-3">
     <div class="card-title">Créer une association</div>
-    <form action="{{ route('association.store') }}" method="POST" style="display:flex;align-items:flex-end;gap:12px;">
+    <form action="{{ route('association.store') }}" method="POST" class="inline-form">
         @csrf
-        <div class="form-group" style="flex:1;margin-bottom:0;">
+        <div class="form-group">
             <label>Nom du dossier</label>
             <input type="text" name="name" required maxlength="100" pattern="[a-zA-Z0-9_-]+" placeholder="mon-association" value="{{ old('name') }}">
             @error('name')<div class="form-error">{{ $message }}</div>@enderror

@@ -15,17 +15,21 @@
         body {
             font-family: 'TitilliumWeb', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 14px;
-            background: #f5f6fa;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(138,77,253,0.10), transparent 36%),
+                radial-gradient(circle at 85% 0%, rgba(79,124,255,0.10), transparent 28%),
+                #f5f6fa;
             color: #1e1e2f;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 24px 12px;
         }
 
         .login-wrap {
             width: 100%;
-            max-width: 400px;
+            max-width: 430px;
             padding: 16px;
         }
 
@@ -35,7 +39,7 @@
         }
 
         .login-header img {
-            width: 220px;
+            width: min(100%, 220px);
             height: auto;
             margin-bottom: 10px;
         }
@@ -49,9 +53,9 @@
         .card {
             background: #ffffff;
             border: 1px solid #e2dff0;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 32px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 12px 34px rgba(30,30,47,0.10);
             text-align: center;
         }
 
@@ -91,6 +95,13 @@
             border-color: #8a4dfd;
             background: rgba(138,77,253,0.04);
             box-shadow: 0 2px 8px rgba(138,77,253,0.12);
+        }
+        @media (max-width: 520px) {
+            body { padding: 12px; }
+            .login-wrap { padding: 0; max-width: 100%; }
+            .login-header { margin-bottom: 20px; }
+            .card { padding: 20px 16px; border-radius: 12px; }
+            .btn-google { font-size: 14px; padding: 11px 14px; }
         }
 
         .btn-google svg {
