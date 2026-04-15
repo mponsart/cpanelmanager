@@ -45,6 +45,7 @@
 
     .quick-card .title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
     .quick-card p { color: var(--text-muted); font-size: 12px; margin-bottom: 10px; }
+    .quick-links { display: flex; flex-wrap: wrap; gap: 8px; }
 
     .dashboard-grid {
         display: grid;
@@ -97,33 +98,54 @@
 <div class="dashboard-actions">
     <div class="quick-card">
         <div class="title">Gestion E-mails</div>
-        <p>Créer, réinitialiser et supprimer rapidement.</p>
-        <a href="{{ route('email.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        <p>Accès direct aux actions principales.</p>
+        <div class="quick-links">
+            <a href="{{ route('email.index') }}#create-email" class="btn btn-ghost btn-sm">Créer</a>
+            <a href="{{ route('email.index') }}#emails-list" class="btn btn-ghost btn-sm">Supprimer</a>
+            <a href="{{ route('email.forwarders') }}" class="btn btn-ghost btn-sm">Redirections</a>
+        </div>
     </div>
     <div class="quick-card">
         <div class="title">Bases de données</div>
-        <p>Créer base, utilisateur et privilèges.</p>
-        <a href="{{ route('database.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        <p>Créer et attribuer en un accès.</p>
+        <div class="quick-links">
+            <a href="{{ route('database.index') }}#create-database" class="btn btn-ghost btn-sm">Base</a>
+            <a href="{{ route('database.index') }}#create-database-user" class="btn btn-ghost btn-sm">Utilisateur</a>
+            <a href="{{ route('database.index') }}#database-privileges" class="btn btn-ghost btn-sm">Privilèges</a>
+        </div>
     </div>
     <div class="quick-card">
         <div class="title">Domaines</div>
-        <p>Gérer domaines addon et sous-domaines.</p>
-        <a href="{{ route('domain.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        <p>Créer addon ou sous-domaine rapidement.</p>
+        <div class="quick-links">
+            <a href="{{ route('domain.index') }}#create-addon-domain" class="btn btn-ghost btn-sm">Addon</a>
+            <a href="{{ route('domain.index') }}#create-subdomain" class="btn btn-ghost btn-sm">Sous-domaine</a>
+        </div>
     </div>
     <div class="quick-card">
         <div class="title">Comptes FTP</div>
-        <p>Ajouter ou supprimer les accès FTP.</p>
-        <a href="{{ route('ftp.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        <p>Créer ou supprimer sans navigation supplémentaire.</p>
+        <div class="quick-links">
+            <a href="{{ route('ftp.index') }}#create-ftp-account" class="btn btn-ghost btn-sm">Créer</a>
+            <a href="{{ route('ftp.index') }}#ftp-accounts-list" class="btn btn-ghost btn-sm">Supprimer</a>
+        </div>
     </div>
     <div class="quick-card">
         <div class="title">Tâches Cron</div>
-        <p>Piloter les exécutions planifiées.</p>
-        <a href="{{ route('cron.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        <p>Créer ou retirer une tâche en quelques clics.</p>
+        <div class="quick-links">
+            <a href="{{ route('cron.index') }}#create-cron-job" class="btn btn-ghost btn-sm">Créer</a>
+            <a href="{{ route('cron.index') }}#cron-jobs-list" class="btn btn-ghost btn-sm">Supprimer</a>
+        </div>
     </div>
     <div class="quick-card">
         <div class="title">Utilisateurs</div>
-        <p>Accès techniciens et permissions.</p>
-        <a href="{{ route('users.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        <p>Gestion des comptes et droits.</p>
+        <div class="quick-links">
+            <a href="{{ route('users.create') }}" class="btn btn-ghost btn-sm">Créer</a>
+            <a href="{{ route('users.index') }}" class="btn btn-ghost btn-sm">Gérer</a>
+            <a href="{{ route('permissions.index') }}" class="btn btn-ghost btn-sm">Permissions</a>
+        </div>
     </div>
 </div>
 

@@ -6,7 +6,7 @@
 @section('content')
 
 <div class="form-row form-row-2 mb-3">
-    <div class="card">
+    <div class="card" id="create-addon-domain">
         <div class="card-title">Ajouter un domaine addon</div>
         <form action="{{ route('domain.create-addon') }}" method="POST">
             @csrf
@@ -29,7 +29,7 @@
         </form>
     </div>
 
-    <div class="card">
+    <div class="card" id="create-subdomain">
         <div class="card-title">Créer un sous-domaine</div>
         <form action="{{ route('domain.create-subdomain') }}" method="POST">
             @csrf

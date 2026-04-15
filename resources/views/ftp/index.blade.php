@@ -9,7 +9,7 @@
     <h1>Comptes FTP</h1>
 </div>
 
-<div class="card">
+<div class="card" id="create-ftp-account">
     <div class="card-title">Créer un compte FTP</div>
     <form action="{{ route('ftp.store') }}" method="POST">
         @csrf
@@ -44,7 +44,7 @@
     </form>
 </div>
 
-<div class="card">
+<div class="card" id="ftp-accounts-list">
     <div class="card-title">Comptes FTP ({{ count($accounts) }})</div>
     <div class="table-wrap">
         <table>

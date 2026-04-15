@@ -10,7 +10,7 @@
     <a href="{{ route('email.forwarders') }}" class="btn btn-ghost">Redirections →</a>
 </div>
 
-<div class="card">
+<div class="card" id="create-email">
     <div class="card-title">Créer une adresse e-mail</div>
     <form action="{{ route('email.store') }}" method="POST">
         @csrf
@@ -39,7 +39,7 @@
     </form>
 </div>
 
-<div class="card">
+<div class="card" id="emails-list">
     <div class="card-title">Adresses existantes ({{ count($emails) }})</div>
     <div class="table-wrap">
         <table>
