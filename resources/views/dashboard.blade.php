@@ -7,6 +7,7 @@
 
 @php
     $incidents = $recentLogs->whereIn('status', ['error', 'denied'])->take(8);
+    $recentActivity = $recentLogs->reject(fn ($log) => in_array($log->status, ['error', 'denied'], true))->take(10);
 @endphp
 
 <style>
@@ -69,7 +70,7 @@
 
 <div class="dashboard-top">
     <div class="dashboard-search">
-        <input type="search" placeholder="Rechercher dans les incidents et logs..." data-dashboard-search>
+        <input type="search" placeholder="Rechercher dans les incidents et logs..." data-dashboard-search aria-label="Rechercher dans les incidents et logs">
     </div>
     <a href="{{ route('logs.index') }}" class="btn btn-primary">Voir tous les journaux</a>
 </div>
@@ -177,7 +178,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($recentLogs->take(10) as $log)
+                    @forelse($recentActivity as $log)
                         <tr data-log-row>
                             <td class="text-muted text-sm">{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
                             <td>{{ $log->user?->name ?? '<système>' }}</td>
