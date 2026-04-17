@@ -25,75 +25,8 @@
     $secretIndex = 0;
 @endphp
 
-{{-- ── Security charter modal ─────────────────────────────────────────── --}}
-<div id="security-charter-overlay" style="
-    position:fixed; inset:0; z-index:9999;
-    background:rgba(15,23,42,0.72);
-    display:flex; align-items:center; justify-content:center;
-    backdrop-filter:blur(4px);
-">
-    <div role="dialog" aria-modal="true" aria-labelledby="charter-title" style="
-        background:var(--panel);
-        border:1px solid var(--border-strong);
-        border-radius:var(--radius);
-        box-shadow:var(--shadow-md);
-        max-width:520px; width:calc(100% - 32px);
-        padding:28px 28px 24px;
-    ">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-            <span style="
-                width:40px;height:40px;flex-shrink:0;border-radius:10px;
-                background:rgba(220,38,38,0.12);
-                display:flex;align-items:center;justify-content:center;
-            ">
-                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="#dc2626" stroke-width="1.5">
-                    <rect x="3" y="7" width="10" height="8" rx="1.5"/>
-                    <path d="M5 7V5a3 3 0 116 0v2"/>
-                    <circle cx="8" cy="11" r="1" fill="#dc2626" stroke="none"/>
-                </svg>
-            </span>
-            <h2 id="charter-title" style="font-size:1.05rem;font-weight:700;margin:0;">
-                Charte de sécurité — Identifiants cPanel
-            </h2>
-        </div>
-
-        <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6;">
-            Vous êtes sur le point d'accéder à des <strong style="color:var(--text);">informations strictement confidentielles</strong>
-            (mots de passe, tokens API). En acceptant cette charte, vous vous engagez à :
-        </p>
-
-        <ul style="
-            font-size:.875rem;line-height:1.8;
-            padding-left:18px;margin-bottom:20px;
-            color:var(--text);
-        ">
-            <li>Ne <strong>pas partager</strong> ces identifiants par e-mail, messagerie ou tout autre canal non sécurisé.</li>
-            <li>Ne <strong>pas effectuer de capture d'écran</strong> ou enregistrement de cette page.</li>
-            <li>Ne <strong>pas noter</strong> ces informations dans un espace accessible à des tiers.</li>
-            <li>Signaler immédiatement toute <strong>compromission suspectée</strong> à l'administrateur principal.</li>
-            <li>N'utiliser ces identifiants qu'à des fins <strong>strictement professionnelles et autorisées</strong>.</li>
-        </ul>
-
-        <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:20px;">
-            Toute violation de cette charte est susceptible d'engager votre responsabilité et de faire l'objet de sanctions.
-        </p>
-
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-            <a href="{{ route('dashboard') }}" class="btn btn-ghost btn-sm">
-                Annuler
-            </a>
-            <button id="charter-accept-btn" type="button" class="btn btn-primary btn-sm">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:5px;">
-                    <polyline points="2,8 6,13 14,3"/>
-                </svg>
-                J'ai lu et j'accepte
-            </button>
-        </div>
-    </div>
-</div>
-
 {{-- Page content (blurred until charter accepted) --}}
-<div id="cpanel-content" style="filter:blur(8px);pointer-events:none;user-select:none;" aria-hidden="true">
+<div id="cpanel-content" style="filter:blur(8px);pointer-events:none;user-select:none;transition:filter .25s ease;" aria-hidden="true">
 
 <div class="page-header">
     <h1>Accès cPanel</h1>
@@ -175,29 +108,6 @@
 <script>
 (function () {
     'use strict';
-
-    // ── Security charter ────────────────────────────────────────────────────
-    var CHARTER_STORAGE_KEY = 'cpanel_charter_accepted';
-    var overlay   = document.getElementById('security-charter-overlay');
-    var content   = document.getElementById('cpanel-content');
-    var acceptBtn = document.getElementById('charter-accept-btn');
-
-    function showContent() {
-        overlay.style.display = 'none';
-        content.style.filter       = '';
-        content.style.pointerEvents = '';
-        content.style.userSelect    = '';
-        content.removeAttribute('aria-hidden');
-    }
-
-    if (sessionStorage.getItem(CHARTER_STORAGE_KEY) === '1') {
-        showContent();
-    }
-
-    acceptBtn.addEventListener('click', function () {
-        sessionStorage.setItem(CHARTER_STORAGE_KEY, '1');
-        showContent();
-    });
 
     // ── Secret store ────────────────────────────────────────────────────────
     var _store = {!! json_encode($secretMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) !!};
@@ -302,3 +212,155 @@
 </script>
 
 @endsection
+
+{{-- ── Security charter modal (rendered directly in <body> via layout stack) ── --}}
+@push('modals')
+<style>
+@keyframes charter-fadein {
+    from { opacity:0; transform:scale(.96); }
+    to   { opacity:1; transform:scale(1);   }
+}
+@keyframes charter-fadeout {
+    from { opacity:1; transform:scale(1);   }
+    to   { opacity:0; transform:scale(.96); }
+}
+#security-charter-overlay { animation: charter-fadein .18s cubic-bezier(.4,0,.2,1) both; }
+#security-charter-overlay.is-hiding { animation: charter-fadeout .15s cubic-bezier(.4,0,.2,1) both; pointer-events:none; }
+</style>
+
+<div id="security-charter-overlay"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="charter-title"
+     style="position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.72);
+            display:flex;align-items:center;justify-content:center;
+            backdrop-filter:blur(4px);">
+    <div style="background:var(--panel);border:1px solid var(--border-strong);
+                border-radius:var(--radius);box-shadow:var(--shadow-md);
+                max-width:520px;width:calc(100% - 32px);padding:28px 28px 24px;">
+
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+            <span style="width:40px;height:40px;flex-shrink:0;border-radius:10px;
+                         background:rgba(220,38,38,0.12);
+                         display:flex;align-items:center;justify-content:center;">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="#dc2626" stroke-width="1.5" aria-hidden="true">
+                    <rect x="3" y="7" width="10" height="8" rx="1.5"/>
+                    <path d="M5 7V5a3 3 0 116 0v2"/>
+                    <circle cx="8" cy="11" r="1" fill="#dc2626" stroke="none"/>
+                </svg>
+            </span>
+            <h2 id="charter-title" style="font-size:1.05rem;font-weight:700;margin:0;">
+                Charte de sécurité — Identifiants cPanel
+            </h2>
+        </div>
+
+        <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6;">
+            Vous êtes sur le point d'accéder à des
+            <strong style="color:var(--text);">informations strictement confidentielles</strong>
+            (mots de passe, tokens API). En acceptant cette charte, vous vous engagez à :
+        </p>
+
+        <ul style="font-size:.875rem;line-height:1.8;padding-left:18px;margin-bottom:20px;color:var(--text);">
+            <li>Ne <strong>pas partager</strong> ces identifiants par e-mail, messagerie ou tout autre canal non sécurisé.</li>
+            <li>Ne <strong>pas effectuer de capture d'écran</strong> ou enregistrement de cette page.</li>
+            <li>Ne <strong>pas noter</strong> ces informations dans un espace accessible à des tiers.</li>
+            <li>Signaler immédiatement toute <strong>compromission suspectée</strong> à l'administrateur principal.</li>
+            <li>N'utiliser ces identifiants qu'à des fins <strong>strictement professionnelles et autorisées</strong>.</li>
+        </ul>
+
+        <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:20px;">
+            Toute violation de cette charte est susceptible d'engager votre responsabilité et de faire l'objet de sanctions.
+        </p>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <a id="charter-cancel-btn" href="{{ route('dashboard') }}" class="btn btn-ghost btn-sm">
+                Annuler
+            </a>
+            <button id="charter-accept-btn" type="button" class="btn btn-primary btn-sm">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+                     style="vertical-align:middle;margin-right:5px;" aria-hidden="true">
+                    <polyline points="2,8 6,13 14,3"/>
+                </svg>
+                J'ai lu et j'accepte
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var CHARTER_KEY = 'cpanel_charter_accepted';
+    var overlay   = document.getElementById('security-charter-overlay');
+    var content   = document.getElementById('cpanel-content');
+    var acceptBtn = document.getElementById('charter-accept-btn');
+    var cancelBtn = document.getElementById('charter-cancel-btn');
+
+    // Safety guard — all elements must exist
+    if (!overlay || !content || !acceptBtn || !cancelBtn) return;
+
+    var escHandler = null;
+
+    function hideOverlay(instant) {
+        // Remove the Escape listener as soon as we start hiding
+        if (escHandler) { document.removeEventListener('keydown', escHandler); escHandler = null; }
+        if (instant) {
+            overlay.style.display = 'none';
+            return;
+        }
+        overlay.classList.add('is-hiding');
+        overlay.addEventListener('animationend', function () {
+            overlay.style.display = 'none';
+        }, { once: true });
+    }
+
+    function revealContent() {
+        content.style.filter       = '';
+        content.style.pointerEvents = '';
+        content.style.userSelect    = '';
+        content.removeAttribute('aria-hidden');
+    }
+
+    // Read sessionStorage safely (may be unavailable in some private-browsing modes)
+    var alreadyAccepted = false;
+    try { alreadyAccepted = sessionStorage.getItem(CHARTER_KEY) === '1'; } catch (e) {}
+
+    if (alreadyAccepted) {
+        hideOverlay(true);
+        revealContent();
+        return;
+    }
+
+    // Auto-focus the accept button so keyboard users can immediately press Enter
+    acceptBtn.focus();
+
+    // Accept handler
+    acceptBtn.addEventListener('click', function () {
+        try { sessionStorage.setItem(CHARTER_KEY, '1'); } catch (e) {}
+        hideOverlay(false);
+        revealContent();
+    });
+
+    // Escape key → cancel (same as clicking "Annuler")
+    escHandler = function (e) {
+        if (e.key === 'Escape') { window.location.href = cancelBtn.href; }
+    };
+    document.addEventListener('keydown', escHandler);
+
+    // Focus trap — keep Tab navigation inside the modal.
+    // The list is intentionally built once at init; modal content is static.
+    var focusable = Array.from(overlay.querySelectorAll('a[href], button:not([disabled])'));
+    overlay.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab' || !focusable.length) return;
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+            if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+        }
+    });
+}());
+</script>
+@endpush
