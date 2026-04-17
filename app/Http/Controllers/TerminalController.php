@@ -102,7 +102,27 @@ class TerminalController extends Controller
         }
 
         fclose($pipes[0]);
-        $stdout = stream_get_contents($pipes[1]);
+
+        $timeout = 30;
+        stream_set_timeout($pipes[1], $timeout);
+        $stdout   = stream_get_contents($pipes[1]);
+        $timedOut = stream_get_meta_data($pipes[1])['timed_out'];
+
+        if ($timedOut) {
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            proc_terminate($process);
+            proc_close($process);
+
+            return [
+                'output'  => $stdout,
+                'error'   => 'La commande a dépassé le délai d\'exécution (30 s).',
+                'cwd'     => $cwd,
+                'success' => false,
+            ];
+        }
+
+        stream_set_timeout($pipes[2], $timeout);
         $stderr = stream_get_contents($pipes[2]);
         fclose($pipes[1]);
         fclose($pipes[2]);
