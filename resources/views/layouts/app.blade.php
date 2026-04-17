@@ -714,7 +714,7 @@
                         || $navCan('view_ftp')
                         || $navCan('manage_cron')
                         || $navCan('view_associations')
-                        || $navCan('use_terminal');
+                        || $navCan('access_cpanel');
         $hasAdminAccess  = $navCan('manage_users');
     @endphp
 
@@ -764,9 +764,9 @@
             <span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg></span> Associations
         </a>
         @endif
-        @if($navCan('use_terminal'))
-        <a href="{{ route('terminal.index') }}" class="nav-link {{ request()->routeIs('terminal.*') ? 'active' : '' }}">
-            <span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="12" rx="2"/><polyline points="4,6 7,8 4,10"/><line x1="8" y1="10" x2="12" y2="10"/></svg></span> Terminal
+        @if($navCan('access_cpanel'))
+        <a href="{{ route('cpanel.index') }}" class="nav-link {{ request()->routeIs('cpanel.*') ? 'active' : '' }}">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg></span> Accès cPanel
         </a>
         @endif
         @endif

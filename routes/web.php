@@ -11,7 +11,7 @@ use App\Http\Controllers\FtpController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\StatsController;
-use App\Http\Controllers\TerminalController;
+use App\Http\Controllers\CpanelAccessController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -93,7 +93,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::patch('/associations/rename',  [AssociationController::class, 'rename'])->name('association.rename')->middleware('permission:manage_associations');
     Route::delete('/associations',        [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');
 
-    // ── Terminal SSH ──────────────────────────────────────────────────────────
-    Route::get('/terminal',      [TerminalController::class, 'index'])->name('terminal.index')->middleware('permission:use_terminal');
-    Route::post('/terminal/exec',[TerminalController::class, 'exec'])->name('terminal.exec')->middleware('permission:use_terminal');
+    // ── Accès cPanel ──────────────────────────────────────────────────────────
+    Route::get('/cpanel',         [CpanelAccessController::class, 'index'])->name('cpanel.index')->middleware('permission:access_cpanel');
+    Route::post('/cpanel/connect',[CpanelAccessController::class, 'connect'])->name('cpanel.connect')->middleware('permission:access_cpanel');
 });
