@@ -85,7 +85,7 @@
 </div>
 
 @if($cpanelUrl)
-<div style="margin-top:8px;">
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
     <a href="{{ $cpanelUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor"
              stroke-width="1.5" style="vertical-align:middle; margin-right:6px;">
@@ -95,6 +95,21 @@
         </svg>
         Ouvrir cPanel
     </a>
+
+    @if(auth()->user()?->isSuperAdmin())
+    <form action="{{ route('cpanel.rotate-password') }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir changer le mot de passe cPanel immédiatement ?');">
+        @csrf
+        <button type="submit" class="btn btn-ghost" style="border-color:var(--warning);color:var(--warning);">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                 stroke-width="1.5" style="vertical-align:middle; margin-right:6px;">
+                <path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/>
+                <polyline points="14,2 14,5.5 10.5,5.5"/>
+                <polyline points="2,14 2,10.5 5.5,10.5"/>
+            </svg>
+            Forcer la rotation du mot de passe
+        </button>
+    </form>
+    @endif
 </div>
 @else
 <div class="alert alert-warning" style="margin-top:8px;">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\CpanelService;
 use App\Services\LoggerService;
+use App\Services\PasswordRotationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -12,7 +13,8 @@ class CpanelAccessController extends Controller
 {
     public function __construct(
         private CpanelService $cpanel,
-        private LoggerService $logger
+        private LoggerService $logger,
+        private PasswordRotationService $rotator
     ) {}
 
     public function index()
@@ -45,6 +47,9 @@ class CpanelAccessController extends Controller
             $url = preg_replace('/^http:\/\//i', 'https://', $url);
 
             $this->logger->success('cpanel_autologin', 'cpanel', null, [], $request);
+
+            // Rotation du mot de passe après connexion réussie
+            $this->rotatePasswordSilently($request);
 
             return redirect()->away($url);
         } catch (\Throwable $e) {
@@ -86,6 +91,9 @@ class CpanelAccessController extends Controller
 
                 $this->logger->success('cpanel_manual_login', 'cpanel', null, [], $request);
 
+                // Rotation du mot de passe après connexion réussie
+                $this->rotatePasswordSilently($request);
+
                 return redirect()->away($location);
             }
 
@@ -96,6 +104,32 @@ class CpanelAccessController extends Controller
             $this->logger->error('cpanel_manual_login', 'cpanel', $e->getMessage(), null, [], $request);
 
             return back()->with('error', 'Erreur lors de la connexion : ' . $e->getMessage());
+        }
+    }
+
+    public function forceRotate(Request $request): RedirectResponse
+    {
+        abort_unless(auth()->user()?->isSuperAdmin(), 403);
+
+        try {
+            $this->rotator->rotate();
+            $this->logger->success('cpanel_force_rotate_password', 'cpanel', null, [], $request);
+
+            return back()->with('success', 'Mot de passe cPanel changé avec succès.');
+        } catch (\Throwable $e) {
+            $this->logger->error('cpanel_force_rotate_password', 'cpanel', $e->getMessage(), null, [], $request);
+
+            return back()->with('error', 'Échec de la rotation du mot de passe : ' . $e->getMessage());
+        }
+    }
+
+    private function rotatePasswordSilently(Request $request): void
+    {
+        try {
+            $this->rotator->rotate();
+            $this->logger->success('cpanel_auto_rotate_password', 'cpanel', null, [], $request);
+        } catch (\Throwable $e) {
+            $this->logger->error('cpanel_auto_rotate_password', 'cpanel', $e->getMessage(), null, [], $request);
         }
     }
 }

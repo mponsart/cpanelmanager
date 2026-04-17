@@ -97,6 +97,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::get('/acces-cpanel',               [CpanelAccessController::class, 'index'])->name('cpanel.index')->middleware('permission:access_cpanel');
     Route::post('/acces-cpanel/connect',      [CpanelAccessController::class, 'connect'])->name('cpanel.connect')->middleware('permission:access_cpanel');
     Route::post('/acces-cpanel/manual-login', [CpanelAccessController::class, 'manualLogin'])->name('cpanel.manual-login')->middleware('permission:access_cpanel');
+    Route::post('/acces-cpanel/rotate-password', [CpanelAccessController::class, 'forceRotate'])->name('cpanel.rotate-password')->middleware('permission:access_cpanel');
 
 
 });
