@@ -25,6 +25,14 @@ return [
     'token' => env('CPANEL_TOKEN', ''),
 
     /*
+     * Mot de passe du compte cPanel (optionnel)
+     * Utilisé pour la connexion manuelle proxiée par Laravel.
+     * Si défini, l'utilisateur n'a pas besoin de saisir son mot de passe.
+     * JAMAIS exposé en frontend ou dans les logs
+     */
+    'password' => env('CPANEL_PASSWORD', ''),
+
+    /*
      * Domaine principal du compte cPanel
      * Utilisé comme valeur par défaut dans les formulaires
      */

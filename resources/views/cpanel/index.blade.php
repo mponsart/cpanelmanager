@@ -53,7 +53,15 @@
         <p class="mb-2" style="color: var(--text-muted, #94a3b8); font-size:.85rem;">
             Connexion manuelle (si l'autologin échoue)
         </p>
-        @if($publicKey)
+        @if($hasConfiguredPassword)
+        {{-- Password comes from .env – no browser input needed --}}
+        <form method="POST" action="{{ route('cpanel.manual-login') }}">
+            @csrf
+            <button type="submit" class="btn btn-secondary btn-sm">
+                Se connecter manuellement
+            </button>
+        </form>
+        @elseif($publicKey)
         <form id="manual-login-form" method="POST" action="{{ route('cpanel.manual-login') }}"
               class="d-inline-flex align-items-center gap-2" style="flex-wrap:wrap; justify-content:center;">
             @csrf
