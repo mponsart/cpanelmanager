@@ -19,7 +19,11 @@ Design **mode clair** avec la charte graphique **Groupe Speed Cloud** (police Ti
 | **FTP** | Créer et supprimer des comptes FTP |
 | **Cron Jobs** | Créer et supprimer des tâches planifiées |
 | **Statistiques** | Disque, bande passante, ressources globales |
+| **Associations** | Gestion des associations MonAsso (créer, renommer, supprimer) |
+| **Accès cPanel** | Connexion automatique (token) ou manuelle (mot de passe), consultation des identifiants serveur |
+| **Rotation mot de passe** | Rotation automatique du mot de passe cPanel après chaque connexion, planification quotidienne, rotation forcée par super-admin |
 | **Utilisateurs** | Créer des techniciens, gérer leurs permissions fine-grained |
+| **Permissions** | Système de permissions granulaires par module |
 | **Journaux** | Historique complet de toutes les actions avec filtres avancés |
 | **Dashboard rapide** | Accès direct aux actions clés (objectif : 3 clics max par action) |
 
@@ -29,6 +33,9 @@ Design **mode clair** avec la charte graphique **Groupe Speed Cloud** (police Ti
 
 ```
 app/
+├── Console/
+│   └── Commands/
+│       └── RotateCpanelPassword.php — Rotation planifiée du mot de passe cPanel
 ├── Http/
 │   ├── Controllers/
 │   │   ├── AuthController.php
@@ -41,6 +48,8 @@ app/
 │   │   ├── FtpController.php
 │   │   ├── CronController.php
 │   │   ├── StatsController.php
+│   │   ├── AssociationController.php
+│   │   ├── CpanelAccessController.php
 │   │   └── LogController.php
 │   └── Middleware/
 │       ├── Authenticate.php       — Vérifie session + statut actif
@@ -52,9 +61,10 @@ app/
 │   ├── UserPermission.php
 │   └── ActionLog.php
 └── Services/
-    ├── CpanelService.php          — Gateway unique vers l'API cPanel (UAPI + API2)
-    ├── PermissionService.php      — Vérification avec cache, invalidation automatique
-    └── LoggerService.php          — Journalisation complète de toutes les actions
+    ├── CpanelService.php              — Gateway unique vers l'API cPanel (UAPI + API2)
+    ├── PasswordRotationService.php    — Rotation du mot de passe cPanel via API + mise à jour .env
+    ├── PermissionService.php          — Vérification avec cache, invalidation automatique
+    └── LoggerService.php              — Journalisation complète de toutes les actions
 ```
 
 ---
@@ -182,6 +192,44 @@ Le seeder utilise `updateOrCreate` : il crée les comptes s'ils n'existent pas, 
 | `create_ftp` | Créer/supprimer des comptes FTP | ftp |
 | `manage_cron` | Gérer les tâches planifiées | cron |
 | `view_stats` | Consulter les statistiques | stats |
+| `view_associations` | Voir la liste des associations | association |
+| `manage_associations` | Créer, renommer, supprimer des associations | association |
+| `access_cpanel` | Accéder à la page cPanel et se connecter | cpanel |
+
+---
+
+## Rotation automatique du mot de passe cPanel
+
+Le mot de passe du compte cPanel est automatiquement roté pour limiter l'exposition en cas de fuite.
+
+### Quand le mot de passe change-t-il ?
+
+| Déclencheur | Détail |
+|---|---|
+| **Après chaque connexion** | Dès qu'un technicien se connecte via le bouton « Connexion automatique » ou « Connexion manuelle », le mot de passe est immédiatement changé. L'ancien mot de passe devient invalide. |
+| **Chaque jour à 03h00** | La commande planifiée `cpanel:rotate-password` génère un nouveau mot de passe via le scheduler Laravel. |
+| **Rotation forcée** | Un super-admin peut déclencher une rotation immédiate depuis la page Accès cPanel (section « Sécurité »). |
+
+### Comment ça fonctionne ?
+
+1. Un mot de passe aléatoire de 32 caractères est généré (`Str::password`)
+2. L'API cPanel `Passwd::set_password` est appelée pour appliquer le changement côté serveur
+3. La variable `CPANEL_PASSWORD` du fichier `.env` est mise à jour automatiquement
+4. La configuration runtime Laravel est rafraîchie
+
+### Commande manuelle
+
+```bash
+php artisan cpanel:rotate-password
+```
+
+### Prérequis
+
+Le cron système Laravel doit être actif sur le serveur :
+
+```cron
+* * * * * cd /chemin/vers/cpanelmanager && php artisan schedule:run >> /dev/null 2>&1
+```
 
 ---
 
@@ -197,6 +245,8 @@ Le seeder utilise `updateOrCreate` : il crée les comptes s'ils n'existent pas, 
 - **Headers HTTP** — CSP, HSTS, X-Frame-Options: DENY, X-Content-Type-Options, suppression des headers techniques
 - **Redaction des logs** — Les mots de passe sont automatiquement remplacés par `[REDACTED]` dans les payloads journalisés
 - **Isolation totale** — Le token cPanel n'est jamais transmis au frontend ni affiché dans les logs
+- **Rotation du mot de passe** — Changement automatique après chaque connexion, planification quotidienne et rotation forcée par super-admin
+- **Charte de sécurité** — Acceptation obligatoire avant l'affichage des identifiants cPanel (modale bloquante + blur)
 
 ---
 
