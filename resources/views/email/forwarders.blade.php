@@ -17,12 +17,12 @@
         <div class="form-row form-row-2">
             <div class="form-group">
                 <label>Adresse source (identifiant)</label>
-                <input type="text" name="address" placeholder="contact" required maxlength="255">
+                <input type="text" name="address" placeholder="contact" required maxlength="255" value="{{ old('address') }}">
                 @error('address')<div class="form-error">{{ $message }}</div>@enderror
             </div>
             <div class="form-group">
                 <label>Rediriger vers</label>
-                <input type="email" name="forwardto" placeholder="destination@exemple.com" required maxlength="255">
+                <input type="email" name="forwardto" placeholder="destination@exemple.com" required maxlength="255" value="{{ old('forwardto') }}">
                 @error('forwardto')<div class="form-error">{{ $message }}</div>@enderror
             </div>
         </div>
@@ -38,16 +38,31 @@
                 <tr>
                     <th>Source</th>
                     <th>Destination</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($forwarders as $fwd)
+                    @php
+                        $source = $fwd['dest'] ?? $fwd['email'] ?? '—';
+                        $dest   = $fwd['forward'] ?? '—';
+                    @endphp
                     <tr>
-                        <td>{{ $fwd['dest'] ?? $fwd['forward'] ?? '—' }}</td>
-                        <td class="text-muted">{{ $fwd['forward'] ?? $fwd['email'] ?? '—' }}</td>
+                        <td>{{ $source }}</td>
+                        <td class="text-muted">{{ $dest }}</td>
+                        <td>
+                            <form action="{{ route('email.delete-forwarder') }}" method="POST"
+                              data-confirm="Supprimer la redirection {{ e($source) }} ?"
+                              onsubmit="return confirm(this.dataset.confirm)">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="address" value="{{ $source }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                            </form>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="2" class="text-muted" style="text-align:center;padding:24px;">Aucune redirection.</td></tr>
+                    <tr><td colspan="3" class="text-muted" style="text-align:center;padding:24px;">Aucune redirection.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -55,3 +70,4 @@
 </div>
 
 @endsection
+

@@ -59,6 +59,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::patch('/email/password', [EmailController::class, 'resetPassword'])->name('email.reset-password')->middleware('permission:create_email');
     Route::get('/email/forwarders', [EmailController::class, 'forwarders'])->name('email.forwarders')->middleware('permission:view_email');
     Route::post('/email/forwarders',[EmailController::class, 'addForwarder'])->name('email.add-forwarder')->middleware('permission:create_email');
+    Route::delete('/email/forwarders', [EmailController::class, 'deleteForwarder'])->name('email.delete-forwarder')->middleware('permission:delete_email');
 
     // ── Bases de données ──────────────────────────────────────────────────────
     Route::get('/database',                [DatabaseController::class, 'index'])->name('database.index')->middleware('permission:view_db');
