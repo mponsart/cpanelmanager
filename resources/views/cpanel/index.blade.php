@@ -53,13 +53,15 @@
         <p class="mb-2" style="color: var(--text-muted, #94a3b8); font-size:.85rem;">
             Connexion manuelle (si l'autologin échoue)
         </p>
-        <form method="GET" action="https://{{ $host }}:{{ $port }}/login/" target="_blank"
+        <form method="POST" action="https://{{ $host }}:{{ $port }}/login/" target="_blank"
               class="d-inline-flex align-items-center gap-2" style="flex-wrap:wrap; justify-content:center;">
-            <input type="text" name="user" value="{{ $username }}"
+            <label for="cpanel-user" class="visually-hidden">Identifiant</label>
+            <input type="text" id="cpanel-user" name="user" value="{{ $username }}"
                    class="form-control form-control-sm"
                    style="max-width:180px; display:inline-block;"
                    placeholder="Identifiant">
-            <input type="password" name="pass"
+            <label for="cpanel-pass" class="visually-hidden">Mot de passe</label>
+            <input type="password" id="cpanel-pass" name="pass"
                    class="form-control form-control-sm"
                    style="max-width:180px; display:inline-block;"
                    placeholder="Mot de passe">
