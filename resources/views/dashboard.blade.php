@@ -346,7 +346,7 @@
                                     <span class="badge badge-warning"><span class="status-dot status-dot-warning"></span> Refusé</span>
                                 @endif
                             </td>
-                            <td><a href="{{ route('logs.show', $incident) }}" class="btn btn-ghost btn-sm">↗</a></td>
+                            <td><a href="{{ route('logs.show', $incident) }}" class="btn btn-ghost btn-sm" aria-label="Voir les détails">↗</a></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="text-muted" style="text-align:center; padding: 24px;">Aucun incident récent.</td></tr>
@@ -387,7 +387,7 @@
                                     <span class="badge badge-warning"><span class="status-dot status-dot-warning"></span> Refusé</span>
                                 @endif
                             </td>
-                            <td><a href="{{ route('logs.show', $log) }}" class="btn btn-ghost btn-sm">↗</a></td>
+                            <td><a href="{{ route('logs.show', $log) }}" class="btn btn-ghost btn-sm" aria-label="Voir les détails">↗</a></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="text-muted" style="text-align:center; padding: 24px;">Aucun journal pour l'instant.</td></tr>
