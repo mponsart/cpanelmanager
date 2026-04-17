@@ -71,7 +71,8 @@
                                 </form>
                                 {{-- Supprimer --}}
                                 <form action="{{ route('association.destroy') }}" method="POST"
-                                      onsubmit="return confirm('Supprimer définitivement l\'association « {{ $asso['name'] }} » et tout son contenu ?');">
+                                      data-confirm="Supprimer définitivement l'association « {{ e($asso['name']) }} » et tout son contenu ?"
+                                      onsubmit="return confirm(this.dataset.confirm)">
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="name" value="{{ $asso['name'] }}">

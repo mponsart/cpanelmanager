@@ -77,7 +77,8 @@
 <div class="card" style="border-color: rgba(224,82,82,0.3);">
     <div class="card-title" style="color: var(--danger);">Zone dangereuse</div>
     <form action="{{ route('users.destroy', $user) }}" method="POST"
-          onsubmit="return confirm('Supprimer {{ addslashes($user->name) }} ? Cette action est réversible.')">
+          data-confirm="Supprimer {{ e($user->name) }} ? Cette action est réversible."
+          onsubmit="return confirm(this.dataset.confirm)">
         @csrf
         @method('DELETE')
         <button type="submit" class="btn btn-danger btn-sm">Supprimer cet utilisateur</button>

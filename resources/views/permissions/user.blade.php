@@ -22,7 +22,7 @@
                 </p>
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px;">
                     @foreach($perms as $perm)
-                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; padding:10px 12px; background:var(--bg3); border-radius:var(--radius); border: 1px solid var(--border); font-size:13px; font-weight:400; color:var(--text); text-transform:none; letter-spacing:0;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; padding:10px 12px; background:var(--panel-soft); border-radius:var(--radius); border: 1px solid var(--border); font-size:13px; font-weight:400; color:var(--text); text-transform:none; letter-spacing:0;">
                             <input
                                 type="checkbox"
                                 name="permissions[]"

@@ -64,7 +64,7 @@
     @if($log->payload)
         <div class="mt-3">
             <label>Payload</label>
-            <pre style="background: var(--bg3); padding: 14px; border-radius: var(--radius); overflow-x: auto; font-size: 13px; margin-top: 6px;">{{ json_encode($log->payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+            <pre style="background: var(--panel-soft); padding: 14px; border-radius: var(--radius); overflow-x: auto; font-size: 13px; margin-top: 6px; border: 1px solid var(--border);">{{ json_encode($log->payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
         </div>
     @endif
 </div>

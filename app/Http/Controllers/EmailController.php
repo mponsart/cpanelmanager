@@ -34,11 +34,6 @@ class EmailController extends Controller
         return view('email.index', compact('emails'));
     }
 
-    public function create()
-    {
-        return view('email.create');
-    }
-
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -146,16 +141,16 @@ class EmailController extends Controller
     public function addForwarder(Request $request)
     {
         $data = $request->validate([
-            'address'     => ['required', 'string', 'max:255'],
-            'forwardto'   => ['required', 'email', 'max:255'],
+            'address'   => ['required', 'string', 'max:255'],
+            'forwardto' => ['required', 'email', 'max:255'],
         ]);
 
         try {
             $this->cpanel->call('Email', 'add_forwarder', [
-                'domain'    => config('cpanel.domain'),
-                'email'     => $data['address'],
-                'fwdopt'    => 'fwd',
-                'fwdemail'  => $data['forwardto'],
+                'domain'   => config('cpanel.domain'),
+                'email'    => $data['address'],
+                'fwdopt'   => 'fwd',
+                'fwdemail' => $data['forwardto'],
             ]);
 
             $this->logger->success('add_forwarder', 'email', $data['address'], $data, $request);
@@ -166,4 +161,25 @@ class EmailController extends Controller
             return back()->withInput()->with('error', e($e->getMessage()));
         }
     }
+
+    public function deleteForwarder(Request $request)
+    {
+        $data = $request->validate([
+            'address' => ['required', 'string', 'max:255'],
+        ]);
+
+        try {
+            $this->cpanel->call('Email', 'delete_forwarder', [
+                'address' => $data['address'],
+            ]);
+
+            $this->logger->success('delete_forwarder', 'email', $data['address'], $data, $request);
+
+            return redirect()->route('email.forwarders')->with('success', 'Redirection supprimée : ' . e($data['address']));
+        } catch (\Throwable $e) {
+            $this->logger->error('delete_forwarder', 'email', $e->getMessage(), $data['address'], $data, $request);
+            return back()->with('error', 'Erreur lors de la suppression : ' . e($e->getMessage()));
+        }
+    }
 }
+
