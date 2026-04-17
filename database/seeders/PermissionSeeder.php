@@ -40,6 +40,9 @@ class PermissionSeeder extends Seeder
 
         // Accès cPanel
         ['key' => 'access_cpanel',       'label' => 'Accéder à cPanel',             'module' => 'cpanel',      'description' => 'Ouvrir une session cPanel avec connexion automatique'],
+
+        // Identifiants confidentiels
+        ['key' => 'view_credentials',    'label' => 'Voir les identifiants',        'module' => 'admin',       'description' => 'Consulter les identifiants confidentiels (cPanel, BDD, SSH, OAuth)'],
     ];
 
     public function run(): void

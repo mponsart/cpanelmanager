@@ -8,6 +8,7 @@ class CredentialsController extends Controller
 {
     public function index(Request $request)
     {
+        // Defence-in-depth: only super-admins may access credentials
         abort_unless(auth()->user()?->isSuperAdmin(), 403);
 
         $credentials = [

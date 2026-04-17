@@ -97,7 +97,7 @@
 (function () {
     'use strict';
 
-    var _store = {!! json_encode($secretMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
+    var _store = {!! json_encode($secretMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) !!};
 
     function fillRoundRect(ctx, x, y, w, h, r) {
         ctx.beginPath();
