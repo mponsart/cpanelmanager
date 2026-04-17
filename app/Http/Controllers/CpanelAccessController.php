@@ -20,10 +20,13 @@ class CpanelAccessController extends Controller
         $host     = config('cpanel.host');
         $port     = config('cpanel.port', 2083);
         $username = config('cpanel.username');
+        $domain   = config('cpanel.domain');
+        $token    = config('cpanel.token');
+        $password = config('cpanel.password');
 
-        $hasConfiguredPassword = ! empty(config('cpanel.password'));
+        $cpanelUrl = $host ? "https://{$host}:{$port}" : null;
 
-        return view('cpanel.index', compact('host', 'port', 'username', 'hasConfiguredPassword'));
+        return view('cpanel.index', compact('host', 'port', 'username', 'domain', 'token', 'password', 'cpanelUrl'));
     }
 
     public function connect(Request $request): RedirectResponse

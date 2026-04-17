@@ -99,6 +99,6 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::post('/cpanel/connect',      [CpanelAccessController::class, 'connect'])->name('cpanel.connect')->middleware('permission:access_cpanel');
     Route::post('/cpanel/manual-login', [CpanelAccessController::class, 'manualLogin'])->name('cpanel.manual-login')->middleware('permission:access_cpanel');
 
-    // ── Identifiants confidentiels (super-admin uniquement) ────────────────────
-    Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentials.index');
+    // ── Identifiants confidentiels (super-admin + permission view_credentials) ──
+    Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentials.index')->middleware('permission:view_credentials');
 });
