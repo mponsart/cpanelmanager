@@ -11,6 +11,7 @@ use App\Http\Controllers\FtpController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\TerminalController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -91,4 +92,8 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::post('/associations',          [AssociationController::class, 'store'])->name('association.store')->middleware('permission:manage_associations');
     Route::patch('/associations/rename',  [AssociationController::class, 'rename'])->name('association.rename')->middleware('permission:manage_associations');
     Route::delete('/associations',        [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');
+
+    // ── Terminal SSH ──────────────────────────────────────────────────────────
+    Route::get('/terminal',      [TerminalController::class, 'index'])->name('terminal.index')->middleware('permission:use_terminal');
+    Route::post('/terminal/exec',[TerminalController::class, 'exec'])->name('terminal.exec')->middleware('permission:use_terminal');
 });
