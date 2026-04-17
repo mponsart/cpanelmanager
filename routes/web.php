@@ -94,6 +94,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::delete('/associations',        [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');
 
     // ── Accès cPanel ──────────────────────────────────────────────────────────
-    Route::get('/cpanel',         [CpanelAccessController::class, 'index'])->name('cpanel.index')->middleware('permission:access_cpanel');
-    Route::post('/cpanel/connect',[CpanelAccessController::class, 'connect'])->name('cpanel.connect')->middleware('permission:access_cpanel');
+    Route::get('/cpanel',               [CpanelAccessController::class, 'index'])->name('cpanel.index')->middleware('permission:access_cpanel');
+    Route::post('/cpanel/connect',      [CpanelAccessController::class, 'connect'])->name('cpanel.connect')->middleware('permission:access_cpanel');
+    Route::post('/cpanel/manual-login', [CpanelAccessController::class, 'manualLogin'])->name('cpanel.manual-login')->middleware('permission:access_cpanel');
 });
