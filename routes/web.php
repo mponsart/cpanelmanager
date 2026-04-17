@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\CronController;
+use App\Http\Controllers\CredentialsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DomainController;
@@ -97,4 +98,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::get('/cpanel',               [CpanelAccessController::class, 'index'])->name('cpanel.index')->middleware('permission:access_cpanel');
     Route::post('/cpanel/connect',      [CpanelAccessController::class, 'connect'])->name('cpanel.connect')->middleware('permission:access_cpanel');
     Route::post('/cpanel/manual-login', [CpanelAccessController::class, 'manualLogin'])->name('cpanel.manual-login')->middleware('permission:access_cpanel');
+
+    // ── Identifiants confidentiels (super-admin uniquement) ────────────────────
+    Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentials.index');
 });
