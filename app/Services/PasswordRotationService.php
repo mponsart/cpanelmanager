@@ -17,7 +17,12 @@ class PasswordRotationService
      */
     public function rotate(): string
     {
-        $newPassword = Str::password(16);
+        // Éviter les caractères problématiques pour .env ($, ", \, #, espace)
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@%^&*()-_=+[]{}|;:,.<>?';
+        $newPassword = '';
+        for ($i = 0; $i < 16; $i++) {
+            $newPassword .= $chars[random_int(0, strlen($chars) - 1)];
+        }
         $oldPassword = config('cpanel.password');
 
         $this->cpanel->callApi2('Passwd', 'change_password', [
@@ -38,16 +43,17 @@ class PasswordRotationService
         $envPath = base_path('.env');
         $content = file_get_contents($envPath);
 
-        $escaped = addcslashes($value, '"\\');
+        // Utiliser des guillemets simples pour éviter l'interpolation de $
+        $escaped = str_replace("'", "\\'", $value);
 
         if (preg_match('/^' . preg_quote($key, '/') . '=.*/m', $content)) {
             $content = preg_replace(
                 '/^' . preg_quote($key, '/') . '=.*/m',
-                $key . '="' . $escaped . '"',
+                $key . "='" . $escaped . "'",
                 $content
             );
         } else {
-            $content .= "\n" . $key . '="' . $escaped . '"' . "\n";
+            $content .= "\n" . $key . "='" . $escaped . "'" . "\n";
         }
 
         file_put_contents($envPath, $content, LOCK_EX);
