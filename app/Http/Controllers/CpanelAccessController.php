@@ -23,40 +23,11 @@ class CpanelAccessController extends Controller
         $port     = config('cpanel.port', 2083);
         $username = config('cpanel.username');
         $domain   = config('cpanel.domain');
-        $token    = config('cpanel.token');
         $password = config('cpanel.password');
 
         $cpanelUrl = $host ? "https://{$host}:{$port}" : null;
 
-        return view('cpanel.index', compact('host', 'port', 'username', 'domain', 'token', 'password', 'cpanelUrl'));
-    }
-
-    public function connect(Request $request): RedirectResponse
-    {
-        try {
-            $data = $this->cpanel->call('Session', 'create_temp_user_session');
-
-            $url = $data['data']['url'] ?? null;
-
-            if (empty($url)) {
-                $this->logger->error('cpanel_autologin', 'cpanel', 'Réponse sans URL de session', null, [], $request);
-
-                return back()->with('error', 'Impossible de créer la session cPanel. Vérifiez les permissions du token API.');
-            }
-
-            $url = preg_replace('/^http:\/\//i', 'https://', $url);
-
-            $this->logger->success('cpanel_autologin', 'cpanel', null, [], $request);
-
-            // Rotation du mot de passe après connexion réussie
-            $this->rotatePasswordSilently($request);
-
-            return redirect()->away($url);
-        } catch (\Throwable $e) {
-            $this->logger->error('cpanel_autologin', 'cpanel', $e->getMessage(), null, [], $request);
-
-            return back()->with('error', 'Erreur lors de la connexion à cPanel : ' . $e->getMessage());
-        }
+        return view('cpanel.index', compact('host', 'port', 'username', 'domain', 'password', 'cpanelUrl'));
     }
 
     public function manualLogin(Request $request): RedirectResponse
