@@ -19,7 +19,13 @@ class CpanelService
         $this->port     = (int) config('cpanel.port', 2083);
         $this->username = config('cpanel.username');
         $this->token    = config('cpanel.token');
+    }
 
+    /**
+     * Vérifie que la configuration cPanel est complète avant d'effectuer un appel API.
+     */
+    private function ensureConfigured(): void
+    {
         if (empty($this->host) || empty($this->username) || empty($this->token)) {
             throw new RuntimeException('Configuration cPanel incomplète. Vérifiez CPANEL_HOST, CPANEL_USERNAME et CPANEL_TOKEN dans .env.');
         }
@@ -35,6 +41,8 @@ class CpanelService
      */
     public function call(string $module, string $function, array $params = []): array
     {
+        $this->ensureConfigured();
+
         $url = sprintf(
             'https://%s:%d/execute/%s/%s',
             $this->host,
@@ -58,6 +66,8 @@ class CpanelService
      */
     public function callApi2(string $module, string $function, array $params = []): array
     {
+        $this->ensureConfigured();
+
         $url = sprintf(
             'https://%s:%d/json-api/cpanel',
             $this->host,
