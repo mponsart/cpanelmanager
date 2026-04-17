@@ -83,7 +83,7 @@
     'use strict';
 
     // Secret store: index → value. Cleared immediately after canvas init.
-    var _store = {!! json_encode($secretMap) !!};
+    var _store = {!! json_encode($secretMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
 
     // Rounded-rect fallback for browsers without CanvasRenderingContext2D.roundRect
     function fillRoundRect(ctx, x, y, w, h, r) {
