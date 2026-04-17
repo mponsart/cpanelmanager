@@ -37,6 +37,9 @@ class PermissionSeeder extends Seeder
         // Associations MonAsso
         ['key' => 'view_associations',   'label' => 'Voir les associations',        'module' => 'association', 'description' => 'Lister les dossiers des associations'],
         ['key' => 'manage_associations', 'label' => 'Gérer les associations',       'module' => 'association', 'description' => 'Créer, renommer et supprimer des associations'],
+
+        // Terminal SSH
+        ['key' => 'use_terminal',        'label' => 'Accéder au terminal SSH',      'module' => 'terminal',    'description' => 'Ouvrir un terminal SSH interactif sur le serveur'],
     ];
 
     public function run(): void
