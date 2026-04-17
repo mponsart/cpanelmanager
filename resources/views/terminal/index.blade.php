@@ -131,7 +131,7 @@
             brightCyan:    '#67e8f9',
             brightWhite:   '#ffffff',
         },
-        convertEol: true,
+        convertEol: false,
         scrollback:  2000,
     });
 
@@ -147,6 +147,7 @@
     var history     = [];
     var historyIdx  = -1;
     var busy        = false;
+    var controller  = null;
 
     var dotEl    = document.getElementById('status-dot');
     var labelEl  = document.getElementById('status-label');
@@ -177,6 +178,8 @@
         busy = true;
         setStatus('loading', 'Exécution…');
 
+        controller = new AbortController();
+
         fetch(EXEC, {
             method:  'POST',
             headers: {
@@ -185,6 +188,7 @@
                 'X-CSRF-TOKEN':     CSRF,
             },
             body: JSON.stringify({ command: cmd, cwd: cwd }),
+            signal: controller.signal,
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
@@ -201,14 +205,32 @@
             prompt();
         })
         .catch(function (err) {
+            if (err.name === 'AbortError') {
+                prompt();
+                return;
+            }
             term.write('\r\n\x1b[31mErreur réseau : ' + err.message + '\x1b[0m');
             setStatus('disconnected', 'Erreur');
             prompt();
         })
-        .finally(function () { busy = false; });
+        .finally(function () { controller = null; busy = false; });
     }
 
     term.onData(function (data) {
+        // Ctrl+C — abort the in-flight request even when busy
+        if (data === '\x03') {
+            term.write('^C');
+            inputBuffer = '';
+            if (controller) {
+                controller.abort();
+                controller = null;
+            }
+            busy = false;
+            setStatus('ok', 'Connecté — ' + '{{ config('ssh.host') ?: 'SSH non configuré' }}');
+            prompt();
+            return;
+        }
+
         if (busy) return;
 
         var code = data.charCodeAt(0);
@@ -219,14 +241,6 @@
             var cmd = inputBuffer;
             inputBuffer = '';
             execCommand(cmd);
-            return;
-        }
-
-        // Ctrl+C
-        if (data === '\x03') {
-            term.write('^C');
-            inputBuffer = '';
-            prompt();
             return;
         }
 
