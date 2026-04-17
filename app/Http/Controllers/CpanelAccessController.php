@@ -16,9 +16,11 @@ class CpanelAccessController extends Controller
 
     public function index()
     {
-        $host = config('cpanel.host');
+        $host     = config('cpanel.host');
+        $port     = config('cpanel.port', 2083);
+        $username = config('cpanel.username');
 
-        return view('cpanel.index', compact('host'));
+        return view('cpanel.index', compact('host', 'port', 'username'));
     }
 
     public function connect(Request $request): RedirectResponse

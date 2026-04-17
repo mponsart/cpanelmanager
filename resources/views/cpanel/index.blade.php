@@ -47,6 +47,26 @@
                 Ouvrir cPanel
             </button>
         </form>
+
+        <hr class="my-4" style="border-color: var(--border, #334155);">
+
+        <p class="mb-2" style="color: var(--text-muted, #94a3b8); font-size:.85rem;">
+            Connexion manuelle (si l'autologin échoue)
+        </p>
+        <form method="GET" action="https://{{ $host }}:{{ $port }}/login/" target="_blank"
+              class="d-inline-flex align-items-center gap-2" style="flex-wrap:wrap; justify-content:center;">
+            <input type="text" name="user" value="{{ $username }}"
+                   class="form-control form-control-sm"
+                   style="max-width:180px; display:inline-block;"
+                   placeholder="Identifiant">
+            <input type="password" name="pass"
+                   class="form-control form-control-sm"
+                   style="max-width:180px; display:inline-block;"
+                   placeholder="Mot de passe">
+            <button type="submit" class="btn btn-secondary btn-sm">
+                Se connecter
+            </button>
+        </form>
         @else
         <div class="alert alert-warning d-inline-block">
             cPanel n'est pas configuré. Définissez <code>CPANEL_HOST</code>, <code>CPANEL_USERNAME</code>
