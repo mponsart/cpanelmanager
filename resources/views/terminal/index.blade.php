@@ -205,7 +205,10 @@
             prompt();
         })
         .catch(function (err) {
-            if (err.name === 'AbortError') return;
+            if (err.name === 'AbortError') {
+                prompt();
+                return;
+            }
             term.write('\r\n\x1b[31mErreur réseau : ' + err.message + '\x1b[0m');
             setStatus('disconnected', 'Erreur');
             prompt();

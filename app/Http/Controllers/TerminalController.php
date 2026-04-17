@@ -123,9 +123,23 @@ class TerminalController extends Controller
         }
 
         stream_set_timeout($pipes[2], $timeout);
-        $stderr = stream_get_contents($pipes[2]);
+        $stderr      = stream_get_contents($pipes[2]);
+        $stderrTimed = stream_get_meta_data($pipes[2])['timed_out'];
         fclose($pipes[1]);
         fclose($pipes[2]);
+
+        if ($stderrTimed) {
+            proc_terminate($process);
+            proc_close($process);
+
+            return [
+                'output'  => $stdout,
+                'error'   => 'La commande a dépassé le délai d\'exécution (30 s).',
+                'cwd'     => $cwd,
+                'success' => false,
+            ];
+        }
+
         $exitCode = proc_close($process);
 
         // Extract the new working directory from the marker line
