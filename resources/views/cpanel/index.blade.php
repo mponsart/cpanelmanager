@@ -203,27 +203,3 @@
 </script>
 
 @endsection
-    document.querySelectorAll('.copy-btn:not(#copy-password)').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var text = btn.getAttribute('data-copy');
-            if (text) {
-                navigator.clipboard.writeText(text).then(function () {
-                    showCopyFeedback(btn);
-                });
-            }
-        });
-    });
-
-    function showCopyFeedback(btn) {
-        var original = btn.innerHTML;
-        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,8 6,13 14,3"/></svg>';
-        btn.style.color = 'var(--success, #22c55e)';
-        setTimeout(function () {
-            btn.innerHTML = original;
-            btn.style.color = '';
-        }, 1200);
-    }
-}());
-</script>
-
-@endsection
