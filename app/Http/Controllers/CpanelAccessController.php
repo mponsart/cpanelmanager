@@ -35,6 +35,8 @@ class CpanelAccessController extends Controller
             session(['cpanel_manual_private_key' => $privateKeyPem]);
             $details   = openssl_pkey_get_details($keyResource);
             $publicKey = $details['key'] ?? null;
+        } else {
+            \Log::warning('cpanel_manual_login: RSA key generation failed', ['openssl_errors' => openssl_error_string()]);
         }
 
         return view('cpanel.index', compact('host', 'port', 'username', 'publicKey'));
@@ -80,10 +82,16 @@ class CpanelAccessController extends Controller
             return back()->with('error', 'Mot de passe manquant ou non chiffré.');
         }
 
+        $rawEncrypted = base64_decode($encryptedPass, true);
+
+        if ($rawEncrypted === false) {
+            return back()->with('error', 'Données chiffrées invalides. Veuillez recharger la page et réessayer.');
+        }
+
         $privateKey    = openssl_pkey_get_private($privateKeyPem);
         $decryptedPass = '';
         $ok = openssl_private_decrypt(
-            base64_decode($encryptedPass),
+            $rawEncrypted,
             $decryptedPass,
             $privateKey,
             OPENSSL_PKCS1_OAEP_PADDING
@@ -105,6 +113,10 @@ class CpanelAccessController extends Controller
                     'user' => $user,
                     'pass' => $decryptedPass,
                 ]);
+
+            // Clear the plaintext password from memory as soon as possible.
+            $decryptedPass = str_repeat("\0", strlen($decryptedPass));
+            unset($decryptedPass);
 
             $location = $response->header('Location');
 

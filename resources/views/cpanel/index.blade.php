@@ -63,7 +63,7 @@
             <input type="password" id="cpanel-pass"
                    class="form-control form-control-sm"
                    style="max-width:180px; display:inline-block;"
-                   placeholder="Mot de passe cPanel" required>
+                   placeholder="Mot de passe cPanel" autocomplete="off" required>
             <button type="submit" class="btn btn-secondary btn-sm">
                 Se connecter
             </button>
