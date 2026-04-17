@@ -39,6 +39,8 @@ class CpanelAccessController extends Controller
                 return back()->with('error', 'Impossible de créer la session cPanel. Vérifiez les permissions du token API.');
             }
 
+            $url = preg_replace('/^http:\/\//i', 'https://', $url);
+
             $this->logger->success('cpanel_autologin', 'cpanel', null, [], $request);
 
             return redirect()->away($url);
@@ -76,6 +78,9 @@ class CpanelAccessController extends Controller
                 if (! str_starts_with($location, 'http')) {
                     $location = "https://{$host}:{$port}{$location}";
                 }
+
+                $location = preg_replace('/^http:\/\//i', 'https://', $location);
+
                 $this->logger->success('cpanel_manual_login', 'cpanel', null, [], $request);
 
                 return redirect()->away($location);
