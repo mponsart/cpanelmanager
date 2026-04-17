@@ -112,20 +112,42 @@
     <p class="text-muted" style="font-size:.875rem;margin-bottom:16px;">
         Le mot de passe est automatiquement roté après chaque connexion et chaque jour à 03h00.
     </p>
-    <form action="{{ route('cpanel.rotate-password') }}" method="POST"
-          onsubmit="return confirm('Êtes-vous sûr de vouloir changer le mot de passe cPanel immédiatement ?\n\nLe mot de passe actuel deviendra invalide.');">
+    <form id="rotate-form" action="{{ route('cpanel.rotate-password') }}" method="POST">
         @csrf
-        <button type="submit" class="btn btn-warning">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:6px;"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
-            Forcer la rotation du mot de passe
+        <button type="submit" class="btn btn-warning" id="rotate-btn">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:6px;" class="rotate-icon"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
+            <span class="rotate-label">Forcer la rotation du mot de passe</span>
         </button>
     </form>
 </div>
+
+{{-- ── Overlay de chargement ─────────────────────────────────────────────── --}}
+<div id="rotate-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);justify-content:center;align-items:center;">
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:32px 40px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.25);max-width:360px;">
+        <svg width="36" height="36" viewBox="0 0 16 16" fill="none" stroke="var(--accent, #8a4dfd)" stroke-width="1.5" style="animation:spin 1s linear infinite;margin-bottom:14px;"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
+        <p style="font-weight:600;font-size:1rem;margin:0 0 6px;color:var(--text);">Rotation en cours…</p>
+        <p style="font-size:.85rem;color:var(--text-muted);margin:0;">Le mot de passe cPanel est en cours de changement. Veuillez patienter.</p>
+    </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 @endif
 
 <script>
 (function () {
     'use strict';
+
+    // ── Rotation overlay ────────────────────────────────────────────────────
+    var rotateForm = document.getElementById('rotate-form');
+    var overlay    = document.getElementById('rotate-overlay');
+    if (rotateForm && overlay) {
+        rotateForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!confirm('Êtes-vous sûr de vouloir changer le mot de passe cPanel immédiatement ?\n\nLe mot de passe actuel deviendra invalide.')) return;
+            overlay.style.display = 'flex';
+            document.getElementById('rotate-btn').disabled = true;
+            rotateForm.submit();
+        });
+    }
 
     var _pw = @json($password);
 
