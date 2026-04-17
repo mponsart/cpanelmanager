@@ -98,6 +98,7 @@
                     </div>
                 </td>
             </tr>
+            @if($isSuperAdmin)
             <tr style="border-top:1px solid var(--border);">
                 <td class="text-muted" style="width:180px;padding:12px 10px;vertical-align:middle;font-size:.875rem;">
                     <span style="display:inline-flex;align-items:center;gap:8px;">
@@ -108,7 +109,7 @@
                 <td style="padding:12px 10px;vertical-align:middle;">
                     @if($password)
                     <div style="display:inline-flex;align-items:center;gap:8px;">
-                        <code id="val-password" style="font-size:.875rem;background:rgba(37,99,235,0.08);padding:4px 10px;border-radius:6px;letter-spacing:.3px;">●●●●●●●●●●●●</code>
+                        <code id="val-password" style="font-size:.875rem;background:rgba(37,99,235,0.08);padding:4px 10px;border-radius:6px;letter-spacing:.3px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">●●●●●●●●●●●●</code>
                         <button type="button" class="btn btn-ghost btn-sm" id="toggle-password" title="Afficher / Masquer" style="padding:2px 6px;">
                             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-eye"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/></svg>
                             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-eye-off" style="display:none;"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/><line x1="2" y1="2" x2="14" y2="14" stroke-width="1.5"/></svg>
@@ -122,6 +123,7 @@
                     @endif
                 </td>
             </tr>
+            @endif
         </table>
     </div>
 </div>

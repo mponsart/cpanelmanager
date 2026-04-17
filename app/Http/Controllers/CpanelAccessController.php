@@ -23,11 +23,14 @@ class CpanelAccessController extends Controller
         $port     = config('cpanel.port', 2083);
         $username = config('cpanel.username');
         $domain   = config('cpanel.domain');
-        $password = config('cpanel.password');
+
+        // Seuls les super-admins peuvent voir le mot de passe
+        $password    = auth()->user()?->isSuperAdmin() ? config('cpanel.password') : null;
+        $isSuperAdmin = auth()->user()?->isSuperAdmin() ?? false;
 
         $cpanelUrl = $host ? "https://{$host}:{$port}" : null;
 
-        return view('cpanel.index', compact('host', 'port', 'username', 'domain', 'password', 'cpanelUrl'));
+        return view('cpanel.index', compact('host', 'port', 'username', 'domain', 'password', 'isSuperAdmin', 'cpanelUrl'));
     }
 
     public function manualLogin(Request $request): RedirectResponse

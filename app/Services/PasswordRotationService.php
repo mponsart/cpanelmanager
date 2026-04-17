@@ -17,7 +17,7 @@ class PasswordRotationService
      */
     public function rotate(): string
     {
-        $newPassword = Str::password(32);
+        $newPassword = Str::password(64);
         $oldPassword = config('cpanel.password');
 
         $this->cpanel->callApi2('Passwd', 'change_password', [
