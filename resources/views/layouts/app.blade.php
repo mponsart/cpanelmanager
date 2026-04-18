@@ -70,36 +70,47 @@
             box-shadow: 1px 0 0 var(--sidebar-border);
         }
 
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
         .sidebar > * { position: relative; z-index: 1; }
 
         .sidebar-brand {
-            padding: 20px 18px 18px;
+            padding: 22px 20px 20px;
             border-bottom: 1px solid var(--sidebar-border);
             display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 70px;
-            background: linear-gradient(135deg, rgba(124,58,237,0.04) 0%, transparent 100%);
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            min-height: 80px;
+            background: linear-gradient(160deg, rgba(124,58,237,0.05) 0%, rgba(124,58,237,0.01) 100%);
             position: relative;
         }
 
-        .sidebar-brand .sidebar-close { position: absolute; top: 12px; right: 12px; }
-        .sidebar-brand img { width: 120px; height: auto; display: block; }
+        .sidebar-brand .sidebar-close { position: absolute; top: 14px; right: 14px; }
+        .sidebar-brand img { width: 150px; height: auto; display: block; }
         .sidebar-brand span {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+            padding: 3px 8px;
+            background: var(--accent-soft);
             color: var(--accent);
-            font-weight: 700;
+            border-radius: 5px;
             font-size: 10px;
-            display: block;
-            margin-top: 2px;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            opacity: 0.7;
+            letter-spacing: 0.5px;
         }
 
-        .sidebar-nav { padding: 10px 10px; flex: 1; }
+        .sidebar-nav { padding: 12px 12px; flex: 1; overflow-y: auto; }
 
         .nav-section {
-            margin: 20px 6px 5px;
+            margin: 22px 6px 8px;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
@@ -114,44 +125,45 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: var(--border);
+            background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
         }
 
-        .nav-section:first-child { margin-top: 6px; }
+        .nav-section:first-child { margin-top: 4px; }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 9px 10px;
+            gap: 11px;
+            padding: 9px 12px;
             margin-bottom: 2px;
-            border-radius: 9px;
+            border-radius: 10px;
             color: var(--sidebar-text);
             text-decoration: none;
             border: 1px solid transparent;
-            transition: all 0.14s ease;
+            transition: all 0.16s ease;
             font-weight: 500;
             font-size: 13.5px;
             position: relative;
         }
 
         .nav-link .icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background: #f1f5f9;
             color: #94a3b8;
             flex-shrink: 0;
-            transition: inherit;
+            transition: all 0.16s ease;
             border: 1px solid #e8edf2;
         }
 
         .nav-link:hover {
             color: var(--sidebar-text-hover);
             background: #f8fafc;
+            border-color: #e8edf2;
         }
 
         .nav-link:hover .icon {
@@ -163,38 +175,40 @@
         .nav-link.active {
             color: var(--accent);
             background: var(--sidebar-active-bg);
+            border-color: rgba(124,58,237,0.15);
             font-weight: 600;
         }
 
         .nav-link.active::before {
             content: '';
             position: absolute;
-            left: -10px;
+            left: -12px;
             top: 50%;
             transform: translateY(-50%);
-            width: 3px;
-            height: 60%;
-            border-radius: 0 3px 3px 0;
+            width: 4px;
+            height: 55%;
+            border-radius: 0 4px 4px 0;
             background: var(--accent);
         }
 
         .nav-link.active .icon {
-            background: rgba(124,58,237,0.10);
-            border-color: rgba(124,58,237,0.22);
-            color: var(--accent);
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(124,58,237,0.28);
         }
 
         .sidebar-footer {
-            margin: 10px;
+            margin: 8px 12px 12px;
             border: 1px solid var(--border);
-            background: var(--panel-soft);
+            background: linear-gradient(135deg, var(--panel-soft) 0%, #ffffff 100%);
             border-radius: 12px;
             padding: 14px;
             font-size: 12px;
             color: var(--sidebar-text);
         }
 
-        .sidebar-footer .user-name { font-weight: 600; color: var(--text); margin-bottom: 2px; display: block; font-size: 13px; }
+        .sidebar-footer .user-name { font-weight: 700; color: var(--text); margin-bottom: 2px; display: block; font-size: 13px; }
 
         /* ── MAIN ── */
         .main {
@@ -209,43 +223,45 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            background: #ffffff;
+            background: rgba(255,255,255,0.92);
             border-bottom: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 1px 3px rgba(15,23,42,0.04);
             padding: 0 28px;
-            height: 60px;
+            height: 62px;
             display: grid;
             grid-template-columns: auto minmax(200px, 380px) auto;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
         .topbar-left { display: flex; align-items: center; gap: 12px; }
 
         .menu-toggle, .sidebar-close {
             display: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 9px;
-            border: 1px solid var(--border-strong);
-            background: var(--panel-soft);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--panel);
             color: var(--text-muted);
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.14s;
+            transition: all 0.16s;
         }
 
         .menu-toggle:hover, .sidebar-close:hover {
-            background: var(--panel);
-            border-color: var(--accent);
+            background: var(--accent-soft);
+            border-color: rgba(124,58,237,0.25);
             color: var(--accent);
         }
 
         .topbar-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
-            letter-spacing: -0.1px;
+            letter-spacing: -0.2px;
             color: var(--text);
         }
 
@@ -258,7 +274,7 @@
 
         .topbar-search svg {
             position: absolute;
-            left: 12px;
+            left: 13px;
             color: #94a3b8;
             pointer-events: none;
         }
@@ -267,12 +283,12 @@
             width: 100%;
             background: var(--panel-soft);
             border: 1px solid var(--border);
-            border-radius: 9px;
+            border-radius: 10px;
             color: var(--text);
-            padding: 8px 12px 8px 36px;
+            padding: 9px 14px 9px 38px;
             font-size: 13px;
             outline: none;
-            transition: all 0.14s;
+            transition: all 0.16s;
             font-family: inherit;
         }
 
@@ -288,39 +304,44 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .content { padding: 28px; flex: 1; }
+        .content { padding: 28px 32px; flex: 1; max-width: 1400px; }
 
         /* ── ALERTS ── */
         .alert {
-            padding: 13px 18px;
+            padding: 14px 18px;
             border-radius: 10px;
             margin-bottom: 18px;
             font-size: 13.5px;
             border: 1px solid;
             display: flex;
-            align-items: flex-start;
-            gap: 8px;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
         }
 
+        .alert::before { font-size: 16px; flex-shrink: 0; }
         .alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+        .alert-success::before { content: '\2713'; }
         .alert-error   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+        .alert-error::before { content: '\2717'; }
         .alert-warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+        .alert-warning::before { content: '\26A0'; }
 
         /* ── CARDS ── */
         .card {
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px;
-            margin-bottom: 18px;
+            padding: 24px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-sm);
-            transition: border-color 0.16s, box-shadow 0.16s;
+            transition: box-shadow 0.2s ease;
         }
 
-        .card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+        .card:hover { box-shadow: var(--shadow-md); }
 
         .card-title {
             font-size: 14px;
@@ -335,12 +356,12 @@
         }
 
         /* ── TABLES ── */
-        .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+        .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); background: var(--panel); }
 
         table { width: 100%; border-collapse: collapse; min-width: 620px; }
 
         th, td {
-            padding: 11px 16px;
+            padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
@@ -353,11 +374,12 @@
             letter-spacing: 0.8px;
             color: var(--text-muted);
             background: var(--panel-soft);
-            border-bottom-color: var(--border);
+            border-bottom: 2px solid var(--border);
         }
 
         tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: var(--panel-soft); }
+        tbody tr { transition: background 0.1s ease; }
+        tbody tr:hover td { background: rgba(124,58,237,0.02); }
 
         /* ── FORMS ── */
         .form-group { margin-bottom: 16px; }
@@ -560,15 +582,15 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
-            gap: 10px;
+            margin-bottom: 26px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .page-header h1 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
-            letter-spacing: -0.3px;
+            letter-spacing: -0.4px;
             color: var(--text);
         }
 
@@ -858,7 +880,7 @@
         <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fermer le menu">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
         </button>
-        <img src="/images/logo.svg" alt="Groupe Speed Cloud">
+        <img src="/images/logo-dark.svg" alt="Groupe Speed Cloud">
         <span>Panel d'administration</span>
     </div>
 
@@ -944,16 +966,16 @@
     </nav>
 
     <div class="sidebar-footer">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <div style="width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">{{ auth()->user()->initials() }}</div>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(124,58,237,0.25);">{{ auth()->user()->initials() }}</div>
             <div style="min-width:0;">
                 <span class="user-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ auth()->user()->name }}</span>
-                <span class="text-sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ auth()->user()->email }}</span>
+                <span class="text-sm text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ auth()->user()->email }}</span>
             </div>
         </div>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;">
+            <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;gap:5px;">
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="11,11 14,8 11,5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
                 Déconnexion
             </button>
@@ -976,11 +998,12 @@
         </div>
 
         <div class="topbar-right">
-            <a href="{{ route('logs.index') }}" class="btn btn-ghost btn-sm" style="font-size:12px;">
+            <a href="{{ route('logs.index') }}" class="btn btn-ghost btn-sm" style="font-size:12px;gap:5px;">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="11" x2="8.01" y2="11" stroke-width="2"/></svg>
                 Incidents
             </a>
-            <span class="text-muted text-sm" style="white-space:nowrap;">{{ now()->format('d/m/Y H:i') }}</span>
+            <span style="width:1px;height:20px;background:var(--border);"></span>
+            <span class="text-muted text-sm" style="white-space:nowrap;font-variant-numeric:tabular-nums;">{{ now()->format('d/m/Y H:i') }}</span>
         </div>
     </div>
 
