@@ -631,11 +631,6 @@
 
         @if($hasCpanelAccess)
         <div class="nav-section">cPanel</div>
-        @if($navCan('view_email'))
-        <a href="{{ route('email.index') }}" class="nav-link {{ request()->routeIs('email.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">mail</span></span> E-mails
-        </a>
-        @endif
         @if($navCan('view_db'))
         <a href="{{ route('database.index') }}" class="nav-link {{ request()->routeIs('database.*') ? 'active' : '' }}">
             <span class="icon"><span class="material-symbols-rounded">database</span></span> Bases de données
@@ -649,11 +644,6 @@
         @if($navCan('view_ftp'))
         <a href="{{ route('ftp.index') }}" class="nav-link {{ request()->routeIs('ftp.*') ? 'active' : '' }}">
             <span class="icon"><span class="material-symbols-rounded">dns</span></span> FTP
-        </a>
-        @endif
-        @if($navCan('manage_cron'))
-        <a href="{{ route('cron.index') }}" class="nav-link {{ request()->routeIs('cron.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">schedule</span></span> Cron Jobs
         </a>
         @endif
         @if($navCan('view_associations'))
