@@ -6,19 +6,25 @@
     <title>Connexion — Groupe Speed Cloud</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Google Sans Text', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 14px;
             min-height: 100vh;
-            background: #faf8fd;
-            color: #1c1b1f;
+            background: #f8f9fa;
+            color: #1f1f1f;
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
+        }
+
+        .material-symbols-rounded {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'opsz' 24;
+            vertical-align: middle;
         }
 
         .wrapper {
@@ -33,9 +39,9 @@
             width: 100%;
             max-width: 400px;
             background: #ffffff;
+            border: 1px solid #dadce0;
             border-radius: 28px;
             padding: 40px 32px 32px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.10), 0 2px 6px 2px rgba(0,0,0,0.08);
             animation: reveal 0.3s cubic-bezier(0.2, 0, 0, 1) both;
         }
 
@@ -66,8 +72,8 @@
             gap: 6px;
             padding: 6px 16px;
             border-radius: 8px;
-            background: #ede9fe;
-            color: #4c1d95;
+            background: #d3e3fd;
+            color: #041e49;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
@@ -78,21 +84,22 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #7c3aed;
+            background: #1a73e8;
         }
 
         h1 {
             text-align: center;
             font-size: 24px;
             font-weight: 400;
-            color: #1c1b1f;
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            color: #1f1f1f;
             margin-bottom: 8px;
         }
 
         .subtitle {
             text-align: center;
             font-size: 14px;
-            color: #49454f;
+            color: #5f6368;
             margin-bottom: 32px;
             letter-spacing: 0.25px;
         }
@@ -108,9 +115,9 @@
             font-weight: 500;
         }
 
-        .alert svg { flex-shrink: 0; }
-        .alert-error   { background: #f9dedc; color: #410e0b; }
-        .alert-success { background: #e8f5e9; color: #1b5e20; }
+        .alert .material-symbols-rounded { flex-shrink: 0; font-size: 20px; }
+        .alert-error   { background: #fce8e6; color: #5f2120; }
+        .alert-success { background: #ceead6; color: #0d652d; }
 
         .btn-google {
             display: flex;
@@ -123,19 +130,18 @@
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
-            font-family: inherit;
+            font-family: 'Google Sans Text', inherit;
             cursor: pointer;
             color: #ffffff;
-            background: #7c3aed;
+            background: #1a73e8;
             border: none;
             letter-spacing: 0.1px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.10), 0 1px 3px 1px rgba(0,0,0,0.08);
-            transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), filter 0.2s;
+            transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), background 0.2s;
         }
 
         .btn-google:hover {
-            box-shadow: 0 1px 2px rgba(0,0,0,0.10), 0 2px 6px 2px rgba(0,0,0,0.08);
-            filter: brightness(1.08);
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.30), 0 1px 3px 1px rgba(60,64,67,0.15);
+            background: #1557b0;
         }
 
         .btn-google svg { flex-shrink: 0; }
@@ -145,7 +151,7 @@
             align-items: center;
             gap: 16px;
             margin: 24px 0;
-            color: #79747e;
+            color: #5f6368;
             font-size: 12px;
             letter-spacing: 0.4px;
         }
@@ -154,7 +160,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: #cac4d0;
+            background: #dadce0;
         }
 
         .notice {
@@ -162,35 +168,35 @@
             gap: 12px;
             padding: 16px;
             border-radius: 12px;
-            background: #fff3e0;
+            background: #fef7e0;
         }
 
         .notice-icon {
             width: 40px;
             height: 40px;
             border-radius: 12px;
-            background: #ffe0b2;
+            background: #feefc3;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            color: #e65100;
+            color: #3c3000;
         }
 
         .notice-text {
             font-size: 12px;
             line-height: 1.6;
-            color: #49454f;
+            color: #5f6368;
             letter-spacing: 0.4px;
         }
 
-        .notice-text strong { color: #1c1b1f; font-weight: 600; }
+        .notice-text strong { color: #1f1f1f; font-weight: 600; }
 
         .footer {
             text-align: center;
             padding: 16px 24px 28px;
             font-size: 12px;
-            color: #79747e;
+            color: #5f6368;
             letter-spacing: 0.4px;
         }
 
@@ -215,14 +221,14 @@
 
         @if(session('error'))
             <div class="alert alert-error">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                <span class="material-symbols-rounded">error</span>
                 {{ session('error') }}
             </div>
         @endif
 
         @if(session('success'))
             <div class="alert alert-success">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span class="material-symbols-rounded">check_circle</span>
                 {{ session('success') }}
             </div>
         @endif
@@ -244,7 +250,7 @@
 
         <div class="notice">
             <div class="notice-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span class="material-symbols-rounded" style="font-size:20px;">warning</span>
             </div>
             <div class="notice-text">
                 Réservé au <strong>personnel autorisé</strong>. Toute connexion est <strong>enregistrée et auditable</strong>. Un usage non autorisé engage votre responsabilité.
