@@ -206,7 +206,7 @@
 <div class="wrapper">
     <div class="surface">
         <div class="logo">
-            <img src="/images/logo.svg" alt="Groupe Speed Cloud">
+            <img src="/images/logo-dark.svg" alt="Groupe Speed Cloud">
         </div>
 
         <div class="chip">

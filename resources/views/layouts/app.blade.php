@@ -958,7 +958,7 @@
         <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fermer le menu">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
         </button>
-        <img src="/images/logo.svg" alt="Groupe Speed Cloud">
+        <img src="/images/logo-dark.svg" alt="Groupe Speed Cloud">
         <span>Panel d'administration</span>
     </div>
 
