@@ -12,6 +12,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\CpanelAccessController;
+use App\Http\Controllers\CredentialsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -102,5 +103,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::delete('/acces-cpanel/logs',          [CpanelAccessController::class, 'clearLogs'])->name('cpanel.logs.clear')->middleware('permission:access_cpanel');
     Route::post('/acces-cpanel/logs/{log}/flag-intrusion', [CpanelAccessController::class, 'flagIntrusion'])->name('cpanel.logs.flag')->middleware('permission:access_cpanel');
 
+    // ── Identifiants ──────────────────────────────────────────────────────────
+    Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentials.index')->middleware('permission:view_credentials');
 
 });
