@@ -124,8 +124,23 @@
                 Rotation automatique
             </div>
             <p class="text-muted" style="font-size:12px;margin-bottom:12px;line-height:1.5;">
-                Le mot de passe est changé automatiquement après chaque connexion et quotidiennement à 03h00.
+                Le mot de passe est roté automatiquement <strong style="color:var(--text);">toutes les 4 heures</strong> et après chaque connexion.
             </p>
+
+            {{-- Dernière rotation --}}
+            <div style="background:var(--panel-soft);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:4px;">Dernière rotation</div>
+                @if($lastRotationAt)
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-size:13px;font-weight:600;color:var(--text);">{{ $lastRotationAt->format('d/m/Y à H:i:s') }}</span>
+                    <span class="badge badge-{{ $lastRotationType === 'Planifiée (cron)' ? 'accent' : ($lastRotationType === 'Manuelle' ? 'warning' : 'success') }}" style="font-size:10px;">{{ $lastRotationType }}</span>
+                </div>
+                <div class="text-muted" style="font-size:11px;margin-top:2px;">{{ $lastRotationAt->diffForHumans() }}</div>
+                @else
+                <span class="text-muted" style="font-size:13px;">Aucune rotation enregistrée</span>
+                @endif
+            </div>
+
             <form id="rotate-form" action="{{ route('cpanel.rotate-password') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-warning btn-sm" id="rotate-btn">

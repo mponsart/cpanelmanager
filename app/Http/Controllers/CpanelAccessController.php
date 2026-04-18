@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActionLog;
 use App\Services\CpanelService;
 use App\Services\LoggerService;
 use App\Services\PasswordRotationService;
@@ -30,7 +31,25 @@ class CpanelAccessController extends Controller
 
         $cpanelUrl = $host ? "https://{$host}:{$port}" : null;
 
-        return view('cpanel.index', compact('host', 'port', 'username', 'domain', 'password', 'isSuperAdmin', 'cpanelUrl'));
+        // Dernière rotation du mot de passe
+        $lastRotation = ActionLog::where('module', 'cpanel')
+            ->whereIn('action', ['cpanel_auto_rotate_password', 'cpanel_force_rotate_password', 'cpanel_scheduled_rotate_password'])
+            ->where('status', 'success')
+            ->latest('created_at')
+            ->first();
+
+        $lastRotationAt   = $lastRotation?->created_at;
+        $lastRotationType = match ($lastRotation?->action ?? '') {
+            'cpanel_auto_rotate_password'      => 'Après connexion',
+            'cpanel_force_rotate_password'      => 'Manuelle',
+            'cpanel_scheduled_rotate_password'  => 'Planifiée (cron)',
+            default                             => null,
+        };
+
+        return view('cpanel.index', compact(
+            'host', 'port', 'username', 'domain', 'password',
+            'isSuperAdmin', 'cpanelUrl', 'lastRotationAt', 'lastRotationType'
+        ));
     }
 
     public function manualLogin(Request $request): RedirectResponse
