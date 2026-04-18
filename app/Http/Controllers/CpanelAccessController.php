@@ -145,10 +145,11 @@ class CpanelAccessController extends Controller
         Cache::forget('cpanel_active_session');
 
         // Logger le rapport de session
-        $this->logger->success('cpanel_session_report', 'cpanel', null, [
-            'description'      => $request->input('description'),
+        $description = $request->input('description');
+        $this->logger->success('cpanel_session_report', 'cpanel', mb_substr($description, 0, 255), [
+            'description'       => $description,
             'session_duration'  => $sessionDuration,
-            'attested'         => true,
+            'attested'          => true,
         ], $request);
 
         try {
@@ -177,6 +178,43 @@ class CpanelAccessController extends Controller
 
             return back()->with('error', 'Échec de la rotation du mot de passe : ' . $e->getMessage());
         }
+    }
+
+    public function logs(Request $request)
+    {
+        $query = ActionLog::with('user')
+            ->where('module', 'cpanel')
+            ->orderByDesc('created_at');
+
+        if ($action = $request->input('action')) {
+            $query->where('action', $action);
+        }
+
+        if ($userId = $request->input('user_id')) {
+            $query->where('user_id', (int) $userId);
+        }
+
+        if ($from = $request->input('from')) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+
+        if ($to = $request->input('to')) {
+            $query->whereDate('created_at', '<=', $to);
+        }
+
+        $logs = $query->paginate(30)->withQueryString();
+
+        $actions = ActionLog::where('module', 'cpanel')
+            ->distinct()
+            ->pluck('action')
+            ->sort()
+            ->values();
+
+        $users = \App\Models\User::whereIn('id',
+            ActionLog::where('module', 'cpanel')->distinct()->pluck('user_id')
+        )->orderBy('name')->get();
+
+        return view('cpanel.logs', compact('logs', 'actions', 'users'));
     }
 
     private function rotatePasswordSilently(Request $request): void

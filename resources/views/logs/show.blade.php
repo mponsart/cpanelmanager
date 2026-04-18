@@ -62,10 +62,27 @@
     @endif
 
     @if($log->payload)
+        @if($log->action === 'cpanel_session_report')
+        <div class="mt-3">
+            <label>Rapport de session cPanel</label>
+            <div style="background:var(--panel-soft);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:6px;">
+                <div style="font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;">{{ $log->payload['description'] ?? '—' }}</div>
+                <div style="display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text-muted);">
+                    @if(!empty($log->payload['session_duration']))
+                    <span>Durée : <strong style="color:var(--text);">{{ $log->payload['session_duration'] }}</strong></span>
+                    @endif
+                    @if(!empty($log->payload['attested']))
+                    <span style="color:#166534;">✓ Attesté sur l'honneur</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @else
         <div class="mt-3">
             <label>Payload</label>
             <pre style="background: var(--panel-soft); padding: 14px; border-radius: var(--radius); overflow-x: auto; font-size: 13px; margin-top: 6px; border: 1px solid var(--border);">{{ json_encode($log->payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
         </div>
+        @endif
     @endif
 </div>
 

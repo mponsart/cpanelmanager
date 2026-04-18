@@ -873,8 +873,11 @@
         </a>
         @endif
         @if($navCan('access_cpanel'))
-        <a href="{{ route('cpanel.index') }}" class="nav-link {{ request()->routeIs('cpanel.*') ? 'active' : '' }}">
+        <a href="{{ route('cpanel.index') }}" class="nav-link {{ request()->routeIs('cpanel.index') ? 'active' : '' }}">
             <span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg></span> Accès cPanel
+        </a>
+        <a href="{{ route('cpanel.logs') }}" class="nav-link {{ request()->routeIs('cpanel.logs') ? 'active' : '' }}">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2v12h12"/><path d="M5 10l3-4 3 2 3-5"/></svg></span> Journaux cPanel
         </a>
         @endif
         @endif
