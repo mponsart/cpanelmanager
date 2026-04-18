@@ -134,7 +134,7 @@
             transition: background 0.12s;
         }
 
-        .btn-google:hover { background: #f9fafb; }
+        .btn-google:hover { background: #faf5ff; }
 
         .btn-google .g-logo {
             width: 36px;
@@ -161,36 +161,34 @@
         /* ── Notice réglementaire ── */
         .notice {
             margin-top: 24px;
-            padding: 16px 18px;
+            padding: 14px 16px 14px 18px;
             border-radius: 10px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 3px solid #f59e0b;
         }
 
         .notice-title {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
+            gap: 7px;
+            font-size: 11.5px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #b45309;
-            margin-bottom: 10px;
-        }
-
-        .notice-title svg { flex-shrink: 0; }
-
-        .notice p {
-            font-size: 12px;
-            line-height: 1.65;
-            color: #6b7280;
+            letter-spacing: 0.5px;
+            color: #92400e;
             margin-bottom: 8px;
         }
 
-        .notice p:last-child { margin-bottom: 0; }
+        .notice-title svg { flex-shrink: 0; color: #d97706; }
 
-        .notice strong { color: #374151; font-weight: 600; }
+        .notice p {
+            font-size: 11.5px;
+            line-height: 1.6;
+            color: #78716c;
+        }
+
+        .notice strong { color: #44403c; font-weight: 600; }
 
         /* ── Footer ── */
         .bottom {
@@ -246,8 +244,8 @@
                 </div>
             @endif
 
-            <h1>Accès au panel</h1>
-            <p class="sub">Identifiez-vous pour gérer l'infrastructure.</p>
+            <h1>Espace restreint</h1>
+            <p class="sub">Authentification requise via compte professionnel.</p>
 
             <div class="card">
                 <a href="{{ route('auth.google') }}" class="btn-google">
@@ -266,14 +264,11 @@
 
             <div class="notice">
                 <div class="notice-title">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    Avertissement
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Accès réglementé
                 </div>
                 <p>
-                    Cette interface est un <strong>outil de travail réservé au personnel autorisé</strong> de Groupe Speed Cloud. L'accès est strictement limité aux comptes validés par un administrateur.
-                </p>
-                <p>
-                    <strong>Toute connexion, action et session est enregistrée</strong> et peut faire l'objet d'un audit. Tout accès non autorisé ou usage abusif est passible de sanctions disciplinaires et de poursuites.
+                    Réservé au <strong>personnel autorisé</strong>. Toute connexion est <strong>enregistrée et auditable</strong>. Un usage non autorisé engage votre responsabilité.
                 </p>
             </div>
         </div>
