@@ -41,7 +41,9 @@
             </div>
         </div>
         @if($cpanelUrl)
-            @if($activeSessionUser && $activeSessionUser->id !== auth()->id())
+            @if($activeSessionUser && $activeSessionUser->id === auth()->id())
+            {{-- Session en cours pour l'utilisateur actuel: pas de bouton --}}
+            @elseif($activeSessionUser && $activeSessionUser->id !== auth()->id())
             <span class="btn btn-ghost" style="opacity:0.5;cursor:not-allowed;pointer-events:none;">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 116 0v2"/></svg>
                 Accès verrouillé
@@ -96,8 +98,11 @@
     </div>
 </div>
 
-{{-- ── Bandeau session active (masqué par défaut) ─────────────────────────── --}}
-<div id="session-panel" class="card" style="display:none;margin-bottom:20px;border:1px solid rgba(124,58,237,0.25);background:linear-gradient(135deg,rgba(124,58,237,0.04),rgba(124,58,237,0.08));">
+{{-- ── Bandeau session active ────────────────────────────────────────────── --}}
+@php
+    $myActiveSession = $activeSessionUser && $activeSessionUser->id === auth()->id();
+@endphp
+<div id="session-panel" class="card" style="{{ $myActiveSession ? '' : 'display:none;' }}margin-bottom:20px;border:1px solid rgba(124,58,237,0.25);background:linear-gradient(135deg,rgba(124,58,237,0.04),rgba(124,58,237,0.08));">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
         <div style="display:flex;align-items:center;gap:14px;">
             <div style="width:42px;height:42px;border-radius:10px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.20);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -378,7 +383,7 @@
                     }
 
                     // Démarrer le timer de session
-                    startSessionTimer();
+                    startSessionTimer(0);
                 })
                 .catch(function () {
                     hideOverlay();
@@ -391,11 +396,11 @@
     }
 
     // ── Timer de session ────────────────────────────────────────────────────
-    function startSessionTimer() {
+    function startSessionTimer(initialSeconds) {
         if (sessionPanel) sessionPanel.style.display = '';
         if (openBtn) openBtn.style.display = 'none';
 
-        var seconds = 0;
+        var seconds = initialSeconds || 0;
         function updateDisplay() {
             var h = Math.floor(seconds / 3600);
             var m = Math.floor((seconds % 3600) / 60);
@@ -413,6 +418,15 @@
             updateDisplay();
         }, 1000);
     }
+
+    // ── Reprise du timer si session active au chargement ────────────────────
+    @if($myActiveSession && $activeSessionSince)
+    (function () {
+        var startedAt = new Date(@json($activeSessionSince->toIso8601String()));
+        var elapsed = Math.floor((Date.now() - startedAt.getTime()) / 1000);
+        startSessionTimer(Math.max(0, elapsed));
+    })();
+    @endif
 
     // ── Fin de session (modale rapport) ────────────────────────────────────
     var endModal      = document.getElementById('end-session-modal');
