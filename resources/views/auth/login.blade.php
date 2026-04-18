@@ -298,7 +298,7 @@
         .alert-error   { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.22); color: #fca5a5; }
         .alert-success { background: rgba(52,211,153,0.07); border-color: rgba(52,211,153,0.22); color: #6ee7b7; }
 
-        @media (min-width: 960px) {
+        @media (min-width: 1024px) {
             .auth-brand { display: flex; flex: 1; }
             .auth-logo-mobile { display: none; }
         }
