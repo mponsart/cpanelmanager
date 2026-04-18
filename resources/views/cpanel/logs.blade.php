@@ -124,15 +124,33 @@
 
             {{-- Rapport de session --}}
             @if($log->action === 'cpanel_session_report' && !empty($log->payload['description']))
-            <div style="margin-top:8px;background:var(--panel-soft);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+            <div style="margin-top:8px;background:{{ !empty($log->payload['flagged_intrusion']) ? '#fef2f2' : 'var(--panel-soft)' }};border:1px solid {{ !empty($log->payload['flagged_intrusion']) ? '#fecaca' : 'var(--border)' }};border-radius:8px;padding:12px 14px;">
+                @if(!empty($log->payload['flagged_intrusion']))
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 10px;background:#dc2626;border-radius:6px;color:#fff;font-size:11px;font-weight:700;">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l7 13H1L8 1z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="none"/></svg>
+                    SIGNALÉ COMME INTRUSION
+                    <span style="font-weight:400;margin-left:4px;">— par {{ $log->payload['flagged_by'] ?? '?' }} le {{ isset($log->payload['flagged_at']) ? \Carbon\Carbon::parse($log->payload['flagged_at'])->format('d/m/Y à H:i') : '?' }}</span>
+                </div>
+                @if(!empty($log->payload['flagged_reason']))
+                <div style="font-size:12px;color:#991b1b;margin-bottom:8px;padding:8px 10px;background:#fff5f5;border:1px solid #fecaca;border-radius:6px;line-height:1.5;">
+                    <strong>Motif :</strong> {{ $log->payload['flagged_reason'] }}
+                </div>
+                @endif
+                @endif
                 <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;">Rapport</div>
                 <div style="font-size:13px;color:var(--text);line-height:1.65;white-space:pre-wrap;">{{ $log->payload['description'] }}</div>
-                <div style="display:flex;gap:14px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);">
+                <div style="display:flex;align-items:center;gap:14px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);flex-wrap:wrap;">
                     @if(!empty($log->payload['session_duration']))
                     <span>⏱ Durée : <strong style="color:var(--text);">{{ $log->payload['session_duration'] }}</strong></span>
                     @endif
                     @if(!empty($log->payload['attested']))
                     <span style="color:#166534;">✓ Attesté sur l'honneur</span>
+                    @endif
+                    @if(auth()->user()?->isSuperAdmin() && empty($log->payload['flagged_intrusion']))
+                    <button type="button" class="btn btn-ghost btn-sm flag-intrusion-btn" data-log-id="{{ $log->id }}" style="margin-left:auto;font-size:11px;color:#dc2626;padding:2px 8px;border:1px solid #fecaca;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l7 13H1L8 1z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="none"/></svg>
+                        Signaler comme intrusion
+                    </button>
                     @endif
                 </div>
             </div>
@@ -169,6 +187,44 @@
     @endif
 </div>
 
+{{-- ── Modal signalement intrusion ───────────────────────────────────────── --}}
+@if(auth()->user()?->isSuperAdmin())
+<div id="flag-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:0;box-shadow:0 12px 40px rgba(15,23,42,0.20);max-width:480px;width:92%;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#fef2f2,#fecaca);padding:20px 24px;border-bottom:1px solid #fecaca;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:42px;height:42px;border-radius:11px;background:#fff5f5;border:1px solid #fca5a5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M8 1l7 13H1L8 1z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="11" r="0.5" fill="#dc2626" stroke="none"/></svg>
+                </div>
+                <div>
+                    <div style="font-size:16px;font-weight:700;color:#991b1b;">Signaler une intrusion</div>
+                    <div style="font-size:12px;color:#b91c1c;margin-top:2px;">Cette action est irréversible et sera journalisée</div>
+                </div>
+            </div>
+        </div>
+        <form id="flag-form" method="POST" action="">
+            @csrf
+            <div style="padding:24px;">
+                <p style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:16px;">
+                    En signalant ce rapport comme intrusion, vous indiquez que la justification fournie par l'utilisateur est insuffisante ou mensongère, et que l'accès est considéré comme non autorisé.
+                </p>
+                <label for="flag-reason" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">Motif du signalement</label>
+                <textarea id="flag-reason" name="reason" rows="3" required minlength="5" maxlength="1000"
+                    placeholder="Ex : L'utilisateur déclare avoir modifié des DNS mais aucune modification n'a été constatée…"
+                    style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft);color:var(--text);font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;box-sizing:border-box;"></textarea>
+            </div>
+            <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:10px;background:var(--panel-soft);">
+                <button type="button" class="btn btn-ghost" id="flag-cancel">Annuler</button>
+                <button type="submit" class="btn btn-danger" id="flag-confirm">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l7 13H1L8 1z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="none"/></svg>
+                    Confirmer le signalement
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
 @endsection
 
 @push('scripts')
@@ -181,6 +237,32 @@
             if (!confirm('Êtes-vous sûr de vouloir purger tous les journaux cPanel ?\n\nCette action est irréversible.')) return;
             document.getElementById('clear-logs-btn').disabled = true;
             form.submit();
+        });
+    }
+
+    // ── Signalement intrusion ───────────────────────────────────────────────
+    var flagModal  = document.getElementById('flag-modal');
+    var flagForm   = document.getElementById('flag-form');
+    var flagCancel = document.getElementById('flag-cancel');
+
+    if (flagModal) {
+        document.querySelectorAll('.flag-intrusion-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var logId = btn.getAttribute('data-log-id');
+                flagForm.action = '{{ url("/acces-cpanel/logs") }}/' + logId + '/flag-intrusion';
+                document.getElementById('flag-reason').value = '';
+                flagModal.style.display = 'flex';
+            });
+        });
+
+        if (flagCancel) {
+            flagCancel.addEventListener('click', function () {
+                flagModal.style.display = 'none';
+            });
+        }
+
+        flagModal.addEventListener('click', function (e) {
+            if (e.target === flagModal) flagModal.style.display = 'none';
         });
     }
 }());

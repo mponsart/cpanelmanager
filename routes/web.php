@@ -100,6 +100,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::post('/acces-cpanel/end-session',     [CpanelAccessController::class, 'endSession'])->name('cpanel.end-session')->middleware('permission:access_cpanel');
     Route::get('/acces-cpanel/logs',             [CpanelAccessController::class, 'logs'])->name('cpanel.logs')->middleware('permission:access_cpanel');
     Route::delete('/acces-cpanel/logs',          [CpanelAccessController::class, 'clearLogs'])->name('cpanel.logs.clear')->middleware('permission:access_cpanel');
+    Route::post('/acces-cpanel/logs/{log}/flag-intrusion', [CpanelAccessController::class, 'flagIntrusion'])->name('cpanel.logs.flag')->middleware('permission:access_cpanel');
 
 
 });

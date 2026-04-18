@@ -231,6 +231,31 @@ class CpanelAccessController extends Controller
         return back()->with('success', "{$count} entrée(s) de journal supprimée(s).");
     }
 
+    public function flagIntrusion(Request $request, ActionLog $log): RedirectResponse
+    {
+        abort_unless(auth()->user()?->isSuperAdmin(), 403);
+        abort_unless($log->module === 'cpanel' && $log->action === 'cpanel_session_report', 404);
+
+        $request->validate([
+            'reason' => 'required|string|min:5|max:1000',
+        ]);
+
+        $payload = $log->payload ?? [];
+        $payload['flagged_intrusion'] = true;
+        $payload['flagged_by']        = auth()->user()->name;
+        $payload['flagged_at']        = now()->toIso8601String();
+        $payload['flagged_reason']    = $request->input('reason');
+        $log->update(['payload' => $payload]);
+
+        $this->logger->success('cpanel_flag_intrusion', 'cpanel', "Log #{$log->id}", [
+            'flagged_log_id' => $log->id,
+            'flagged_user'   => $log->user?->name,
+            'reason'         => $request->input('reason'),
+        ], $request);
+
+        return back()->with('success', 'Rapport signalé comme intrusion.');
+    }
+
     private function rotatePasswordSilently(Request $request): void
     {
         try {
