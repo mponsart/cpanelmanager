@@ -106,8 +106,7 @@
     </p>
 </div>
 
-{{-- ── Super-admin : mot de passe + sécurité ─────────────────────────────── --}}
-@if($isSuperAdmin)
+{{-- ── Sécurité & identifiants ────────────────────────────────────────────── --}}
 <div class="card">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">
         <div style="width:36px;height:36px;border-radius:8px;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -115,7 +114,7 @@
         </div>
         <div>
             <div style="font-size:15px;font-weight:700;color:var(--text);">Sécurité & identifiants</div>
-            <div style="font-size:12px;color:var(--text-muted);">Réservé aux super-administrateurs</div>
+            <div style="font-size:12px;color:var(--text-muted);">Mot de passe et rotation automatique</div>
         </div>
     </div>
 
@@ -137,7 +136,7 @@
                     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
                 </button>
             </div>
-            <p class="text-muted" style="font-size:11px;margin-top:8px;">Visible uniquement par les super-administrateurs.</p>
+            <p class="text-muted" style="font-size:11px;margin-top:8px;">Ne partagez jamais ce mot de passe en dehors de cette interface.</p>
             @else
             <p class="text-muted" style="font-style:italic;font-size:13px;">Non configuré — définir <code class="code">CPANEL_PASSWORD</code> dans <code class="code">.env</code></p>
             @endif
@@ -167,6 +166,7 @@
                 @endif
             </div>
 
+            @if($isSuperAdmin)
             <form id="rotate-form" action="{{ route('cpanel.rotate-password') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-warning btn-sm" id="rotate-btn">
@@ -174,10 +174,10 @@
                     Forcer la rotation
                 </button>
             </form>
+            @endif
         </div>
     </div>
 </div>
-@endif
 
 {{-- ── Modal d'avertissement avant connexion ─────────────────────────────── --}}
 <div id="login-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">

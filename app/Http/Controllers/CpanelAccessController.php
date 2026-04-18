@@ -25,8 +25,8 @@ class CpanelAccessController extends Controller
         $username = config('cpanel.username');
         $domain   = config('cpanel.domain');
 
-        // Seuls les super-admins peuvent voir le mot de passe
-        $password    = auth()->user()?->isSuperAdmin() ? config('cpanel.password') : null;
+        // Mot de passe visible pour tous les utilisateurs ayant accès à la page
+        $password    = config('cpanel.password');
         $isSuperAdmin = auth()->user()?->isSuperAdmin() ?? false;
 
         $cpanelUrl = $host ? "https://{$host}:{$port}" : null;
