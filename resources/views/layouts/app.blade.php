@@ -328,8 +328,7 @@
             font-weight: 600;
             color: var(--text-muted);
             margin-bottom: 6px;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
+            letter-spacing: 0.2px;
         }
 
         input[type="text"],

@@ -89,6 +89,7 @@
         }
 
         .auth-brand-body h1 span {
+            color: #c084fc; /* fallback for browsers without gradient-clip support */
             background: linear-gradient(135deg, #c084fc, #818cf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
