@@ -22,11 +22,10 @@
         .page {
             min-height: 100vh;
             display: grid;
-            grid-template-columns: 1fr;
             grid-template-rows: auto 1fr auto;
         }
 
-        /* ── Header ── */
+        /* ── Top bar ── */
         .top-bar {
             display: flex;
             align-items: center;
@@ -34,10 +33,7 @@
             padding: 20px 32px;
         }
 
-        .top-bar img {
-            height: 28px;
-            width: auto;
-        }
+        .top-bar img { height: 28px; width: auto; }
 
         .top-bar .env {
             font-size: 11px;
@@ -69,7 +65,6 @@
             to   { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Icône cadenas */
         .lock-icon {
             width: 52px;
             height: 52px;
@@ -113,7 +108,7 @@
         .alert-error   { background: #fef2f2; color: #b91c1c; }
         .alert-success { background: #ecfdf5; color: #047857; }
 
-        /* Card bouton */
+        /* Bouton */
         .card {
             background: #fff;
             border: 1px solid #e5e7eb;
@@ -163,39 +158,39 @@
             color: #7c3aed;
         }
 
-        /* Infos sous la carte */
-        .details {
-            display: flex;
-            gap: 6px;
-            margin-top: 20px;
-        }
-
-        .detail {
-            flex: 1;
-            text-align: center;
-            padding: 14px 8px;
+        /* ── Notice réglementaire ── */
+        .notice {
+            margin-top: 24px;
+            padding: 16px 18px;
             border-radius: 10px;
             background: #fff;
             border: 1px solid #e5e7eb;
         }
 
-        .detail-val {
-            display: block;
-            font-size: 16px;
+        .notice-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
             font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 2px;
-        }
-
-        .detail-val .hl { color: #7c3aed; }
-
-        .detail-lbl {
-            font-size: 10.5px;
-            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #9ca3af;
+            letter-spacing: 0.6px;
+            color: #b45309;
+            margin-bottom: 10px;
         }
+
+        .notice-title svg { flex-shrink: 0; }
+
+        .notice p {
+            font-size: 12px;
+            line-height: 1.65;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .notice p:last-child { margin-bottom: 0; }
+
+        .notice strong { color: #374151; font-weight: 600; }
 
         /* ── Footer ── */
         .bottom {
@@ -217,10 +212,9 @@
 
         @media (max-width: 480px) {
             .top-bar { padding: 16px 20px; }
-            .center  { padding: 0 16px; }
-            .box h1  { font-size: 21px; }
-            .details { flex-direction: column; }
-            .bottom  { flex-wrap: wrap; gap: 8px 16px; padding: 16px; }
+            .center { padding: 0 16px; }
+            .box h1 { font-size: 21px; }
+            .bottom { flex-wrap: wrap; gap: 8px 16px; padding: 16px; }
         }
     </style>
 </head>
@@ -270,27 +264,25 @@
                 </a>
             </div>
 
-            <div class="details">
-                <div class="detail">
-                    <span class="detail-val"><span class="hl">4</span>h</span>
-                    <span class="detail-lbl">Rotation MDP</span>
+            <div class="notice">
+                <div class="notice-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Avertissement
                 </div>
-                <div class="detail">
-                    <span class="detail-val">100<span class="hl">%</span></span>
-                    <span class="detail-lbl">Actions loguées</span>
-                </div>
-                <div class="detail">
-                    <span class="detail-val">256<span class="hl">-bit</span></span>
-                    <span class="detail-lbl">Chiffrement</span>
-                </div>
+                <p>
+                    Cette interface est un <strong>outil de travail réservé au personnel autorisé</strong> de Groupe Speed Cloud. L'accès est strictement limité aux comptes validés par un administrateur.
+                </p>
+                <p>
+                    <strong>Toute connexion, action et session est enregistrée</strong> et peut faire l'objet d'un audit. Tout accès non autorisé ou usage abusif est passible de sanctions disciplinaires et de poursuites.
+                </p>
             </div>
         </div>
     </main>
 
     <footer class="bottom">
-        <span>Accès sur invitation uniquement</span>
+        <span>Accès réglementé</span>
         <span class="dot"></span>
-        <span>Connexions enregistrées</span>
+        <span>Sessions auditées</span>
         <span class="dot"></span>
         <span>&copy; {{ date('Y') }} Groupe Speed Cloud</span>
     </footer>
