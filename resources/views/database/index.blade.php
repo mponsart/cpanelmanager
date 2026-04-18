@@ -5,6 +5,10 @@
 
 @section('content')
 
+<div class="page-header">
+    <h1>Bases de données MySQL</h1>
+</div>
+
 <div class="form-row form-row-2 mb-3">
     <div class="card" id="create-database">
         <div class="card-title">Créer une base de données</div>
@@ -87,7 +91,7 @@
                             <td class="text-muted">{{ isset($db['disk_usage']) ? number_format($db['disk_usage'] / 1024, 2) . ' Mo' : '—' }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="2" class="text-muted" style="text-align:center;padding:16px;">Aucune base de données.</td></tr>
+                        <tr><td colspan="2" class="table-empty">Aucune base de données.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -103,7 +107,7 @@
                     @forelse($dbUsers as $u)
                         <tr><td>{{ $u['user'] ?? $u }}</td></tr>
                     @empty
-                        <tr><td class="text-muted" style="text-align:center;padding:16px;">Aucun utilisateur.</td></tr>
+                        <tr><td class="table-empty">Aucun utilisateur.</td></tr>
                     @endforelse
                 </tbody>
             </table>

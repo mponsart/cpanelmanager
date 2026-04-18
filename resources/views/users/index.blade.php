@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 @forelse($users as $user)
-                    <tr @if($user->trashed()) style="opacity: 0.5;" @endif>
+                    <tr @if($user->trashed()) class="row-trashed" @endif>
                         <td>{{ $user->name }}</td>
                         <td class="text-muted">{{ $user->email }}</td>
                         <td>
@@ -38,7 +38,7 @@
                                 <span class="badge badge-error">Inactif</span>
                             @endif
                             @if($user->is_super_admin)
-                                <span class="badge" style="background:rgba(79,124,255,0.15); color:var(--accent);">Super Admin</span>
+                                <span class="badge badge-accent">Super Admin</span>
                             @endif
                         </td>
                         <td class="text-muted">{{ $user->permissions->count() }} permission(s)</td>
@@ -57,7 +57,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-muted" style="text-align:center; padding:24px;">Aucun utilisateur.</td></tr>
+                    <tr><td colspan="7" class="table-empty">Aucun utilisateur.</td></tr>
                 @endforelse
             </tbody>
         </table>

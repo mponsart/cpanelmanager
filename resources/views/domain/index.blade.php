@@ -5,6 +5,10 @@
 
 @section('content')
 
+<div class="page-header">
+    <h1>Gestion des domaines</h1>
+</div>
+
 <div class="form-row form-row-2 mb-3">
     <div class="card" id="create-addon-domain">
         <div class="card-title">Ajouter un domaine addon</div>

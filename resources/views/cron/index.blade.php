@@ -5,6 +5,10 @@
 
 @section('content')
 
+<div class="page-header">
+    <h1>Gestion des tâches cron</h1>
+</div>
+
 <div class="card" id="create-cron-job">
     <div class="card-title">Créer une tâche cron</div>
     <form action="{{ route('cron.store') }}" method="POST">
@@ -99,7 +103,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="text-muted" style="text-align:center;padding:24px;">Aucune tâche cron.</td></tr>
+                    <tr><td colspan="3" class="table-empty">Aucune tâche cron.</td></tr>
                 @endforelse
             </tbody>
         </table>

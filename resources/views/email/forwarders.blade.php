@@ -62,7 +62,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="text-muted" style="text-align:center;padding:24px;">Aucune redirection.</td></tr>
+                    <tr><td colspan="3" class="table-empty">Aucune redirection.</td></tr>
                 @endforelse
             </tbody>
         </table>

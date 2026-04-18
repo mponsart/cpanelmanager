@@ -5,6 +5,10 @@
 
 @section('content')
 
+<div class="page-header">
+    <h1>Associations MonAsso</h1>
+</div>
+
 <div class="card mb-3">
     <div class="card-title">Créer une association</div>
     <form action="{{ route('association.store') }}" method="POST" class="inline-form">
@@ -84,7 +88,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="text-muted" style="text-align:center;padding:20px;">Aucune association trouvée.</td></tr>
+                    <tr><td colspan="4" class="table-empty">Aucune association trouvée.</td></tr>
                 @endforelse
             </tbody>
         </table>

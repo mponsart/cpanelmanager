@@ -5,6 +5,10 @@
 
 @section('content')
 
+<div class="page-header">
+    <h1>Journaux d'actions</h1>
+</div>
+
 <div class="card">
     <div class="card-title">Filtres</div>
     <form method="GET" action="{{ route('logs.index') }}">
@@ -86,7 +90,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="text-muted" style="text-align:center; padding: 24px;">Aucun journal.</td></tr>
+                    <tr><td colspan="8" class="table-empty">Aucun journal.</td></tr>
                 @endforelse
             </tbody>
         </table>

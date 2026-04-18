@@ -109,7 +109,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="text-muted" style="text-align:center; padding:24px;">Aucune adresse e-mail.</td></tr>
+                    <tr><td colspan="4" class="table-empty">Aucune adresse e-mail.</td></tr>
                 @endforelse
             </tbody>
         </table>

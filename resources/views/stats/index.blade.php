@@ -5,6 +5,10 @@
 
 @section('content')
 
+<div class="page-header">
+    <h1>Statistiques cPanel</h1>
+</div>
+
 @if(!empty($stats))
 <div class="stats-grid">
     @foreach($stats as $stat)
@@ -42,10 +46,10 @@
             @endphp
             <div class="disk-usage-row">
                 <div class="disk-usage-details">
-                    <div style="font-size:1.5rem;font-weight:700;color:var(--text);">
+                    <div class="kpi-value" style="font-size:1.5rem;">
                         {{ number_format($used, 1) }} Mo
                     </div>
-                    <div class="text-muted text-sm" style="margin-top:4px;">
+                    <div class="text-muted text-sm mt-1">
                         @if($unlimited)
                             Quota : <strong style="color:var(--success);">Illimité</strong>
                         @else
@@ -55,8 +59,8 @@
                 </div>
                 @unless($unlimited)
                 <div class="disk-usage-bar-wrap">
-                    <div style="background:var(--border);border-radius:6px;height:10px;overflow:hidden;">
-                        <div style="width:{{ min($percent, 100) }}%;height:100%;background:{{ $percent > 90 ? 'var(--danger)' : ($percent > 70 ? 'var(--warning)' : 'var(--success)') }};border-radius:6px;transition:width .3s;"></div>
+                    <div class="progress-track" style="height:10px;">
+                        <div class="progress-bar {{ $percent > 90 ? 'progress-bar-danger' : ($percent > 70 ? 'progress-bar-warning' : 'progress-bar-success') }}" style="width:{{ min($percent, 100) }}%;"></div>
                     </div>
                 </div>
                 @endunless
@@ -74,7 +78,7 @@
             @endphp
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Domaine</th><th style="width:120px;text-align:right;">Consommation</th><th style="width:180px;"></th></tr></thead>
+                    <thead><tr><th>Domaine</th><th style="width:120px;" class="tabular-right">Consommation</th><th style="width:180px;"></th></tr></thead>
                     <tbody>
                         @foreach($bandwidth as $domain => $bytes)
                             @php
@@ -88,10 +92,10 @@
                                         {{ $domain }}
                                     </a>
                                 </td>
-                                <td style="text-align:right;font-variant-numeric:tabular-nums;">{{ $display }}</td>
+                                <td class="tabular-right">{{ $display }}</td>
                                 <td style="padding-left:12px;">
-                                    <div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden;">
-                                        <div style="width:{{ $barPercent }}%;height:100%;background:var(--accent);border-radius:4px;transition:width .3s;"></div>
+                                    <div class="progress-track">
+                                        <div class="progress-bar" style="width:{{ $barPercent }}%;background:var(--accent);"></div>
                                     </div>
                                 </td>
                             </tr>

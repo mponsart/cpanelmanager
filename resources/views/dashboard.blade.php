@@ -10,179 +10,6 @@
     $recentActivity = $recentLogs->reject(fn ($log) => in_array($log->status, ['error', 'denied'], true))->take(10);
 @endphp
 
-<style>
-    .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-        margin-bottom: 20px;
-    }
-
-    .kpi-card {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 18px 20px;
-        box-shadow: var(--shadow-sm);
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-    }
-
-    .kpi-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .kpi-icon-blue   { background: #eff6ff; color: #2563eb; }
-    .kpi-icon-green  { background: #f0fdf4; color: #16a34a; }
-    .kpi-icon-red    { background: #fef2f2; color: #dc2626; }
-    .kpi-icon-amber  { background: #fffbeb; color: #d97706; }
-
-    .kpi-body { flex: 1; min-width: 0; }
-    .kpi-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .kpi-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.2; margin-top: 3px; }
-
-    .shortcuts-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .shortcut-card {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 16px;
-        box-shadow: var(--shadow-sm);
-        transition: border-color 0.12s, box-shadow 0.12s;
-    }
-
-    .shortcut-card:hover {
-        border-color: #bfdbfe;
-        box-shadow: 0 4px 16px rgba(37,99,235,0.08);
-    }
-
-    .shortcut-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .shortcut-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: #eff6ff;
-        color: #2563eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .shortcut-title { font-size: 13px; font-weight: 600; color: var(--text); }
-    .shortcut-desc  { font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px; }
-
-    .shortcut-links { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    .shortcut-links .btn-ghost {
-        font-size: 11.5px;
-        padding: 4px 10px;
-        background: var(--panel-soft);
-    }
-
-    .activity-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    .activity-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .activity-header .title { font-size: 14px; font-weight: 600; }
-
-    .status-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        display: inline-block;
-        flex-shrink: 0;
-    }
-
-    .status-dot-error   { background: var(--danger); }
-    .status-dot-warning { background: var(--warning); }
-    .status-dot-success { background: var(--success); }
-
-    .dash-search-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 18px;
-        flex-wrap: wrap;
-    }
-
-    .dash-search {
-        position: relative;
-        min-width: 240px;
-    }
-
-    .dash-search svg {
-        position: absolute;
-        left: 11px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        pointer-events: none;
-    }
-
-    .dash-search input {
-        width: 100%;
-        padding: 8px 12px 8px 34px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--panel);
-        font-size: 13px;
-        color: var(--text);
-        outline: none;
-        transition: all 0.12s;
-    }
-
-    .dash-search input:focus {
-        border-color: #93c5fd;
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
-    }
-
-    @media (max-width: 1100px) {
-        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-        .shortcuts-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 860px) {
-        .activity-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-        .kpi-grid { grid-template-columns: 1fr 1fr; }
-        .shortcuts-grid { grid-template-columns: 1fr; }
-    }
-</style>
-
 <div class="dash-search-row">
     <div class="dash-search">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -349,7 +176,7 @@
                             <td><a href="{{ route('logs.show', $incident) }}" class="btn btn-ghost btn-sm" aria-label="Voir les détails">↗</a></td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-muted" style="text-align:center; padding: 24px;">Aucun incident récent.</td></tr>
+                        <tr><td colspan="5" class="table-empty">Aucun incident récent.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -390,7 +217,7 @@
                             <td><a href="{{ route('logs.show', $log) }}" class="btn btn-ghost btn-sm" aria-label="Voir les détails">↗</a></td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-muted" style="text-align:center; padding: 24px;">Aucun journal pour l'instant.</td></tr>
+                        <tr><td colspan="5" class="table-empty">Aucun journal pour l'instant.</td></tr>
                     @endforelse
                 </tbody>
             </table>

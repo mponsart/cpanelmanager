@@ -77,7 +77,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-muted" style="text-align:center;padding:24px;">Aucun compte FTP.</td></tr>
+                    <tr><td colspan="6" class="table-empty">Aucun compte FTP.</td></tr>
                 @endforelse
             </tbody>
         </table>
