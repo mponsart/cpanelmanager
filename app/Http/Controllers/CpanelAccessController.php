@@ -217,6 +217,20 @@ class CpanelAccessController extends Controller
         return view('cpanel.logs', compact('logs', 'actions', 'users'));
     }
 
+    public function clearLogs(Request $request): RedirectResponse
+    {
+        abort_unless(auth()->user()?->isSuperAdmin(), 403);
+
+        $count = ActionLog::where('module', 'cpanel')->count();
+        ActionLog::where('module', 'cpanel')->delete();
+
+        $this->logger->success('cpanel_logs_cleared', 'cpanel', null, [
+            'deleted_count' => $count,
+        ], $request);
+
+        return back()->with('success', "{$count} entrée(s) de journal supprimée(s).");
+    }
+
     private function rotatePasswordSilently(Request $request): void
     {
         try {

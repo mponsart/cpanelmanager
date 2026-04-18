@@ -61,6 +61,16 @@
                 <div style="font-size:12px;color:var(--text-muted);">{{ $logs->total() }} entrée{{ $logs->total() > 1 ? 's' : '' }}</div>
             </div>
         </div>
+        @if(auth()->user()?->isSuperAdmin() && $logs->total() > 0)
+        <form id="clear-logs-form" action="{{ route('cpanel.logs.clear') }}" method="POST" style="margin:0;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger btn-sm" id="clear-logs-btn">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,6 3,14 13,14 13,6"/><line x1="1" y1="3" x2="15" y2="3"/><path d="M6 3V1.5h4V3"/><line x1="6.5" y1="8.5" x2="6.5" y2="11.5"/><line x1="9.5" y1="8.5" x2="9.5" y2="11.5"/></svg>
+                Purger les journaux
+            </button>
+        </form>
+        @endif
     </div>
 
     @forelse($logs as $log)
@@ -160,3 +170,19 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    var form = document.getElementById('clear-logs-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!confirm('Êtes-vous sûr de vouloir purger tous les journaux cPanel ?\n\nCette action est irréversible.')) return;
+            document.getElementById('clear-logs-btn').disabled = true;
+            form.submit();
+        });
+    }
+}());
+</script>
+@endpush
