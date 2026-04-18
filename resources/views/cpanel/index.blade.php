@@ -41,10 +41,17 @@
             </div>
         </div>
         @if($cpanelUrl)
-        <button type="button" class="btn btn-primary" id="open-login-modal">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
-            Se connecter
-        </button>
+            @if($activeSessionUser && $activeSessionUser->id !== auth()->id())
+            <span class="btn btn-ghost" style="opacity:0.5;cursor:not-allowed;pointer-events:none;">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 116 0v2"/></svg>
+                Accès verrouillé
+            </span>
+            @else
+            <button type="button" class="btn btn-primary" id="open-login-modal">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
+                Se connecter
+            </button>
+            @endif
         @endif
     </div>
 
@@ -104,18 +111,59 @@
             </div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-            <form id="end-session-form" action="{{ route('cpanel.end-session') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-danger" id="end-session-btn">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
-                    J'ai terminé
-                </button>
-            </form>
+            <button type="button" class="btn btn-danger" id="open-end-modal">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
+                J'ai terminé
+            </button>
         </div>
     </div>
     <p class="text-muted" style="font-size:11px;margin-top:12px;margin-bottom:0;line-height:1.5;">
-        Lorsque vous cliquez sur « J'ai terminé », le mot de passe cPanel est immédiatement changé pour sécuriser l'accès.
+        Lorsque vous cliquez sur « J'ai terminé », vous devrez décrire les actions effectuées. Le mot de passe sera ensuite changé.
     </p>
+</div>
+
+{{-- ── Modal rapport de session ──────────────────────────────────────────── --}}
+<div id="end-session-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:0;box-shadow:0 12px 40px rgba(15,23,42,0.20);max-width:540px;width:92%;overflow:hidden;">
+        {{-- Header --}}
+        <div style="background:linear-gradient(135deg,#fef2f2,#fecaca);padding:20px 24px;border-bottom:1px solid #fecaca;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:42px;height:42px;border-radius:11px;background:#fff5f5;border:1px solid #fca5a5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M14 2H2v12h12V2z"/><path d="M5 5h6M5 8h4"/></svg>
+                </div>
+                <div>
+                    <div style="font-size:16px;font-weight:700;color:#991b1b;">Rapport de session</div>
+                    <div style="font-size:12px;color:#b91c1c;margin-top:2px;">Décrivez les actions effectuées sur cPanel</div>
+                </div>
+            </div>
+        </div>
+        {{-- Body --}}
+        <form id="end-session-form" action="{{ route('cpanel.end-session') }}" method="POST">
+            @csrf
+            <div style="padding:24px;">
+                <label for="session-description" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">
+                    Que avez-vous fait sur cPanel ?
+                </label>
+                <textarea id="session-description" name="description" rows="4" required minlength="10" maxlength="2000"
+                    placeholder="Ex : Modification des enregistrements DNS du domaine example.com, ajout d'un sous-domaine api.example.com…"
+                    style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft);color:var(--text);font-size:13px;line-height:1.6;resize:vertical;font-family:inherit;box-sizing:border-box;min-height:100px;"></textarea>
+                <p class="text-muted" style="font-size:11px;margin-top:6px;">Minimum 10 caractères. Soyez précis : domaines, comptes, fichiers modifiés, etc.</p>
+
+                <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;color:var(--text);font-weight:500;margin-top:16px;padding:12px 14px;background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.12);border-radius:8px;">
+                    <input type="checkbox" id="end-session-attest" style="margin-top:3px;width:16px;height:16px;accent-color:#dc2626;flex-shrink:0;">
+                    <span>J'atteste sur l'honneur que la description ci-dessus est exacte et complète. Je suis conscient(e) que toute fausse déclaration pourra entraîner des sanctions.</span>
+                </label>
+            </div>
+            {{-- Footer --}}
+            <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:10px;background:var(--panel-soft);">
+                <button type="button" class="btn btn-ghost" id="end-modal-cancel">Annuler</button>
+                <button type="submit" class="btn btn-danger" id="end-modal-confirm" disabled style="opacity:0.5;">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
+                    Terminer et sécuriser
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 {{-- ── Sécurité & identifiants ────────────────────────────────────────────── --}}
@@ -366,18 +414,52 @@
         }, 1000);
     }
 
-    // ── Fin de session ──────────────────────────────────────────────────────
-    var endForm = document.getElementById('end-session-form');
-    var endBtn  = document.getElementById('end-session-btn');
-    if (endForm) {
-        endForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            if (!confirm('Terminer la session ?\n\nLe mot de passe cPanel sera immédiatement changé.')) return;
-            if (endBtn) endBtn.disabled = true;
-            if (timerInterval) clearInterval(timerInterval);
-            showOverlay('Sécurisation en cours…', 'Le mot de passe cPanel est en cours de changement.');
-            endForm.submit();
+    // ── Fin de session (modale rapport) ────────────────────────────────────
+    var endModal      = document.getElementById('end-session-modal');
+    var openEndBtn    = document.getElementById('open-end-modal');
+    var endCancelBtn  = document.getElementById('end-modal-cancel');
+    var endConfirmBtn = document.getElementById('end-modal-confirm');
+    var endAttest     = document.getElementById('end-session-attest');
+    var endDesc       = document.getElementById('session-description');
+    var endForm       = document.getElementById('end-session-form');
+
+    if (openEndBtn && endModal) {
+        openEndBtn.addEventListener('click', function () {
+            endModal.style.display = 'flex';
         });
+
+        if (endCancelBtn) {
+            endCancelBtn.addEventListener('click', function () {
+                endModal.style.display = 'none';
+            });
+        }
+
+        endModal.addEventListener('click', function (e) {
+            if (e.target === endModal) endModal.style.display = 'none';
+        });
+
+        function updateEndConfirm() {
+            var valid = endAttest && endAttest.checked && endDesc && endDesc.value.trim().length >= 10;
+            if (endConfirmBtn) {
+                endConfirmBtn.disabled = !valid;
+                endConfirmBtn.style.opacity = valid ? '1' : '0.5';
+            }
+        }
+
+        if (endAttest) endAttest.addEventListener('change', updateEndConfirm);
+        if (endDesc) endDesc.addEventListener('input', updateEndConfirm);
+
+        if (endForm) {
+            endForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (endConfirmBtn.disabled) return;
+                endConfirmBtn.disabled = true;
+                if (timerInterval) clearInterval(timerInterval);
+                endModal.style.display = 'none';
+                showOverlay('Sécurisation en cours…', 'Enregistrement du rapport et changement du mot de passe.');
+                endForm.submit();
+            });
+        }
     }
 
     // ── Rotation overlay ────────────────────────────────────────────────────

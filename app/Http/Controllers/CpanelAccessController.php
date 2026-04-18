@@ -65,6 +65,17 @@ class CpanelAccessController extends Controller
 
     public function manualLogin(Request $request)
     {
+        // Vérifier qu'aucune autre session n'est active
+        $activeSession = Cache::get('cpanel_active_session');
+        if ($activeSession && $activeSession['user_id'] !== auth()->id()) {
+            $activeUser = \App\Models\User::find($activeSession['user_id']);
+            $name = $activeUser?->name ?? 'Un autre utilisateur';
+
+            return response()->json([
+                'error' => "{$name} est actuellement connecté(e) à cPanel. Veuillez attendre qu'il/elle termine sa session."
+            ], 409);
+        }
+
         $host = config('cpanel.host');
         $port = (int) config('cpanel.port', 2083);
         $user = config('cpanel.username');
@@ -116,14 +127,35 @@ class CpanelAccessController extends Controller
 
     public function endSession(Request $request): RedirectResponse
     {
+        $request->validate([
+            'description' => 'required|string|min:10|max:2000',
+        ], [
+            'description.required' => 'Vous devez décrire les actions effectuées.',
+            'description.min'      => 'La description doit contenir au moins 10 caractères.',
+        ]);
+
+        // Récupérer la durée de session avant de la supprimer
+        $activeSession = Cache::get('cpanel_active_session');
+        $sessionDuration = null;
+        if ($activeSession) {
+            $sessionDuration = \Carbon\Carbon::parse($activeSession['started_at'])->diffForHumans(now(), true);
+        }
+
         // Libérer la session active
         Cache::forget('cpanel_active_session');
+
+        // Logger le rapport de session
+        $this->logger->success('cpanel_session_report', 'cpanel', null, [
+            'description'      => $request->input('description'),
+            'session_duration'  => $sessionDuration,
+            'attested'         => true,
+        ], $request);
 
         try {
             $this->rotator->rotate();
             $this->logger->success('cpanel_end_session_rotate', 'cpanel', null, [], $request);
 
-            return back()->with('success', 'Session terminée — le mot de passe cPanel a été changé.');
+            return back()->with('success', 'Session terminée — rapport enregistré et mot de passe changé.');
         } catch (\Throwable $e) {
             $this->logger->error('cpanel_end_session_rotate', 'cpanel', $e->getMessage(), null, [], $request);
 
