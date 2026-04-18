@@ -247,13 +247,41 @@ class CpanelAccessController extends Controller
         $payload['flagged_reason']    = $request->input('reason');
         $log->update(['payload' => $payload]);
 
+        // Révoquer la permission access_cpanel de l'utilisateur concerné
+        $flaggedUser = $log->user;
+        $permissionRevoked = false;
+        if ($flaggedUser && !$flaggedUser->isSuperAdmin()) {
+            $flaggedUser->permissions()->detach(
+                \App\Models\Permission::where('key', 'access_cpanel')->value('id')
+            );
+            $permissionRevoked = true;
+        }
+
+        // Rotation immédiate du mot de passe cPanel
+        try {
+            $this->rotator->rotate();
+            $passwordRotated = true;
+        } catch (\Throwable $e) {
+            $passwordRotated = false;
+        }
+
         $this->logger->success('cpanel_flag_intrusion', 'cpanel', "Log #{$log->id}", [
-            'flagged_log_id' => $log->id,
-            'flagged_user'   => $log->user?->name,
-            'reason'         => $request->input('reason'),
+            'flagged_log_id'    => $log->id,
+            'flagged_user'      => $flaggedUser?->name,
+            'reason'            => $request->input('reason'),
+            'permission_revoked' => $permissionRevoked,
+            'password_rotated'  => $passwordRotated,
         ], $request);
 
-        return back()->with('success', 'Rapport signalé comme intrusion.');
+        $message = 'Rapport signalé comme intrusion.';
+        if ($permissionRevoked) {
+            $message .= ' Accès cPanel révoqué pour ' . $flaggedUser->name . '.';
+        }
+        if ($passwordRotated) {
+            $message .= ' Mot de passe cPanel changé.';
+        }
+
+        return back()->with('success', $message);
     }
 
     private function rotatePasswordSilently(Request $request): void
