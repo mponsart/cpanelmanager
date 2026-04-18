@@ -8,6 +8,7 @@ use App\Services\LoggerService;
 use App\Services\PasswordRotationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class CpanelAccessController extends Controller
@@ -46,9 +47,19 @@ class CpanelAccessController extends Controller
             default                             => null,
         };
 
+        // Session cPanel active
+        $activeSession = Cache::get('cpanel_active_session');
+        $activeSessionUser = null;
+        $activeSessionSince = null;
+        if ($activeSession) {
+            $activeSessionUser = \App\Models\User::find($activeSession['user_id']);
+            $activeSessionSince = \Carbon\Carbon::parse($activeSession['started_at']);
+        }
+
         return view('cpanel.index', compact(
             'host', 'port', 'username', 'domain', 'password',
-            'isSuperAdmin', 'cpanelUrl', 'lastRotationAt', 'lastRotationType'
+            'isSuperAdmin', 'cpanelUrl', 'lastRotationAt', 'lastRotationType',
+            'activeSessionUser', 'activeSessionSince'
         ));
     }
 
@@ -84,6 +95,12 @@ class CpanelAccessController extends Controller
 
                 $this->logger->success('cpanel_manual_login', 'cpanel', null, [], $request);
 
+                // Enregistrer la session active (expire après 4h)
+                Cache::put('cpanel_active_session', [
+                    'user_id'    => auth()->id(),
+                    'started_at' => now()->toIso8601String(),
+                ], now()->addHours(4));
+
                 return response()->json(['url' => $location]);
             }
 
@@ -99,6 +116,9 @@ class CpanelAccessController extends Controller
 
     public function endSession(Request $request): RedirectResponse
     {
+        // Libérer la session active
+        Cache::forget('cpanel_active_session');
+
         try {
             $this->rotator->rotate();
             $this->logger->success('cpanel_end_session_rotate', 'cpanel', null, [], $request);

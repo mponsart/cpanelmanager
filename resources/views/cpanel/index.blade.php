@@ -10,6 +10,18 @@
     <strong>Rappel :</strong> l'accès direct à cPanel doit rester exceptionnel. Utilisez-le uniquement pour les fonctionnalités non disponibles dans ce panneau.
 </div>
 
+{{-- ── Alerte session active (autre utilisateur) ─────────────────────────── --}}
+@if($activeSessionUser && $activeSessionUser->id !== auth()->id())
+<div class="alert alert-error" style="margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;"><path d="M8 1l7 13H1L8 1z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="none"/></svg>
+    <div>
+        <strong>Session active !</strong>
+        <strong style="color:var(--text);">{{ $activeSessionUser->name }}</strong> est connecté(e) à cPanel depuis {{ $activeSessionSince->diffForHumans(null, false, false, 2) }}.
+        <span style="display:block;font-size:12px;margin-top:4px;opacity:.85;">Se connecter en même temps peut provoquer des conflits. Coordonnez-vous avant de continuer.</span>
+    </div>
+</div>
+@endif
+
 @if(!$cpanelUrl)
 <div class="alert alert-error">
     cPanel n'est pas configuré. Définissez <code class="code">CPANEL_HOST</code> dans votre fichier <code class="code">.env</code>.
