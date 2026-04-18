@@ -33,16 +33,16 @@ class CpanelAccessController extends Controller
 
         // Dernière rotation du mot de passe
         $lastRotation = ActionLog::where('module', 'cpanel')
-            ->whereIn('action', ['cpanel_auto_rotate_password', 'cpanel_force_rotate_password', 'cpanel_scheduled_rotate_password'])
+            ->whereIn('action', ['cpanel_force_rotate_password', 'cpanel_scheduled_rotate_password', 'cpanel_end_session_rotate'])
             ->where('status', 'success')
             ->latest('created_at')
             ->first();
 
         $lastRotationAt   = $lastRotation?->created_at;
         $lastRotationType = match ($lastRotation?->action ?? '') {
-            'cpanel_auto_rotate_password'      => 'Après connexion',
             'cpanel_force_rotate_password'      => 'Manuelle',
             'cpanel_scheduled_rotate_password'  => 'Planifiée (cron)',
+            'cpanel_end_session_rotate'         => 'Fin de session',
             default                             => null,
         };
 
@@ -52,7 +52,7 @@ class CpanelAccessController extends Controller
         ));
     }
 
-    public function manualLogin(Request $request): RedirectResponse
+    public function manualLogin(Request $request)
     {
         $host = config('cpanel.host');
         $port = (int) config('cpanel.port', 2083);
@@ -61,7 +61,7 @@ class CpanelAccessController extends Controller
         $configuredPassword = config('cpanel.password');
 
         if (empty($configuredPassword)) {
-            return back()->with('error', 'CPANEL_PASSWORD n\'est pas configuré dans le fichier .env.');
+            return response()->json(['error' => 'CPANEL_PASSWORD n\'est pas configuré dans le fichier .env.'], 422);
         }
 
         try {
@@ -84,19 +84,30 @@ class CpanelAccessController extends Controller
 
                 $this->logger->success('cpanel_manual_login', 'cpanel', null, [], $request);
 
-                // Rotation du mot de passe après connexion réussie
-                $this->rotatePasswordSilently($request);
-
-                return redirect()->away($location);
+                return response()->json(['url' => $location]);
             }
 
             $this->logger->error('cpanel_manual_login', 'cpanel', 'Réponse sans redirection', null, [], $request);
 
-            return back()->with('error', 'Identifiants incorrects ou connexion refusée par cPanel.');
+            return response()->json(['error' => 'Identifiants incorrects ou connexion refusée par cPanel.'], 401);
         } catch (\Throwable $e) {
             $this->logger->error('cpanel_manual_login', 'cpanel', $e->getMessage(), null, [], $request);
 
-            return back()->with('error', 'Erreur lors de la connexion : ' . $e->getMessage());
+            return response()->json(['error' => 'Erreur lors de la connexion : ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function endSession(Request $request): RedirectResponse
+    {
+        try {
+            $this->rotator->rotate();
+            $this->logger->success('cpanel_end_session_rotate', 'cpanel', null, [], $request);
+
+            return back()->with('success', 'Session terminée — le mot de passe cPanel a été changé.');
+        } catch (\Throwable $e) {
+            $this->logger->error('cpanel_end_session_rotate', 'cpanel', $e->getMessage(), null, [], $request);
+
+            return back()->with('error', 'Session terminée mais la rotation du mot de passe a échoué : ' . $e->getMessage());
         }
     }
 

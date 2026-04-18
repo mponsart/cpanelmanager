@@ -33,9 +33,6 @@
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
             Se connecter
         </button>
-        <form action="{{ route('cpanel.manual-login') }}" method="POST" id="login-form" style="display:none;">
-            @csrf
-        </form>
         @endif
     </div>
 
@@ -78,6 +75,35 @@
             </div>
         </div>
     </div>
+</div>
+
+{{-- ── Bandeau session active (masqué par défaut) ─────────────────────────── --}}
+<div id="session-panel" class="card" style="display:none;margin-bottom:20px;border:1px solid rgba(124,58,237,0.25);background:linear-gradient(135deg,rgba(124,58,237,0.04),rgba(124,58,237,0.08));">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:42px;height:42px;border-radius:10px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.20);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><polyline points="8,4.5 8,8 11,9.5"/></svg>
+            </div>
+            <div>
+                <div style="font-size:14px;font-weight:700;color:var(--text);">Session cPanel en cours</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+                    Connecté depuis <strong id="session-timer" style="color:var(--accent);font-family:ui-monospace,monospace;">00:00</strong>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <form id="end-session-form" action="{{ route('cpanel.end-session') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-danger" id="end-session-btn">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
+                    J'ai terminé
+                </button>
+            </form>
+        </div>
+    </div>
+    <p class="text-muted" style="font-size:11px;margin-top:12px;margin-bottom:0;line-height:1.5;">
+        Lorsque vous cliquez sur « J'ai terminé », le mot de passe cPanel est immédiatement changé pour sécuriser l'accès.
+    </p>
 </div>
 
 {{-- ── Super-admin : mot de passe + sécurité ─────────────────────────────── --}}
@@ -124,7 +150,7 @@
                 Rotation automatique
             </div>
             <p class="text-muted" style="font-size:12px;margin-bottom:12px;line-height:1.5;">
-                Le mot de passe est roté automatiquement <strong style="color:var(--text);">toutes les 4 heures</strong> et après chaque connexion.
+                Le mot de passe est changé automatiquement <strong style="color:var(--text);">toutes les 4 heures</strong> via une tâche planifiée.
             </p>
 
             {{-- Dernière rotation --}}
@@ -219,6 +245,9 @@
         overlayDesc.textContent  = desc;
         overlay.style.display    = 'flex';
     }
+    function hideOverlay() {
+        if (overlay) overlay.style.display = 'none';
+    }
 
     // ── Modal d'avertissement ────────────────────────────────────────────────
     var loginModal   = document.getElementById('login-modal');
@@ -226,7 +255,9 @@
     var cancelBtn    = document.getElementById('modal-cancel');
     var confirmBtn   = document.getElementById('modal-confirm');
     var acceptCb     = document.getElementById('modal-accept');
-    var loginForm    = document.getElementById('login-form');
+    var sessionPanel = document.getElementById('session-panel');
+    var sessionTimer = document.getElementById('session-timer');
+    var timerInterval = null;
 
     if (openBtn && loginModal) {
         openBtn.addEventListener('click', function () {
@@ -252,13 +283,80 @@
             });
         }
 
-        if (confirmBtn && loginForm) {
+        if (confirmBtn) {
             confirmBtn.addEventListener('click', function () {
                 loginModal.style.display = 'none';
-                showOverlay('Connexion en cours…', 'Redirection vers cPanel, veuillez patienter.');
-                loginForm.submit();
+                showOverlay('Connexion en cours…', 'Ouverture de cPanel dans un nouvel onglet.');
+                openBtn.disabled = true;
+
+                fetch('{{ route("cpanel.manual-login") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+                .then(function (res) {
+                    hideOverlay();
+                    if (!res.ok || !res.data.url) {
+                        openBtn.disabled = false;
+                        alert(res.data.error || 'Erreur lors de la connexion.');
+                        return;
+                    }
+
+                    // Ouvrir cPanel dans un nouvel onglet
+                    window.open(res.data.url, '_blank');
+
+                    // Démarrer le timer de session
+                    startSessionTimer();
+                })
+                .catch(function () {
+                    hideOverlay();
+                    openBtn.disabled = false;
+                    alert('Erreur réseau lors de la connexion.');
+                });
             });
         }
+    }
+
+    // ── Timer de session ────────────────────────────────────────────────────
+    function startSessionTimer() {
+        if (sessionPanel) sessionPanel.style.display = '';
+        if (openBtn) openBtn.style.display = 'none';
+
+        var seconds = 0;
+        function updateDisplay() {
+            var h = Math.floor(seconds / 3600);
+            var m = Math.floor((seconds % 3600) / 60);
+            var s = seconds % 60;
+            var parts = [];
+            if (h > 0) parts.push(String(h).padStart(2, '0'));
+            parts.push(String(m).padStart(2, '0'));
+            parts.push(String(s).padStart(2, '0'));
+            if (sessionTimer) sessionTimer.textContent = parts.join(':');
+        }
+        updateDisplay();
+
+        timerInterval = setInterval(function () {
+            seconds++;
+            updateDisplay();
+        }, 1000);
+    }
+
+    // ── Fin de session ──────────────────────────────────────────────────────
+    var endForm = document.getElementById('end-session-form');
+    var endBtn  = document.getElementById('end-session-btn');
+    if (endForm) {
+        endForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!confirm('Terminer la session ?\n\nLe mot de passe cPanel sera immédiatement changé.')) return;
+            if (endBtn) endBtn.disabled = true;
+            if (timerInterval) clearInterval(timerInterval);
+            showOverlay('Sécurisation en cours…', 'Le mot de passe cPanel est en cours de changement.');
+            endForm.submit();
+        });
     }
 
     // ── Rotation overlay ────────────────────────────────────────────────────
