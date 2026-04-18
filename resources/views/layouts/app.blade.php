@@ -357,7 +357,7 @@
         }
 
         tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: #fafbff; }
+        tbody tr:hover td { background: var(--panel-soft); }
 
         /* ── FORMS ── */
         .form-group { margin-bottom: 16px; }
