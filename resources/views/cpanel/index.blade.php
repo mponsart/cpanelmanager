@@ -289,6 +289,9 @@
                 showOverlay('Connexion en cours…', 'Ouverture de cPanel dans un nouvel onglet.');
                 openBtn.disabled = true;
 
+                // Ouvrir l'onglet immédiatement (clic utilisateur = pas bloqué)
+                var cpanelTab = window.open('about:blank', '_blank');
+
                 fetch('{{ route("cpanel.manual-login") }}', {
                     method: 'POST',
                     headers: {
@@ -301,19 +304,25 @@
                 .then(function (res) {
                     hideOverlay();
                     if (!res.ok || !res.data.url) {
+                        if (cpanelTab) cpanelTab.close();
                         openBtn.disabled = false;
                         alert(res.data.error || 'Erreur lors de la connexion.');
                         return;
                     }
 
-                    // Ouvrir cPanel dans un nouvel onglet
-                    window.open(res.data.url, '_blank');
+                    // Rediriger l'onglet déjà ouvert vers cPanel
+                    if (cpanelTab) {
+                        cpanelTab.location.href = res.data.url;
+                    } else {
+                        window.open(res.data.url, '_blank');
+                    }
 
                     // Démarrer le timer de session
                     startSessionTimer();
                 })
                 .catch(function () {
                     hideOverlay();
+                    if (cpanelTab) cpanelTab.close();
                     openBtn.disabled = false;
                     alert('Erreur réseau lors de la connexion.');
                 });
