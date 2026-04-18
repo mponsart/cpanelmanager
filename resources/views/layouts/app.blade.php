@@ -30,12 +30,12 @@
             --warning:               #d97706;
             --success:               #059669;
             --radius:                12px;
-            --sidebar-w:             260px;
-            --sidebar-bg:            #ffffff;
-            --sidebar-border:        #e8edf2;
-            --sidebar-text:          #64748b;
-            --sidebar-text-hover:    #0f172a;
-            --sidebar-active-bg:     rgba(124,58,237,0.08);
+            --sidebar-w:             230px;
+            --sidebar-bg:            #1e293b;
+            --sidebar-border:        rgba(255,255,255,0.08);
+            --sidebar-text:          #94a3b8;
+            --sidebar-text-hover:    #e2e8f0;
+            --sidebar-active-bg:     rgba(124,58,237,0.20);
             --sidebar-active-border: #7c3aed;
             --shadow-sm:             0 1px 3px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.05);
             --shadow-md:             0 4px 20px rgba(15,23,42,0.10), 0 2px 6px rgba(15,23,42,0.06);
@@ -57,158 +57,123 @@
         .sidebar {
             width: var(--sidebar-w);
             background: var(--sidebar-bg);
-            border-right: 1px solid var(--sidebar-border);
+            border-right: none;
             display: flex;
             flex-direction: column;
             position: fixed;
             top: 0;
             left: 0;
             bottom: 0;
-            overflow-y: auto;
+            overflow: hidden;
             z-index: 100;
             transition: transform 0.22s cubic-bezier(.4,0,.2,1);
-            box-shadow: 1px 0 0 var(--sidebar-border);
         }
-
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-        .sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .sidebar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .sidebar > * { position: relative; z-index: 1; }
 
         .sidebar-brand {
-            padding: 22px 20px 20px;
+            padding: 16px 16px 14px;
             border-bottom: 1px solid var(--sidebar-border);
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
-            min-height: 80px;
-            background: linear-gradient(160deg, rgba(124,58,237,0.05) 0%, rgba(124,58,237,0.01) 100%);
-            position: relative;
-        }
-
-        .sidebar-brand .sidebar-close { position: absolute; top: 14px; right: 14px; }
-        .sidebar-brand img { width: 150px; height: auto; display: block; }
-        .sidebar-brand span {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 11px;
-            display: inline-flex;
             align-items: center;
-            gap: 6px;
-            letter-spacing: 0.3px;
-            padding: 3px 8px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            border-radius: 5px;
-            font-size: 10px;
-            letter-spacing: 0.5px;
+            gap: 0;
+            min-height: 48px;
+            position: relative;
+            flex-shrink: 0;
         }
 
-        .sidebar-nav { padding: 12px 12px; flex: 1; overflow-y: auto; }
+        .sidebar-brand .sidebar-close { position: absolute; top: 12px; right: 12px; color: var(--sidebar-text); }
+        .sidebar-brand img { width: 120px; height: auto; display: block; filter: brightness(0) invert(1); }
+        .sidebar-brand span { display: none; }
+
+        .sidebar-nav { padding: 10px 8px; flex: 1; min-height: 0; overflow-y: auto; }
+
+        .sidebar-nav::-webkit-scrollbar { width: 3px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 
         .nav-section {
-            margin: 22px 6px 8px;
-            font-size: 10px;
+            margin: 12px 10px 4px;
+            font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.6px;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: 1.4px;
+            color: #64748b;
         }
 
-        .nav-section::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
-        }
+        .nav-section::after { display: none; }
 
-        .nav-section:first-child { margin-top: 4px; }
+        .nav-section:first-child { margin-top: 0; }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 11px;
-            padding: 9px 12px;
-            margin-bottom: 2px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 7px 10px;
+            margin-bottom: 1px;
+            border-radius: 6px;
             color: var(--sidebar-text);
             text-decoration: none;
-            border: 1px solid transparent;
-            transition: all 0.16s ease;
-            font-weight: 500;
-            font-size: 13.5px;
+            border: none;
+            transition: all 0.12s ease;
+            font-weight: 400;
+            font-size: 13px;
             position: relative;
         }
 
         .nav-link .icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 9px;
+            width: 20px;
+            height: 20px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: #f1f5f9;
-            color: #94a3b8;
+            color: #64748b;
             flex-shrink: 0;
-            transition: all 0.16s ease;
-            border: 1px solid #e8edf2;
+            transition: color 0.12s ease;
+            border: none;
+            background: none;
+            border-radius: 0;
         }
 
         .nav-link:hover {
-            color: var(--sidebar-text-hover);
-            background: #f8fafc;
-            border-color: #e8edf2;
+            color: #e2e8f0;
+            background: rgba(255,255,255,0.06);
         }
 
-        .nav-link:hover .icon {
-            background: rgba(124,58,237,0.08);
-            border-color: rgba(124,58,237,0.18);
-            color: var(--accent);
-        }
+        .nav-link:hover .icon { color: #cbd5e1; }
 
         .nav-link.active {
-            color: var(--accent);
+            color: #ffffff;
             background: var(--sidebar-active-bg);
-            border-color: rgba(124,58,237,0.15);
             font-weight: 600;
         }
 
         .nav-link.active::before {
             content: '';
             position: absolute;
-            left: -12px;
+            left: -8px;
             top: 50%;
             transform: translateY(-50%);
-            width: 4px;
-            height: 55%;
-            border-radius: 0 4px 4px 0;
+            width: 3px;
+            height: 60%;
+            border-radius: 0 3px 3px 0;
             background: var(--accent);
         }
 
-        .nav-link.active .icon {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(124,58,237,0.28);
-        }
+        .nav-link.active .icon { color: var(--accent); background: none; border: none; box-shadow: none; border-radius: 0; }
 
         .sidebar-footer {
-            margin: 8px 12px 12px;
-            border: 1px solid var(--border);
-            background: linear-gradient(135deg, var(--panel-soft) 0%, #ffffff 100%);
-            border-radius: 12px;
-            padding: 14px;
+            margin: 0;
+            border-top: 1px solid var(--sidebar-border);
+            background: rgba(0,0,0,0.15);
+            border-radius: 0;
+            padding: 10px 12px;
             font-size: 12px;
             color: var(--sidebar-text);
+            flex-shrink: 0;
         }
 
-        .sidebar-footer .user-name { font-weight: 700; color: var(--text); margin-bottom: 2px; display: block; font-size: 13px; }
+        .sidebar-footer .user-name { font-weight: 600; color: #e2e8f0; margin-bottom: 0; display: block; font-size: 12px; }
 
         /* ── MAIN ── */
         .main {
@@ -223,58 +188,54 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            background: rgba(255,255,255,0.92);
+            background: #ffffff;
             border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 1px 3px rgba(15,23,42,0.04);
-            padding: 0 28px;
-            height: 62px;
-            display: grid;
-            grid-template-columns: auto minmax(200px, 380px) auto;
+            padding: 0 24px;
+            height: 48px;
+            display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
-        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
         .menu-toggle, .sidebar-close {
             display: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             border: 1px solid var(--border);
             background: var(--panel);
             color: var(--text-muted);
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.16s;
+            transition: all 0.12s;
         }
 
         .menu-toggle:hover, .sidebar-close:hover {
             background: var(--accent-soft);
-            border-color: rgba(124,58,237,0.25);
             color: var(--accent);
         }
 
         .topbar-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: -0.2px;
             color: var(--text);
+            white-space: nowrap;
         }
 
         .topbar-search {
+            flex: 1;
+            max-width: 280px;
             position: relative;
             display: flex;
             align-items: center;
-            justify-content: center;
         }
 
         .topbar-search svg {
             position: absolute;
-            left: 13px;
+            left: 10px;
             color: #94a3b8;
             pointer-events: none;
         }
@@ -283,12 +244,12 @@
             width: 100%;
             background: var(--panel-soft);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 7px;
             color: var(--text);
-            padding: 9px 14px 9px 38px;
-            font-size: 13px;
+            padding: 6px 10px 6px 30px;
+            font-size: 12px;
             outline: none;
-            transition: all 0.16s;
+            transition: all 0.12s;
             font-family: inherit;
         }
 
@@ -297,14 +258,16 @@
         .topbar-search input:focus {
             background: #ffffff;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-soft);
+            box-shadow: 0 0 0 2px var(--accent-soft);
         }
 
         .topbar-right {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 8px;
+            margin-left: auto;
+            flex-shrink: 0;
         }
 
         .content { padding: 28px 32px; flex: 1; max-width: 1400px; }
@@ -801,7 +764,7 @@
         /* ── RESPONSIVE ── */
         @media (max-width: 1200px) {
             .cron-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .topbar { grid-template-columns: auto minmax(160px, 1fr) auto; }
+            .topbar-search { max-width: 220px; }
         }
 
         @media (max-width: 1100px) {
@@ -819,8 +782,7 @@
 
             body.nav-open .sidebar { transform: translateX(0); }
             .main { margin-left: 0; }
-            .topbar { grid-template-columns: 1fr; }
-            .topbar-right { justify-content: space-between; }
+            .topbar-search { display: none; }
         }
 
         @media (max-width: 900px) {
@@ -966,20 +928,18 @@
     </nav>
 
     <div class="sidebar-footer">
-        <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(124,58,237,0.25);">{{ auth()->user()->initials() }}</div>
-            <div style="min-width:0;">
-                <span class="user-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ auth()->user()->name }}</span>
-                <span class="text-sm text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ auth()->user()->email }}</span>
+        <div style="display:flex;align-items:center;gap:9px;">
+            <div style="width:28px;height:28px;border-radius:6px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">{{ auth()->user()->initials() }}</div>
+            <div style="min-width:0;flex:1;">
+                <span class="user-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ auth()->user()->name }}</span>
             </div>
+            <form action="{{ route('logout') }}" method="POST" style="flex-shrink:0;">
+                @csrf
+                <button type="submit" class="btn btn-ghost btn-sm" title="Déconnexion" style="padding:3px 5px;color:#64748b;border:none;background:none;">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="11,11 14,8 11,5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
+                </button>
+            </form>
         </div>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;gap:5px;">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="11,11 14,8 11,5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
-                Déconnexion
-            </button>
-        </form>
     </div>
 </aside>
 

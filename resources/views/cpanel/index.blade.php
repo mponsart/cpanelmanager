@@ -31,7 +31,7 @@
 
 {{-- ── Informations serveur ───────────────────────────────────────────────── --}}
 <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
-    <div class="stat-card" style="border-left:3px solid var(--accent);">
+    <div class="stat-card">
         <div class="stat-label">Hôte</div>
         <div style="display:flex;align-items:center;gap:8px;padding-left:14px;margin-top:6px;">
             <span style="font-size:.9rem;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $host ?: '—' }}</span>
@@ -42,13 +42,13 @@
             @endif
         </div>
     </div>
-    <div class="stat-card" style="border-left:3px solid var(--success);">
+    <div class="stat-card">
         <div class="stat-label">Port</div>
         <div style="padding-left:14px;margin-top:6px;">
             <span style="font-size:.9rem;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $port ?: '—' }}</span>
         </div>
     </div>
-    <div class="stat-card" style="border-left:3px solid #a78bfa;">
+    <div class="stat-card">
         <div class="stat-label">Utilisateur</div>
         <div style="display:flex;align-items:center;gap:8px;padding-left:14px;margin-top:6px;">
             <span style="font-size:.9rem;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $username ?: '—' }}</span>
@@ -59,7 +59,7 @@
             @endif
         </div>
     </div>
-    <div class="stat-card" style="border-left:3px solid var(--warning);">
+    <div class="stat-card">
         <div class="stat-label">Domaine</div>
         <div style="display:flex;align-items:center;gap:8px;padding-left:14px;margin-top:6px;">
             <span style="font-size:.9rem;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $domain ?: '—' }}</span>
