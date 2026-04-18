@@ -56,7 +56,7 @@
         /* ── SIDEBAR ── */
         .sidebar {
             width: var(--sidebar-w);
-            background: var(--sidebar-bg);
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
             border-right: none;
             display: flex;
             flex-direction: column;
@@ -72,33 +72,31 @@
         .sidebar > * { position: relative; z-index: 1; }
 
         .sidebar-brand {
-            padding: 16px 16px 14px;
-            border-bottom: 1px solid var(--sidebar-border);
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             align-items: center;
             gap: 0;
-            min-height: 48px;
+            min-height: 56px;
             position: relative;
             flex-shrink: 0;
         }
 
-        .sidebar-brand .sidebar-close { position: absolute; top: 12px; right: 12px; color: var(--sidebar-text); }
+        .sidebar-brand .sidebar-close { position: absolute; top: 14px; right: 14px; color: #64748b; }
         .sidebar-brand img { width: 120px; height: auto; display: block; filter: brightness(0) invert(1); }
         .sidebar-brand span { display: none; }
 
-        .sidebar-nav { padding: 10px 8px; flex: 1; min-height: 0; overflow-y: auto; }
+        .sidebar-nav { padding: 12px 10px; flex: 1; min-height: 0; overflow-y: auto; }
 
-        .sidebar-nav::-webkit-scrollbar { width: 3px; }
-        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+        .sidebar-nav::-webkit-scrollbar { width: 0; }
 
         .nav-section {
-            margin: 12px 10px 4px;
-            font-size: 9px;
+            margin: 16px 8px 6px;
+            font-size: 9.5px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.4px;
-            color: #64748b;
+            letter-spacing: 1.2px;
+            color: #475569;
         }
 
         .nav-section::after { display: none; }
@@ -109,30 +107,30 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 7px 10px;
-            margin-bottom: 1px;
-            border-radius: 6px;
-            color: var(--sidebar-text);
+            padding: 8px 10px;
+            margin-bottom: 2px;
+            border-radius: 8px;
+            color: #94a3b8;
             text-decoration: none;
             border: none;
-            transition: all 0.12s ease;
-            font-weight: 400;
+            transition: all 0.15s ease;
+            font-weight: 500;
             font-size: 13px;
             position: relative;
         }
 
         .nav-link .icon {
-            width: 20px;
-            height: 20px;
+            width: 28px;
+            height: 28px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: #64748b;
             flex-shrink: 0;
-            transition: color 0.12s ease;
+            transition: all 0.15s ease;
             border: none;
-            background: none;
-            border-radius: 0;
+            background: rgba(255,255,255,0.04);
+            border-radius: 6px;
         }
 
         .nav-link:hover {
@@ -140,40 +138,49 @@
             background: rgba(255,255,255,0.06);
         }
 
-        .nav-link:hover .icon { color: #cbd5e1; }
+        .nav-link:hover .icon {
+            color: #e2e8f0;
+            background: rgba(255,255,255,0.08);
+        }
 
         .nav-link.active {
             color: #ffffff;
-            background: var(--sidebar-active-bg);
+            background: rgba(124,58,237,0.15);
             font-weight: 600;
         }
 
         .nav-link.active::before {
             content: '';
             position: absolute;
-            left: -8px;
+            left: 0;
             top: 50%;
             transform: translateY(-50%);
             width: 3px;
-            height: 60%;
+            height: 18px;
             border-radius: 0 3px 3px 0;
             background: var(--accent);
         }
 
-        .nav-link.active .icon { color: var(--accent); background: none; border: none; box-shadow: none; border-radius: 0; }
+        .nav-link.active .icon {
+            color: #a78bfa;
+            background: rgba(124,58,237,0.20);
+            border: none;
+            box-shadow: none;
+            border-radius: 6px;
+        }
 
         .sidebar-footer {
             margin: 0;
-            border-top: 1px solid var(--sidebar-border);
-            background: rgba(0,0,0,0.15);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            background: rgba(0,0,0,0.20);
             border-radius: 0;
-            padding: 10px 12px;
+            padding: 12px 14px;
             font-size: 12px;
-            color: var(--sidebar-text);
+            color: #94a3b8;
             flex-shrink: 0;
         }
 
-        .sidebar-footer .user-name { font-weight: 600; color: #e2e8f0; margin-bottom: 0; display: block; font-size: 12px; }
+        .sidebar-footer .user-name { font-weight: 600; color: #e2e8f0; margin-bottom: 0; display: block; font-size: 12.5px; }
 
         /* ── MAIN ── */
         .main {
@@ -184,26 +191,11 @@
             flex-direction: column;
         }
 
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: #ffffff;
-            border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .topbar-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-
         .menu-toggle, .sidebar-close {
             display: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             border: 1px solid var(--border);
             background: var(--panel);
             color: var(--text-muted);
@@ -218,59 +210,29 @@
             color: var(--accent);
         }
 
-        .topbar-title {
-            font-size: 14px;
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 32px 0;
+            gap: 12px;
+        }
+
+        .content-header h1 {
+            font-size: 22px;
             font-weight: 700;
             color: var(--text);
-            white-space: nowrap;
+            letter-spacing: -0.3px;
         }
 
-        .topbar-search {
-            flex: 1;
-            max-width: 280px;
-            position: relative;
+        .content-header-right {
             display: flex;
             align-items: center;
-        }
-
-        .topbar-search svg {
-            position: absolute;
-            left: 10px;
-            color: #94a3b8;
-            pointer-events: none;
-        }
-
-        .topbar-search input {
-            width: 100%;
-            background: var(--panel-soft);
-            border: 1px solid var(--border);
-            border-radius: 7px;
-            color: var(--text);
-            padding: 6px 10px 6px 30px;
-            font-size: 12px;
-            outline: none;
-            transition: all 0.12s;
-            font-family: inherit;
-        }
-
-        .topbar-search input::placeholder { color: #94a3b8; }
-
-        .topbar-search input:focus {
-            background: #ffffff;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px var(--accent-soft);
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-left: auto;
+            gap: 10px;
             flex-shrink: 0;
         }
 
-        .content { padding: 28px 32px; flex: 1; max-width: 1400px; }
+        .content { padding: 20px 32px 28px; flex: 1; max-width: 1400px; }
 
         /* ── ALERTS ── */
         .alert {
@@ -764,7 +726,8 @@
         /* ── RESPONSIVE ── */
         @media (max-width: 1200px) {
             .cron-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .topbar-search { max-width: 220px; }
+            .content-header { padding: 20px 22px 0; }
+            .content-header h1 { font-size: 20px; }
         }
 
         @media (max-width: 1100px) {
@@ -782,7 +745,7 @@
 
             body.nav-open .sidebar { transform: translateX(0); }
             .main { margin-left: 0; }
-            .topbar-search { display: none; }
+            .content-header .menu-toggle { display: inline-flex; }
         }
 
         @media (max-width: 900px) {
@@ -824,8 +787,8 @@
 
         @media (max-width: 640px) {
             .content { padding: 14px; }
-            .topbar { padding: 0 14px; }
-            .topbar-title { font-size: 14px; }
+            .content-header { padding: 14px 14px 0; }
+            .content-header h1 { font-size: 18px; }
             .card { padding: 16px; }
             th, td { padding: 9px 11px; }
             .stat-value { font-size: 22px; }
@@ -928,15 +891,15 @@
     </nav>
 
     <div class="sidebar-footer">
-        <div style="display:flex;align-items:center;gap:9px;">
-            <div style="width:28px;height:28px;border-radius:6px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">{{ auth()->user()->initials() }}</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">{{ auth()->user()->initials() }}</div>
             <div style="min-width:0;flex:1;">
                 <span class="user-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ auth()->user()->name }}</span>
             </div>
             <form action="{{ route('logout') }}" method="POST" style="flex-shrink:0;">
                 @csrf
-                <button type="submit" class="btn btn-ghost btn-sm" title="Déconnexion" style="padding:3px 5px;color:#64748b;border:none;background:none;">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="11,11 14,8 11,5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
+                <button type="submit" title="Déconnexion" style="padding:4px;color:#64748b;border:none;background:none;cursor:pointer;display:flex;align-items:center;border-radius:4px;transition:color 0.12s;">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="11,11 14,8 11,5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
                 </button>
             </form>
         </div>
@@ -944,26 +907,15 @@
 </aside>
 
 <div class="main">
-    <div class="topbar">
-        <div class="topbar-left">
+    <div class="content-header">
+        <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle" data-sidebar-open aria-label="Ouvrir le menu">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
             </button>
-            <span class="topbar-title">@yield('page-title', 'Dashboard')</span>
+            <h1>@yield('page-title', 'Dashboard')</h1>
         </div>
-
-        <div class="topbar-search">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
-            <input type="search" placeholder="Rechercher un module dans le menu…" data-nav-search aria-label="Rechercher un module dans le menu">
-        </div>
-
-        <div class="topbar-right">
-            <a href="{{ route('logs.index') }}" class="btn btn-ghost btn-sm" style="font-size:12px;gap:5px;">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="11" x2="8.01" y2="11" stroke-width="2"/></svg>
-                Incidents
-            </a>
-            <span style="width:1px;height:20px;background:var(--border);"></span>
-            <span class="text-muted text-sm" style="white-space:nowrap;font-variant-numeric:tabular-nums;">{{ now()->format('d/m/Y H:i') }}</span>
+        <div class="content-header-right">
+            <span class="text-muted text-sm" style="font-variant-numeric:tabular-nums;">{{ now()->format('d/m/Y') }}</span>
         </div>
     </div>
 
@@ -1023,18 +975,6 @@
     overlay.addEventListener('click', closeNav);
     document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
         link.addEventListener('click', closeNav);
-    });
-})();
-(function() {
-    var input = document.querySelector('[data-nav-search]');
-    if (!input) return;
-    var links = Array.from(document.querySelectorAll('.sidebar .nav-link'));
-    input.addEventListener('input', function() {
-        var q = input.value.toLowerCase().trim();
-        links.forEach(function(link) {
-            var text = link.textContent.toLowerCase();
-            link.style.display = !q || text.includes(q) ? '' : 'none';
-        });
     });
 })();
 </script>
