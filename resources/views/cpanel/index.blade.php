@@ -1,804 +1,438 @@
 @extends('layouts.app')
 
-@section('title', 'Accès cPanel')
-@section('page-title', 'Accès cPanel')
+@section('title', 'Associations')
+@section('page-title', 'Associations MonAsso')
 
 @section('content')
 
-{{-- ── Bannière d'avertissement ───────────────────────────────────────────── --}}
-<div class="alert alert-warning" style="margin-bottom:20px;">
-    <strong>Rappel :</strong> l'accès direct à cPanel doit rester exceptionnel. Utilisez-le uniquement pour les fonctionnalités non disponibles dans ce panneau.
+<div class="page-header">
+    <h1>Associations MonAsso</h1>
 </div>
 
-{{-- ── Alerte session active (autre utilisateur) ─────────────────────────── --}}
-@if($activeSessionUser && $activeSessionUser->id !== auth()->id())
-<div class="alert alert-error" style="margin-bottom:20px;display:flex;align-items:center;gap:12px;">
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;"><path d="M8 1l7 13H1L8 1z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="11" r="0.5" fill="currentColor" stroke="none"/></svg>
-    <div>
-        <strong>Session active !</strong>
-        <strong style="color:var(--text);">{{ $activeSessionUser->name }}</strong> est connecté(e) à cPanel depuis {{ $activeSessionSince->diffForHumans(null, false, false, 2) }}.
-        <span style="display:block;font-size:12px;margin-top:4px;opacity:.85;">Se connecter en même temps peut provoquer des conflits. Coordonnez-vous avant de continuer.</span>
+<div class="card mb-3">
+    <div class="card-title">Créer une association</div>
+    <form action="{{ route('association.store') }}" method="POST" class="inline-form">
+        @csrf
+        <div class="form-group">
+            <label>Nom du dossier</label>
+            <input type="text" name="name" required maxlength="100" pattern="[a-zA-Z0-9_-]+" placeholder="mon-association" value="{{ old('name') }}">
+            @error('name')<div class="form-error">{{ $message }}</div>@enderror
+        </div>
+        <button type="submit" class="btn btn-primary">Créer</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-title">Associations ({{ count($associations) }})</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th style="width:120px;text-align:right;">Taille</th>
+                    <th style="width:120px;text-align:center;">Quota</th>
+                    <th style="width:170px;">Dernière modification</th>
+                    <th style="width:280px;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($associations as $asso)
+                    <tr style="{{ $asso['suspended'] ? 'background:rgba(234,179,8,.04);' : '' }}">
+                        <td style="font-weight:500;">
+                            <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{ $asso['suspended'] ? '#d97706' : 'var(--accent)' }}" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
+                                <span style="{{ $asso['suspended'] ? 'opacity:.7;' : '' }}">{{ $asso['name'] }}</span>
+                                @if($asso['suspended'])
+                                    @php $si = $asso['suspend_info']; @endphp
+                                    <button type="button"
+                                        onclick="document.getElementById('suspend-info-{{ $loop->index }}').style.display = document.getElementById('suspend-info-{{ $loop->index }}').style.display === 'none' ? 'block' : 'none'"
+                                        style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:4px;background:rgba(234,179,8,.15);color:#92400e;border:1px solid rgba(234,179,8,.4);cursor:pointer;line-height:1.5;">
+                                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                                        Suspendu
+                                    </button>
+                                    <div id="suspend-info-{{ $loop->index }}" style="display:none;width:100%;margin-top:6px;padding:10px 12px;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.3);border-radius:8px;font-size:12px;color:var(--text);line-height:1.6;">
+                                        @if(!empty($si['reason']))
+                                            <div style="margin-bottom:4px;"><strong>Raison :</strong> {{ $si['reason'] }}</div>
+                                        @endif
+                                        @if(!empty($si['suspended_by']))
+                                            <div style="color:var(--text-muted,#6b7280);"><strong>Par :</strong> {{ $si['suspended_by'] }}</div>
+                                        @endif
+                                        @if(!empty($si['suspended_at']))
+                                            <div style="color:var(--text-muted,#6b7280);"><strong>Le :</strong> {{ \Carbon\Carbon::parse($si['suspended_at'])->setTimezone('Europe/Paris')->format('d/m/Y à H:i') }}</div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </span>
+                        </td>
+                        <td style="text-align:right;font-variant-numeric:tabular-nums;" class="text-muted">
+                            @php
+                                $size = $asso['size'];
+                                if ($size >= 1073741824) $display = round($size / 1073741824, 2) . ' Go';
+                                elseif ($size >= 1048576) $display = round($size / 1048576, 1) . ' Mo';
+                                elseif ($size >= 1024) $display = round($size / 1024, 0) . ' Ko';
+                                else $display = $size . ' o';
+                            @endphp
+                            {{ $display }}
+                        </td>
+                        <td style="text-align:center;">
+                            @php $currentQuota = (int) ($asso['quota_gb'] ?? 10); @endphp
+                            <button type="button"
+                                class="btn btn-ghost btn-sm"
+                                title="Configurer le quota"
+                                onclick="openQuotaModal('{{ e($asso['name']) }}', {{ $currentQuota }})"
+                                style="padding:4px 8px;display:inline-flex;align-items:center;gap:6px;">
+                                <span style="font-size:11px;color:var(--text-muted);">{{ $currentQuota }} Go</span>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                            </button>
+                        </td>
+                        <td class="text-muted text-sm">
+                            {{ $asso['modified'] ? \Carbon\Carbon::createFromTimestamp($asso['modified'], 'Europe/Paris')->format('d/m/Y H:i') : '—' }}
+                        </td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex;gap:6px;">
+                                {{-- Renommer (désactivé si suspendu) --}}
+                                @if(!$asso['suspended'])
+                                <button type="button"
+                                    class="btn btn-ghost btn-sm"
+                                    title="Renommer"
+                                    onclick="openRenameModal('{{ e($asso['name']) }}')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                                </button>
+                                @endif
+
+                                {{-- Suspendre / Réactiver --}}
+                                @if($asso['suspended'])
+                                    <form action="{{ route('association.unsuspend') }}" method="POST"
+                                          data-confirm="Réactiver l'association « {{ e($asso['name']) }} » ?"
+                                          onsubmit="return confirm(this.dataset.confirm)">
+                                        @csrf
+                                        <input type="hidden" name="name" value="{{ $asso['name'] }}">
+                                        <button type="submit" class="btn btn-ghost btn-sm" title="Réactiver" style="color:#16a34a;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                            <span style="font-size:11px;margin-left:2px;">Réactiver</span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <button type="button"
+                                        onclick="openSuspendModal('{{ e($asso['name']) }}')"
+                                        class="btn btn-ghost btn-sm" title="Suspendre" style="color:#d97706;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                                        <span style="font-size:11px;margin-left:2px;">Suspendre</span>
+                                    </button>
+                                @endif
+
+                                {{-- Supprimer --}}
+                                <form action="{{ route('association.destroy') }}" method="POST"
+                                      data-confirm="Supprimer définitivement l'association « {{ e($asso['name']) }} » et tout son contenu ?"
+                                      onsubmit="return confirm(this.dataset.confirm)">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="name" value="{{ $asso['name'] }}">
+                                    <button type="submit" class="btn btn-ghost btn-sm" title="Supprimer" style="color:var(--danger);">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="table-empty">Aucune association trouvée.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
-@endif
 
-@if(!$cpanelUrl)
-<div class="alert alert-error">
-    cPanel n'est pas configuré. Définissez <code class="code">CPANEL_HOST</code> dans votre fichier <code class="code">.env</code>.
-</div>
-@endif
-
-{{-- ── Carte principale : Connexion ──────────────────────────────────────── --}}
-<div class="card" style="margin-bottom:20px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-        <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="1" y="2" width="14" height="5" rx="1"/><rect x="1" y="9" width="14" height="5" rx="1"/><circle cx="12.5" cy="4.5" r="1" fill="var(--accent)" stroke="none"/><circle cx="12.5" cy="11.5" r="1" fill="var(--accent)" stroke="none"/></svg>
-            </div>
-            <div>
-                <div style="font-size:15px;font-weight:700;color:var(--text);">Serveur cPanel</div>
-                <div style="font-size:12px;color:var(--text-muted);">Informations de connexion</div>
-            </div>
-        </div>
-        @if($cpanelUrl)
-            @if($activeSessionUser && $activeSessionUser->id === auth()->id())
-            {{-- Session en cours pour l'utilisateur actuel: pas de bouton --}}
-            @elseif($activeSessionUser && $activeSessionUser->id !== auth()->id())
-            <span class="btn btn-ghost" style="opacity:0.5;cursor:not-allowed;pointer-events:none;">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 116 0v2"/></svg>
-                Accès verrouillé
-            </span>
-            @else
-            <button type="button" class="btn btn-primary" id="open-login-modal">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
-                Se connecter
-            </button>
-            @endif
-        @endif
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-        <div style="padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:4px;">Hôte</div>
-            <div style="display:flex;align-items:center;gap:6px;">
-                <span style="font-size:13px;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $host ?: '—' }}</span>
-                @if($host)
-                <button type="button" class="btn btn-ghost btn-sm copy-btn" data-copy="{{ $host }}" title="Copier" style="padding:1px 4px;border:none;background:none;color:var(--text-muted);">
-                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
-                </button>
-                @endif
-            </div>
-        </div>
-        <div style="padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:4px;">Port</div>
-            <span style="font-size:13px;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $port ?: '—' }}</span>
-        </div>
-        <div style="padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:4px;">Utilisateur</div>
-            <div style="display:flex;align-items:center;gap:6px;">
-                <span style="font-size:13px;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $username ?: '—' }}</span>
-                @if($username)
-                <button type="button" class="btn btn-ghost btn-sm copy-btn" data-copy="{{ $username }}" title="Copier" style="padding:1px 4px;border:none;background:none;color:var(--text-muted);">
-                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
-                </button>
-                @endif
-            </div>
-        </div>
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:4px;">Domaine</div>
-            <div style="display:flex;align-items:center;gap:6px;">
-                <span style="font-size:13px;font-weight:600;color:var(--text);font-family:ui-monospace,monospace;">{{ $domain ?: '—' }}</span>
-                @if($domain)
-                <button type="button" class="btn btn-ghost btn-sm copy-btn" data-copy="{{ $domain }}" title="Copier" style="padding:1px 4px;border:none;background:none;color:var(--text-muted);">
-                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
-                </button>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ── Bandeau session active ────────────────────────────────────────────── --}}
-@php
-    $myActiveSession = $activeSessionUser && $activeSessionUser->id === auth()->id();
-@endphp
-<div id="session-panel" class="card" style="{{ $myActiveSession ? '' : 'display:none;' }}margin-bottom:20px;border:1px solid rgba(124,58,237,0.25);background:linear-gradient(135deg,rgba(124,58,237,0.04),rgba(124,58,237,0.08));">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-        <div style="display:flex;align-items:center;gap:14px;">
-            <div style="width:42px;height:42px;border-radius:10px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.20);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><polyline points="8,4.5 8,8 11,9.5"/></svg>
-            </div>
-            <div>
-                <div style="font-size:14px;font-weight:700;color:var(--text);">Session cPanel en cours</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
-                    Connecté depuis <strong id="session-timer" style="color:var(--accent);font-family:ui-monospace,monospace;">00:00</strong>
-                </div>
-            </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <button type="button" class="btn btn-danger" id="open-end-modal">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
-                J'ai terminé
-            </button>
-        </div>
-    </div>
-    <p class="text-muted" style="font-size:11px;margin-top:12px;margin-bottom:0;line-height:1.5;">
-        Lorsque vous cliquez sur « J'ai terminé », vous devrez décrire les actions effectuées. Le mot de passe sera ensuite changé.
-    </p>
-</div>
-
-{{-- ── Modal rapport de session ──────────────────────────────────────────── --}}
-<div id="end-session-modal" class="cp-modal" aria-hidden="true">
-    <div class="cp-modal-dialog cp-modal-dialog-lg" role="dialog" aria-modal="true" aria-labelledby="end-modal-title">
-        <div class="cp-modal-head cp-modal-head-danger">
-            <div class="cp-modal-head-row">
-                <div class="cp-modal-icon cp-modal-icon-danger">
-                    <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M14 2H2v12h12V2z"/><path d="M5 5h6M5 8h4"/></svg>
+{{-- ── Modale de quota ─────────────────────────────────────────────────── --}}
+<div id="quota-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:460px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
                 </div>
                 <div>
-                    <div id="end-modal-title" class="cp-modal-title">Rapport de session</div>
-                    <div class="cp-modal-subtitle">Décrivez les actions effectuées sur cPanel</div>
+                    <div style="font-weight:500;font-size:20px;line-height:1.2;color:#202124;">Quota de stockage</div>
+                    <div id="quota-modal-name" style="font-size:13px;color:#5f6368;margin-top:2px;"></div>
                 </div>
             </div>
         </div>
 
-        <form id="end-session-form" action="{{ route('cpanel.end-session') }}" method="POST">
+        <form id="quota-form" action="{{ route('association.storage-quota') }}" method="POST">
             @csrf
-            <div class="cp-modal-body">
-                <label for="session-description" class="cp-field-label">Qu'avez-vous fait sur cPanel ?</label>
-                <textarea id="session-description" name="description" rows="4" required minlength="10" maxlength="2000" placeholder="Ex : Modification des enregistrements DNS du domaine example.com, ajout d'un sous-domaine api.example.com…" class="cp-textarea"></textarea>
-                <p class="cp-help">Minimum 10 caractères. Soyez précis : domaines, comptes, fichiers modifiés, etc.</p>
-
-                <label class="cp-attest cp-attest-danger">
-                    <input type="checkbox" id="end-session-attest">
-                    <span>J'atteste sur l'honneur que la description ci-dessus est exacte et complète. Je suis conscient(e) que toute fausse déclaration pourra entraîner des sanctions.</span>
+            <input type="hidden" name="name" id="quota-input-name">
+            <div style="padding:20px 24px;">
+                <label for="quota-gb" style="display:block;font-size:13px;font-weight:500;color:#3c4043;margin-bottom:7px;">
+                    Quota autorisé (entre 1 et 10 Go)
                 </label>
+                <select id="quota-gb" name="quota_gb" required style="width:100%;padding:11px 12px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#202124;font-size:14px;">
+                    @for($q = 1; $q <= 10; $q++)
+                        <option value="{{ $q }}">{{ $q }} Go</option>
+                    @endfor
+                </select>
+                <p style="font-size:12px;color:#5f6368;margin-top:9px;line-height:1.5;">
+                    La valeur actuelle est chargée automatiquement à l'ouverture de cette modale.
+                </p>
             </div>
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#fff;">
+                <button type="button" onclick="closeQuotaModal()" class="btn btn-ghost">Annuler</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-            <div class="cp-modal-foot">
-                <button type="button" class="btn btn-ghost" id="end-modal-cancel">Annuler</button>
-                <button type="submit" class="btn btn-danger" id="end-modal-confirm" disabled>
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
-                    Terminer et sécuriser
+{{-- ── Modale de suspension ─────────────────────────────────────────────── --}}
+<div id="suspend-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:520px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#fef7e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight:500;font-size:20px;line-height:1.2;color:#202124;">Suspendre l'association</div>
+                    <div id="suspend-modal-name" style="font-size:13px;color:#5f6368;margin-top:2px;"></div>
+                </div>
+            </div>
+        </div>
+        <form id="suspend-form" action="{{ route('association.suspend') }}" method="POST">
+            @csrf
+            <input type="hidden" name="name" id="suspend-input-name">
+            <div style="padding:20px 24px;">
+                <p style="font-size:13px;color:#5f6368;margin:0 0 16px;line-height:1.5;">
+                    Les visiteurs seront automatiquement redirigés vers
+                    <strong style="color:#202124;">https://monasso.eu/errors/suspended-instance</strong>.
+                    Aucun fichier ne sera supprimé.
+                </p>
+                <div class="form-group" style="margin:0;">
+                    <label style="font-size:13px;font-weight:500;color:#3c4043;">Raison de la suspension <span style="color:#d93025;">*</span></label>
+                    <textarea id="suspend-reason" name="reason" rows="3" required minlength="5" maxlength="500"
+                        placeholder="Ex : Non-respect des conditions d'utilisation, absence de paiement…"
+                        style="width:100%;padding:11px 12px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#202124;font-size:14px;line-height:1.5;resize:vertical;font-family:inherit;box-sizing:border-box;margin-top:6px;"></textarea>
+                    <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+                        <span id="suspend-char-count" style="font-size:11px;color:#5f6368;">0 / 500</span>
+                    </div>
+                </div>
+                <div style="margin-top:14px;padding:12px 14px;background:#fef7e0;border:1px solid #fce8b2;border-radius:12px;display:flex;gap:10px;align-items:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="11" r=".5" fill="#d97706"/></svg>
+                    <p style="font-size:12px;color:#8a5b00;margin:0;line-height:1.5;">La raison sera enregistrée et visible dans le panel. Elle ne sera <strong>pas</strong> affichée aux visiteurs.</p>
+                </div>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#fff;">
+                <button type="button" onclick="closeSuspendModal()" class="btn btn-ghost">Annuler</button>
+                <button type="submit" id="suspend-submit" class="btn btn-warning" style="background:#d97706;color:#fff;border-color:#d97706;" disabled>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    Suspendre
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ── Sécurité & identifiants ────────────────────────────────────────────── --}}
-<div class="card">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-        <div style="width:36px;height:36px;border-radius:8px;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="var(--danger)" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 116 0v2"/></svg>
-        </div>
-        <div>
-            <div style="font-size:15px;font-weight:700;color:var(--text);">Sécurité & identifiants</div>
-            <div style="font-size:12px;color:var(--text-muted);">Mot de passe et rotation automatique</div>
-        </div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-        {{-- Mot de passe --}}
-        <div>
-            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 116 0v2"/></svg>
-                Mot de passe cPanel
-            </div>
-            @if($password)
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <code id="val-password" style="font-size:13px;padding:7px 12px;background:var(--panel-soft);border:1px solid var(--border);border-radius:6px;letter-spacing:.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,monospace;">●●●●●●●●●●●●●●●●</code>
-                <button type="button" class="btn btn-ghost btn-sm" id="toggle-password" title="Afficher / Masquer" style="padding:4px 6px;">
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-eye"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/></svg>
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-eye-off" style="display:none;"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/><line x1="2" y1="2" x2="14" y2="14" stroke-width="1.5"/></svg>
-                </button>
-                <button type="button" class="btn btn-ghost btn-sm copy-btn" id="copy-password" title="Copier" style="padding:4px 6px;">
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
-                </button>
-            </div>
-            <p class="text-muted" style="font-size:11px;margin-top:8px;">Ne partagez jamais ce mot de passe en dehors de cette interface.</p>
-            @else
-            <p class="text-muted" style="font-style:italic;font-size:13px;">Non configuré — définir <code class="code">CPANEL_PASSWORD</code> dans <code class="code">.env</code></p>
-            @endif
-        </div>
-
-        {{-- Rotation --}}
-        <div style="border-left:1px solid var(--border);padding-left:24px;">
-            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l6 3v4c0 3.5-2.5 6.5-6 7.5C4.5 14.5 2 11.5 2 8V4l6-3z"/></svg>
-                Rotation automatique
-            </div>
-            <p class="text-muted" style="font-size:12px;margin-bottom:12px;line-height:1.5;">
-                Le mot de passe est changé automatiquement <strong style="color:var(--text);">avant connexion cPanel</strong> si la dernière rotation a plus de {{ (int) config('cpanel.rotation_hours', 4) }} heure(s).
-            </p>
-
-            {{-- Dernière rotation --}}
-            <div style="background:var(--panel-soft);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;">
-                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:4px;">Dernière rotation</div>
-                @if($lastRotationAt)
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="font-size:13px;font-weight:600;color:var(--text);">{{ $lastRotationAt->format('d/m/Y à H:i:s') }}</span>
-                    <span class="badge badge-{{ $lastRotationType === 'Manuelle' ? 'warning' : 'success' }}" style="font-size:10px;">{{ $lastRotationType }}</span>
-                </div>
-                <div class="text-muted" style="font-size:11px;margin-top:2px;">{{ $lastRotationAt->diffForHumans() }}</div>
-                @else
-                <span class="text-muted" style="font-size:13px;">Aucune rotation enregistrée</span>
-                @endif
-            </div>
-
-            @if($isSuperAdmin)
-            <form id="rotate-form" action="{{ route('cpanel.rotate-password') }}" method="POST">
-                @csrf
-                <button type="button" class="btn btn-warning btn-sm" id="rotate-btn">
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="rotate-icon"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
-                    Forcer la rotation
-                </button>
-            </form>
-            @endif
-        </div>
-    </div>
-</div>
-
-{{-- ── Modal d'avertissement avant connexion ─────────────────────────────── --}}
-<div id="login-modal" class="cp-modal" aria-hidden="true">
-    <div class="cp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
-        <div class="cp-modal-head cp-modal-head-warning">
-            <div class="cp-modal-head-row">
-                <div class="cp-modal-icon cp-modal-icon-warning">
-                    <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><path d="M8 1l6 3v4c0 3.5-2.5 6.5-6 7.5C4.5 14.5 2 11.5 2 8V4l6-3z"/><line x1="8" y1="5.5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.5" fill="#d97706" stroke="none"/></svg>
+{{-- ── Modale de renommage ───────────────────────────────────────────────── --}}
+<div id="rename-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:460px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#e3e3fd;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000091" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                 </div>
                 <div>
-                    <div id="login-modal-title" class="cp-modal-title">Accès limité</div>
-                    <div class="cp-modal-subtitle">Connexion directe à cPanel</div>
+                    <div style="font-weight:600;font-size:18px;line-height:1.2;color:#161616;">Renommer l'association</div>
+                    <div id="rename-modal-current" style="font-size:13px;color:#666;margin-top:2px;"></div>
                 </div>
             </div>
         </div>
 
-        <div class="cp-modal-body">
-            <p class="cp-modal-text">Ces identifiants donnent accès à l'ensemble de cPanel. Merci de respecter ces règles :</p>
-            <ul class="cp-rules">
-                <li>Utiliser <strong>uniquement</strong> pour les fonctionnalités non disponibles dans ce panneau</li>
-                <li>Limiter la durée de la session au strict nécessaire</li>
-                <li>Ne jamais partager ou enregistrer les identifiants</li>
-                <li>Toute action est journalisée et auditée</li>
-            </ul>
-            <label class="cp-check">
-                <input type="checkbox" id="modal-accept">
-                <span>J'ai lu et j'accepte ces conditions d'utilisation</span>
-            </label>
-            <div id="login-modal-error" class="alert alert-error" style="display:none;margin-top:14px;"></div>
-        </div>
-
-        <div class="cp-modal-foot">
-            <button type="button" class="btn btn-ghost" id="modal-cancel">Annuler</button>
-            <button type="button" class="btn btn-primary" id="modal-confirm" disabled>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
-                Continuer vers cPanel
-            </button>
-        </div>
+        <form id="rename-form" action="{{ route('association.rename') }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" name="old_name" id="rename-old-name">
+            <div style="padding:20px 24px;">
+                <label for="rename-new-name" style="display:block;font-size:13px;font-weight:600;color:#161616;margin-bottom:7px;">
+                    Nouveau nom du dossier
+                </label>
+                <input
+                    type="text"
+                    id="rename-new-name"
+                    name="new_name"
+                    required
+                    maxlength="100"
+                    pattern="[a-zA-Z0-9_-]+"
+                    placeholder="nouveau-nom"
+                    autocomplete="off"
+                    style="width:100%;padding:10px 14px;border:2px solid #929292;border-radius:4px 4px 0 0;border-bottom-color:#161616;background:#fff;color:#161616;font-size:14px;font-family:Marianne,arial,sans-serif;box-sizing:border-box;outline:none;"
+                >
+                <p id="rename-error" style="display:none;font-size:12px;color:#ce0500;margin-top:6px;"></p>
+                <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.5;">Caractères autorisés : lettres, chiffres, tirets (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">-</code>) et tirets bas (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">_</code>).</p>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#f6f6f6;">
+                <button type="button" id="rename-cancel" class="btn btn-ghost">Annuler</button>
+                <button type="submit" id="rename-submit" class="btn btn-primary" disabled>Renommer</button>
+            </div>
+        </form>
     </div>
 </div>
 
-{{-- ── Modal confirmation rotation ───────────────────────────────────────── --}}
-<div id="rotate-modal" class="cp-modal" aria-hidden="true">
-    <div class="cp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="rotate-modal-title">
-        <div class="cp-modal-head cp-modal-head-warning-soft">
-            <div class="cp-modal-head-row">
-                <div class="cp-modal-icon cp-modal-icon-warning">
-                    <span class="material-symbols-rounded" style="font-size:22px;">warning</span>
+{{-- ── Modale de renommage ─────────────────────────────────────────────── --}}
+<div id="rename-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:460px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#e3e3fd;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000091" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                 </div>
                 <div>
-                    <div id="rotate-modal-title" class="cp-modal-title">Confirmer la rotation</div>
-                    <div class="cp-modal-subtitle">Changement immédiat du mot de passe cPanel</div>
+                    <div style="font-weight:500;font-size:20px;line-height:1.2;color:#202124;">Renommer l'association</div>
+                    <div id="rename-modal-current" style="font-size:13px;color:#5f6368;margin-top:2px;"></div>
                 </div>
             </div>
         </div>
 
-        <div class="cp-modal-body">
-            <p class="cp-modal-text">Voulez-vous vraiment forcer la rotation maintenant ?</p>
-            <p class="cp-help">Le mot de passe actuel deviendra immédiatement invalide.</p>
-        </div>
-
-        <div class="cp-modal-foot cp-modal-foot-plain">
-            <button type="button" class="btn btn-ghost" id="rotate-modal-cancel">Annuler</button>
-            <button type="button" class="btn btn-warning" id="rotate-modal-confirm">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
-                Forcer la rotation
-            </button>
-        </div>
+        <form id="rename-form" action="{{ route('association.rename') }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" name="old_name" id="rename-old-name">
+            <div style="padding:20px 24px;">
+                <label for="rename-new-name" style="display:block;font-size:13px;font-weight:500;color:#3c4043;margin-bottom:7px;">
+                    Nouveau nom du dossier
+                </label>
+                <input
+                    type="text"
+                    id="rename-new-name"
+                    name="new_name"
+                    required
+                    maxlength="100"
+                    pattern="[a-zA-Z0-9_-]+"
+                    placeholder="nouveau-nom"
+                    autocomplete="off"
+                    style="width:100%;padding:10px 12px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#202124;font-size:14px;box-sizing:border-box;outline:none;"
+                >
+                <p id="rename-error" style="display:none;font-size:12px;color:#d93025;margin-top:6px;"></p>
+                <p style="font-size:12px;color:#5f6368;margin-top:8px;line-height:1.5;">Caractères autorisés : lettres, chiffres, tirets (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">-</code>) et tirets bas (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">_</code>).</p>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#fff;">
+                <button type="button" id="rename-cancel" class="btn btn-ghost">Annuler</button>
+                <button type="submit" id="rename-submit" class="btn btn-primary" disabled>Renommer</button>
+            </div>
+        </form>
     </div>
 </div>
-
-{{-- ── Overlay de chargement ─────────────────────────────────────────────── --}}
-<div id="action-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
-    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:36px 44px;text-align:center;box-shadow:0 12px 40px rgba(15,23,42,0.20);max-width:360px;">
-        <svg width="36" height="36" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5" style="animation:spin 1s linear infinite;margin-bottom:14px;"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
-        <p id="overlay-title" style="font-weight:700;font-size:1rem;margin:0 0 6px;color:var(--text);">Chargement…</p>
-        <p id="overlay-desc" style="font-size:.85rem;color:var(--text-muted);margin:0;">Veuillez patienter.</p>
-    </div>
-</div>
-<style>
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.cp-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(15,23,42,0.50);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    justify-content: center;
-    align-items: center;
-    padding: 16px;
-}
-
-.cp-modal-dialog {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: 0 12px 40px rgba(15,23,42,0.20);
-    width: 100%;
-    max-width: 500px;
-    overflow: hidden;
-}
-
-.cp-modal-dialog-lg {
-    max-width: 560px;
-}
-
-.cp-modal-head {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-}
-
-.cp-modal-head-warning {
-    background: linear-gradient(135deg,#fef3c7,#fde68a);
-    border-bottom-color: #fde68a;
-}
-
-.cp-modal-head-warning-soft {
-    background: linear-gradient(135deg,#fff8e1,#ffefbf);
-    border-bottom-color: #f8e5ac;
-}
-
-.cp-modal-head-danger {
-    background: linear-gradient(135deg,#fef2f2,#fecaca);
-    border-bottom-color: #fecaca;
-}
-
-.cp-modal-head-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.cp-modal-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.cp-modal-icon-warning {
-    background: #fffbeb;
-    border: 1px solid #fcd34d;
-    color: #d97706;
-}
-
-.cp-modal-icon-danger {
-    background: #fff5f5;
-    border: 1px solid #fca5a5;
-}
-
-.cp-modal-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-}
-
-.cp-modal-subtitle {
-    font-size: 12px;
-    margin-top: 2px;
-    color: var(--text-muted);
-}
-
-.cp-modal-body {
-    padding: 22px 24px;
-}
-
-.cp-modal-text {
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.65;
-    margin: 0;
-}
-
-.cp-rules {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.7;
-    margin: 14px 0 18px;
-    padding-left: 18px;
-}
-
-.cp-rules li { margin-bottom: 6px; }
-.cp-rules li:last-child { margin-bottom: 0; }
-.cp-rules strong { color: var(--text); }
-
-.cp-check {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text);
-    font-weight: 500;
-}
-
-.cp-check input,
-.cp-attest input {
-    margin-top: 3px;
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    accent-color: var(--accent);
-}
-
-.cp-field-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 8px;
-}
-
-.cp-textarea {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--panel-soft);
-    color: var(--text);
-    font-size: 13px;
-    line-height: 1.6;
-    resize: vertical;
-    font-family: inherit;
-    box-sizing: border-box;
-    min-height: 100px;
-}
-
-.cp-help {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 8px;
-    line-height: 1.55;
-}
-
-.cp-attest {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text);
-    font-weight: 500;
-    margin-top: 16px;
-    padding: 12px 14px;
-    border-radius: 8px;
-}
-
-.cp-attest-danger {
-    background: rgba(220,38,38,0.04);
-    border: 1px solid rgba(220,38,38,0.12);
-}
-
-.cp-attest-danger input {
-    accent-color: #dc2626;
-}
-
-.cp-modal-foot {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    background: var(--panel-soft);
-}
-
-.cp-modal-foot-plain {
-    background: var(--panel);
-}
-
-@media (max-width: 680px) {
-    .cp-modal-head,
-    .cp-modal-body,
-    .cp-modal-foot {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-}
-</style>
 
 <script>
 (function () {
-    'use strict';
+    var quotaModal     = document.getElementById('quota-modal');
+    var quotaInputName = document.getElementById('quota-input-name');
+    var quotaModalName = document.getElementById('quota-modal-name');
+    var quotaSelect    = document.getElementById('quota-gb');
 
-    var overlay      = document.getElementById('action-overlay');
-    var overlayTitle = document.getElementById('overlay-title');
-    var overlayDesc  = document.getElementById('overlay-desc');
+    var modal        = document.getElementById('suspend-modal');
+    var inputName    = document.getElementById('suspend-input-name');
+    var modalName    = document.getElementById('suspend-modal-name');
+    var reasonTA     = document.getElementById('suspend-reason');
+    var charCount    = document.getElementById('suspend-char-count');
+    var submitBtn    = document.getElementById('suspend-submit');
 
-    function showOverlay(title, desc) {
-        if (!overlay) return;
-        overlayTitle.textContent = title;
-        overlayDesc.textContent  = desc;
-        overlay.style.display    = 'flex';
-    }
-    function hideOverlay() {
-        if (overlay) overlay.style.display = 'none';
-    }
+    window.openQuotaModal = function (name, quotaGb) {
+        quotaInputName.value = name;
+        quotaModalName.textContent = name;
+        quotaSelect.value = String(quotaGb || 10);
+        quotaModal.style.display = 'flex';
+    };
 
-    function setActionEnabled(button, enabled) {
-        if (!button) return;
-        button.disabled = !enabled;
-        button.style.opacity = enabled ? '1' : '0.5';
-    }
+    window.closeQuotaModal = function () {
+        quotaModal.style.display = 'none';
+    };
 
-    function openModal(modal) {
-        if (!modal) return;
+    window.openSuspendModal = function (name) {
+        inputName.value  = name;
+        modalName.textContent = name;
+        reasonTA.value   = '';
+        charCount.textContent = '0 / 500';
+        submitBtn.disabled = true;
         modal.style.display = 'flex';
-        modal.setAttribute('aria-hidden', 'false');
-    }
+        setTimeout(function () { reasonTA.focus(); }, 50);
+    };
 
-    function closeModal(modal) {
-        if (!modal) return;
+    window.closeSuspendModal = function () {
         modal.style.display = 'none';
-        modal.setAttribute('aria-hidden', 'true');
-    }
+    };
 
-    function bindBackdropClose(modal, closeButton) {
-        if (closeButton) {
-            closeButton.addEventListener('click', function () {
-                closeModal(modal);
-            });
-        }
+    reasonTA.addEventListener('input', function () {
+        var len = reasonTA.value.length;
+        charCount.textContent = len + ' / 500';
+        submitBtn.disabled = len < 5;
+    });
 
-        if (modal) {
-            modal.addEventListener('click', function (e) {
-                if (e.target === modal) closeModal(modal);
-            });
-        }
-    }
+    quotaModal.addEventListener('click', function (e) {
+        if (e.target === quotaModal) closeQuotaModal();
+    });
 
-    // ── Modal d'avertissement ────────────────────────────────────────────────
-    var loginModal   = document.getElementById('login-modal');
-    var openBtn      = document.getElementById('open-login-modal');
-    var cancelBtn    = document.getElementById('modal-cancel');
-    var confirmBtn   = document.getElementById('modal-confirm');
-    var acceptCb     = document.getElementById('modal-accept');
-    var loginErrorEl = document.getElementById('login-modal-error');
-    var sessionPanel = document.getElementById('session-panel');
-    var sessionTimer = document.getElementById('session-timer');
-    var timerInterval = null;
-
-    if (openBtn && loginModal) {
-        openBtn.addEventListener('click', function () {
-            openModal(loginModal);
-            if (loginErrorEl) {
-                loginErrorEl.style.display = 'none';
-                loginErrorEl.textContent = '';
-            }
-            if (acceptCb) { acceptCb.checked = false; }
-            setActionEnabled(confirmBtn, false);
-        });
-
-        bindBackdropClose(loginModal, cancelBtn);
-
-        if (acceptCb && confirmBtn) {
-            acceptCb.addEventListener('change', function () {
-                setActionEnabled(confirmBtn, acceptCb.checked);
-            });
-        }
-
-        if (confirmBtn) {
-            confirmBtn.addEventListener('click', function () {
-                closeModal(loginModal);
-                showOverlay('Connexion en cours…', 'Ouverture de cPanel dans un nouvel onglet.');
-                openBtn.disabled = true;
-
-                // Ouvrir l'onglet immédiatement (clic utilisateur = pas bloqué)
-                var cpanelTab = window.open('about:blank', '_blank');
-
-                fetch('{{ route("cpanel.manual-login") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
-                .then(function (res) {
-                    hideOverlay();
-                    if (!res.ok || !res.data.url) {
-                        if (cpanelTab) cpanelTab.close();
-                        openBtn.disabled = false;
-                        if (loginErrorEl) {
-                            loginErrorEl.textContent = res.data.error || 'Erreur lors de la connexion.';
-                            loginErrorEl.style.display = 'flex';
-                        }
-                        return;
-                    }
-
-                    // Rediriger l'onglet déjà ouvert vers cPanel
-                    if (cpanelTab) {
-                        cpanelTab.location.href = res.data.url;
-                    } else {
-                        window.open(res.data.url, '_blank');
-                    }
-
-                    // Démarrer le timer de session
-                    startSessionTimer(0);
-                })
-                .catch(function () {
-                    hideOverlay();
-                    if (cpanelTab) cpanelTab.close();
-                    openBtn.disabled = false;
-                    if (loginErrorEl) {
-                        loginErrorEl.textContent = 'Erreur réseau lors de la connexion.';
-                        loginErrorEl.style.display = 'flex';
-                    }
-                });
-            });
-        }
-    }
-
-    // ── Timer de session ────────────────────────────────────────────────────
-    function startSessionTimer(initialSeconds) {
-        if (sessionPanel) sessionPanel.style.display = '';
-        if (openBtn) openBtn.style.display = 'none';
-
-        var seconds = initialSeconds || 0;
-        function updateDisplay() {
-            var h = Math.floor(seconds / 3600);
-            var m = Math.floor((seconds % 3600) / 60);
-            var s = seconds % 60;
-            var parts = [];
-            if (h > 0) parts.push(String(h).padStart(2, '0'));
-            parts.push(String(m).padStart(2, '0'));
-            parts.push(String(s).padStart(2, '0'));
-            if (sessionTimer) sessionTimer.textContent = parts.join(':');
-        }
-        updateDisplay();
-
-        timerInterval = setInterval(function () {
-            seconds++;
-            updateDisplay();
-        }, 1000);
-    }
-
-    // ── Reprise du timer si session active au chargement ────────────────────
-    @if($myActiveSession && $activeSessionSince)
-    (function () {
-        var startedAt = new Date(@json($activeSessionSince->toIso8601String()));
-        var elapsed = Math.floor((Date.now() - startedAt.getTime()) / 1000);
-        startSessionTimer(Math.max(0, elapsed));
-    })();
-    @endif
-
-    // ── Fin de session (modale rapport) ────────────────────────────────────
-    var endModal      = document.getElementById('end-session-modal');
-    var openEndBtn    = document.getElementById('open-end-modal');
-    var endCancelBtn  = document.getElementById('end-modal-cancel');
-    var endConfirmBtn = document.getElementById('end-modal-confirm');
-    var endAttest     = document.getElementById('end-session-attest');
-    var endDesc       = document.getElementById('session-description');
-    var endForm       = document.getElementById('end-session-form');
-
-    if (openEndBtn && endModal) {
-        openEndBtn.addEventListener('click', function () {
-            openModal(endModal);
-        });
-
-        bindBackdropClose(endModal, endCancelBtn);
-
-        function updateEndConfirm() {
-            var valid = endAttest && endAttest.checked && endDesc && endDesc.value.trim().length >= 10;
-            setActionEnabled(endConfirmBtn, !!valid);
-        }
-
-        if (endAttest) endAttest.addEventListener('change', updateEndConfirm);
-        if (endDesc) endDesc.addEventListener('input', updateEndConfirm);
-
-        if (endForm) {
-            endForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                if (endConfirmBtn.disabled) return;
-                endConfirmBtn.disabled = true;
-                if (timerInterval) clearInterval(timerInterval);
-                closeModal(endModal);
-                showOverlay('Sécurisation en cours…', 'Enregistrement du rapport et changement du mot de passe.');
-                endForm.submit();
-            });
-        }
-    }
-
-    // ── Rotation via modale ─────────────────────────────────────────────────
-    var rotateForm = document.getElementById('rotate-form');
-    var rotateBtn = document.getElementById('rotate-btn');
-    var rotateModal = document.getElementById('rotate-modal');
-    var rotateModalCancel = document.getElementById('rotate-modal-cancel');
-    var rotateModalConfirm = document.getElementById('rotate-modal-confirm');
-
-    if (rotateForm && rotateBtn && rotateModal) {
-        rotateBtn.addEventListener('click', function () {
-            openModal(rotateModal);
-        });
-
-        bindBackdropClose(rotateModal, rotateModalCancel);
-
-        if (rotateModalConfirm) {
-            rotateModalConfirm.addEventListener('click', function () {
-                closeModal(rotateModal);
-                rotateBtn.disabled = true;
-                showOverlay('Rotation en cours…', 'Le mot de passe cPanel est en cours de changement.');
-                rotateForm.submit();
-            });
-        }
-    }
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeSuspendModal();
+    });
 
     document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Escape') return;
-        [loginModal, endModal, rotateModal].forEach(function (modal) {
-            if (modal && modal.style.display === 'flex') closeModal(modal);
-        });
+        if (e.key === 'Escape' && quotaModal.style.display === 'flex') closeQuotaModal();
+        if (e.key === 'Escape' && modal.style.display === 'flex') closeSuspendModal();
+        if (e.key === 'Escape' && renameModal.style.display === 'flex') closeRenameModal();
     });
 
-    // ── Password toggle ─────────────────────────────────────────────────────
-    var _pw       = @json($password);
-    var pwEl      = document.getElementById('val-password');
-    var toggleBtn = document.getElementById('toggle-password');
-    if (pwEl && toggleBtn && _pw) {
-        var visible = false;
-        var eyeOn  = toggleBtn.querySelector('.icon-eye');
-        var eyeOff = toggleBtn.querySelector('.icon-eye-off');
-        toggleBtn.addEventListener('click', function () {
-            visible = !visible;
-            pwEl.textContent = visible ? _pw : '●●●●●●●●●●●●●●●●';
-            eyeOn.style.display  = visible ? 'none' : '';
-            eyeOff.style.display = visible ? '' : 'none';
-        });
-    }
+    // ── Modale renommage ──────────────────────────────────────────────────
+    var renameModal   = document.getElementById('rename-modal');
+    var renameOldName = document.getElementById('rename-old-name');
+    var renameCurrent = document.getElementById('rename-modal-current');
+    var renameInput   = document.getElementById('rename-new-name');
+    var renameError   = document.getElementById('rename-error');
+    var renameSubmit  = document.getElementById('rename-submit');
+    var renameCancel  = document.getElementById('rename-cancel');
 
-    // ── Copy password ───────────────────────────────────────────────────────
-    var copyPwBtn = document.getElementById('copy-password');
-    if (copyPwBtn && _pw) {
-        copyPwBtn.addEventListener('click', function () {
-            navigator.clipboard.writeText(_pw).then(function () { showCopyFeedback(copyPwBtn); });
-        });
-    }
+    window.openRenameModal = function (name) {
+        renameOldName.value        = name;
+        renameCurrent.textContent  = name;
+        renameInput.value          = name;
+        renameError.style.display  = 'none';
+        renameSubmit.disabled      = true;
+        renameModal.style.display  = 'flex';
+        setTimeout(function () {
+            renameInput.focus();
+            renameInput.select();
+        }, 50);
+    };
 
-    // ── Generic copy buttons ────────────────────────────────────────────────
-    document.querySelectorAll('.copy-btn:not(#copy-password)').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var text = btn.getAttribute('data-copy');
-            if (text) {
-                navigator.clipboard.writeText(text).then(function () { showCopyFeedback(btn); });
-            }
-        });
+    window.closeRenameModal = function () {
+        renameModal.style.display = 'none';
+    };
+
+    renameInput.addEventListener('input', function () {
+        var val = renameInput.value.trim();
+        var valid = /^[a-zA-Z0-9_-]+$/.test(val);
+        var unchanged = val === renameOldName.value;
+
+        if (!val) {
+            renameError.textContent = 'Le nom ne peut pas être vide.';
+            renameError.style.display = 'block';
+            renameSubmit.disabled = true;
+        } else if (!valid) {
+            renameError.textContent = 'Caractères non autorisés. Utilisez uniquement lettres, chiffres, - et _.';
+            renameError.style.display = 'block';
+            renameSubmit.disabled = true;
+        } else if (unchanged) {
+            renameError.style.display = 'none';
+            renameSubmit.disabled = true;
+        } else {
+            renameError.style.display = 'none';
+            renameSubmit.disabled = false;
+        }
     });
 
-    function showCopyFeedback(btn) {
-        var original = btn.innerHTML;
-        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,8 6,13 14,3"/></svg>';
-        btn.style.color = 'var(--success)';
-        setTimeout(function () { btn.innerHTML = original; btn.style.color = ''; }, 1200);
-    }
-}());
+    renameCancel.addEventListener('click', closeRenameModal);
+
+    renameModal.addEventListener('click', function (e) {
+        if (e.target === renameModal) closeRenameModal();
+    });
+})();
 </script>
 
 @endsection
