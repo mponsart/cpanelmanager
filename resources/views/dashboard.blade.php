@@ -63,56 +63,6 @@
 </div>
 
 <div class="shortcuts-grid">
-    @if($can('create_email'))
-    <div class="shortcut-card">
-        <div class="shortcut-header">
-            <div class="shortcut-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1.5"/><polyline points="1,4 8,9 15,4"/></svg>
-            </div>
-            <div class="shortcut-title">E-mails</div>
-        </div>
-        <p class="shortcut-desc">Créer, supprimer ou gérer les redirections.</p>
-        <div class="shortcut-links">
-            <a href="{{ route('email.index') }}#create-email" class="btn btn-ghost btn-sm">Créer</a>
-            <a href="{{ route('email.index') }}#emails-list" class="btn btn-ghost btn-sm">Supprimer</a>
-            <a href="{{ route('email.forwarders') }}" class="btn btn-ghost btn-sm">Redirections</a>
-        </div>
-    </div>
-    @endif
-
-    @if($can('view_db'))
-    <div class="shortcut-card">
-        <div class="shortcut-header">
-            <div class="shortcut-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v3c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 7v3c0 1.1 2.7 2 6 2s6-.9 6-2V7"/><path d="M2 10v2c0 1.1 2.7 2 6 2s6-.9 6-2v-2"/></svg>
-            </div>
-            <div class="shortcut-title">Bases de données</div>
-        </div>
-        <p class="shortcut-desc">Créer et attribuer en un accès.</p>
-        <div class="shortcut-links">
-            <a href="{{ route('database.index') }}#create-database" class="btn btn-ghost btn-sm">Base</a>
-            <a href="{{ route('database.index') }}#create-database-user" class="btn btn-ghost btn-sm">Utilisateur</a>
-            <a href="{{ route('database.index') }}#database-privileges" class="btn btn-ghost btn-sm">Privilèges</a>
-        </div>
-    </div>
-    @endif
-
-    @if($can('view_domain'))
-    <div class="shortcut-card">
-        <div class="shortcut-header">
-            <div class="shortcut-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><ellipse cx="8" cy="8" rx="3" ry="6.5"/><line x1="1.5" y1="5.5" x2="14.5" y2="5.5"/><line x1="1.5" y1="10.5" x2="14.5" y2="10.5"/></svg>
-            </div>
-            <div class="shortcut-title">Domaines</div>
-        </div>
-        <p class="shortcut-desc">Créer addon ou sous-domaine rapidement.</p>
-        <div class="shortcut-links">
-            <a href="{{ route('domain.index') }}#create-addon-domain" class="btn btn-ghost btn-sm">Addon</a>
-            <a href="{{ route('domain.index') }}#create-subdomain" class="btn btn-ghost btn-sm">Sous-domaine</a>
-        </div>
-    </div>
-    @endif
-
     @if($can('view_associations'))
     <div class="shortcut-card">
         <div class="shortcut-header">
@@ -121,41 +71,24 @@
             </div>
             <div class="shortcut-title">Associations</div>
         </div>
-        <p class="shortcut-desc">Créer, suspendre et gérer les quotas.</p>
+        <p class="shortcut-desc">Créer, suspendre et gérer les quotas des instances.</p>
         <div class="shortcut-links">
             <a href="{{ route('association.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
         </div>
     </div>
     @endif
 
-    @if($can('view_ftp'))
+    @if($can('access_cpanel'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="5" rx="1"/><rect x="1" y="9" width="14" height="5" rx="1"/><circle cx="12.5" cy="4.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.5" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>
             </div>
-            <div class="shortcut-title">Comptes FTP</div>
+            <div class="shortcut-title">Accès cPanel</div>
         </div>
-        <p class="shortcut-desc">Créer ou supprimer sans navigation supplémentaire.</p>
+        <p class="shortcut-desc">Session encadrée et rotation automatique des accès.</p>
         <div class="shortcut-links">
-            <a href="{{ route('ftp.index') }}#create-ftp-account" class="btn btn-ghost btn-sm">Créer</a>
-            <a href="{{ route('ftp.index') }}#ftp-accounts-list" class="btn btn-ghost btn-sm">Supprimer</a>
-        </div>
-    </div>
-    @endif
-
-    @if($can('manage_cron'))
-    <div class="shortcut-card">
-        <div class="shortcut-header">
-            <div class="shortcut-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><polyline points="8,4.5 8,8 10.5,10"/></svg>
-            </div>
-            <div class="shortcut-title">Tâches Cron</div>
-        </div>
-        <p class="shortcut-desc">Créer ou retirer une tâche en quelques clics.</p>
-        <div class="shortcut-links">
-            <a href="{{ route('cron.index') }}#create-cron-job" class="btn btn-ghost btn-sm">Créer</a>
-            <a href="{{ route('cron.index') }}#cron-jobs-list" class="btn btn-ghost btn-sm">Supprimer</a>
+            <a href="{{ route('cpanel.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
         </div>
     </div>
     @endif
@@ -168,15 +101,48 @@
             </div>
             <div class="shortcut-title">Utilisateurs</div>
         </div>
-        <p class="shortcut-desc">Gestion des comptes et droits d'accès.</p>
+        <p class="shortcut-desc">Gestion des comptes techniciens et statuts d'accès.</p>
         <div class="shortcut-links">
-            <a href="{{ route('users.create') }}" class="btn btn-ghost btn-sm">Créer</a>
             <a href="{{ route('users.index') }}" class="btn btn-ghost btn-sm">Gérer</a>
-            <a href="{{ route('permissions.index') }}" class="btn btn-ghost btn-sm">Permissions</a>
+            <a href="{{ route('users.create') }}" class="btn btn-ghost btn-sm">Créer</a>
+        </div>
+    </div>
+
+    <div class="shortcut-card">
+        <div class="shortcut-header">
+            <div class="shortcut-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l6 3v4c0 3.5-2.5 6.5-6 7.5C4.5 14.5 2 11.5 2 8V4l6-3z"/></svg>
+            </div>
+            <div class="shortcut-title">Permissions</div>
+        </div>
+        <p class="shortcut-desc">Attribution des droits modules et contrôle des accès.</p>
+        <div class="shortcut-links">
+            <a href="{{ route('permissions.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        </div>
+    </div>
+
+    <div class="shortcut-card">
+        <div class="shortcut-header">
+            <div class="shortcut-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/><line x1="4.5" y1="8" x2="11.5" y2="8"/><line x1="4.5" y1="10.5" x2="11.5" y2="10.5"/></svg>
+            </div>
+            <div class="shortcut-title">Journaux</div>
+        </div>
+        <p class="shortcut-desc">Suivi des actions, incidents et audits de sécurité.</p>
+        <div class="shortcut-links">
+            <a href="{{ route('logs.index') }}" class="btn btn-ghost btn-sm">Consulter</a>
         </div>
     </div>
     @endif
 </div>
+
+@if(!$can('view_associations') && !$can('access_cpanel') && !$can('manage_users'))
+<div class="card">
+    <div class="alert alert-warning" style="margin-bottom:0;">
+        Aucune fonctionnalité n'est actuellement assignée à votre profil. Contactez un administrateur.
+    </div>
+</div>
+@endif
 
 <div class="activity-grid">
     <div class="card" style="margin-bottom:0;">

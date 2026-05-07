@@ -15,7 +15,10 @@
             font-family: 'Google Sans Text', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 14px;
             min-height: 100vh;
-            background: #f8f9fa;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(26,115,232,0.14), transparent 38%),
+                radial-gradient(circle at 85% 85%, rgba(30,142,62,0.12), transparent 36%),
+                #f4f7fb;
             color: #1f1f1f;
             display: flex;
             flex-direction: column;
@@ -32,119 +35,119 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 32px 24px;
+            padding: 30px 20px;
         }
 
-        .surface {
+        .shell {
             width: 100%;
-            max-width: 400px;
-            background: #ffffff;
-            border: 1px solid #dadce0;
-            border-radius: 28px;
-            padding: 40px 32px 32px;
-            animation: reveal 0.3s cubic-bezier(0.2, 0, 0, 1) both;
+            max-width: 980px;
+            border: 1px solid #d3d9e3;
+            border-radius: 32px;
+            background: #fff;
+            box-shadow: 0 16px 40px rgba(60,64,67,.16), 0 3px 10px rgba(60,64,67,.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            min-height: 560px;
         }
 
-        @keyframes reveal {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+        .brand-pane {
+            background: linear-gradient(155deg, #eef3fd 0%, #f7faff 60%, #fefefe 100%);
+            border-right: 1px solid #e8eaed;
+            padding: 36px 34px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .logo img {
-            height: 28px;
-            width: auto;
-        }
+        .logo img { height: 28px; width: auto; display: block; }
 
         .chip {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-
-        .chip-label {
+            margin-top: 20px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 16px;
-            border-radius: 8px;
+            gap: 7px;
+            border-radius: 999px;
+            padding: 6px 12px;
             background: #d3e3fd;
-            color: #041e49;
+            color: #0b3a83;
             font-size: 11px;
-            font-weight: 600;
+            letter-spacing: .45px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 700;
+            width: fit-content;
         }
 
-        .chip-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #1a73e8;
+        .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: #1a73e8; }
+
+        .brand-title {
+            margin-top: 26px;
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            font-size: 30px;
+            line-height: 1.15;
+            font-weight: 500;
+            color: #202124;
+            max-width: 340px;
+        }
+
+        .brand-subtitle {
+            margin-top: 12px;
+            color: #5f6368;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 320px;
+        }
+
+        .brand-notice {
+            margin-top: auto;
+            display: flex;
+            gap: 11px;
+            border: 1px solid #fce8b2;
+            border-radius: 14px;
+            background: #fef7e0;
+            padding: 14px;
+            font-size: 12px;
+            color: #6a4a00;
+            line-height: 1.55;
+        }
+
+        .brand-notice strong { color: #3c3000; }
+
+        .auth-pane {
+            padding: 36px 34px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         h1 {
-            text-align: center;
-            font-size: 24px;
-            font-weight: 400;
             font-family: 'Google Sans', 'Roboto', sans-serif;
-            color: #1f1f1f;
-            margin-bottom: 8px;
+            font-size: 30px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 6px;
+            letter-spacing: -.2px;
         }
 
         .subtitle {
-            text-align: center;
             font-size: 14px;
             color: #5f6368;
-            margin-bottom: 32px;
-            letter-spacing: 0.25px;
+            margin-bottom: 22px;
+            line-height: 1.5;
         }
 
         .alert {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 10px;
             border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 14px;
+            padding: 11px 13px;
+            margin-bottom: 12px;
+            font-size: 13px;
             font-weight: 500;
         }
 
-        .alert .material-symbols-rounded { flex-shrink: 0; font-size: 20px; }
-        .alert-error   { background: #fce8e6; color: #5f2120; }
-        .alert-success { background: #ceead6; color: #0d652d; }
-
-        .btn-google {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 14px 24px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            font-family: 'Google Sans Text', inherit;
-            cursor: pointer;
-            color: #ffffff;
-            background: #1a73e8;
-            border: none;
-            letter-spacing: 0.1px;
-            transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), background 0.2s;
-        }
-
-        .btn-google:hover {
-            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.30), 0 1px 3px 1px rgba(60,64,67,0.15);
-            background: #1557b0;
-        }
-
-        .btn-google svg { flex-shrink: 0; }
+        .alert-error { background: #fce8e6; color: #5f2120; }
+        .alert-success { background: #e6f4ea; color: #0d652d; }
 
         .auth-form {
             display: flex;
@@ -155,17 +158,17 @@
         .charter-check {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 9px;
             font-size: 12px;
             color: #3c4043;
             background: #f8fafd;
             border: 1px solid #d2e3fc;
             border-radius: 12px;
-            padding: 12px;
+            padding: 11px;
         }
 
         .charter-check input[type='checkbox'] {
-            margin-top: 2px;
+            margin-top: 1px;
             width: 16px;
             height: 16px;
             accent-color: #1a73e8;
@@ -185,21 +188,14 @@
             border: 1px solid #dadce0;
             background: #fff;
             color: #1a73e8;
-            border-radius: 20px;
+            border-radius: 999px;
             padding: 10px 14px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: background .15s ease;
         }
 
         .charter-read-btn:hover { background: #f8f9fa; }
-
-        .btn-google:disabled {
-            background: #9aa0a6;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
 
         .charter-badge {
             display: none;
@@ -210,7 +206,35 @@
             background: #e6f4ea;
             border: 1px solid #ceead6;
             border-radius: 10px;
-            padding: 8px 10px;
+            padding: 7px 10px;
+        }
+
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            width: 100%;
+            padding: 13px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #fff;
+            background: #1a73e8;
+            border: none;
+            transition: box-shadow .2s ease, background .2s ease;
+        }
+
+        .btn-google:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px rgba(60,64,67,.15);
+        }
+
+        .btn-google:disabled {
+            background: #9aa0a6;
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
         .charter-modal {
@@ -221,14 +245,14 @@
             align-items: center;
             justify-content: center;
             padding: 18px;
-            background: rgba(32,33,36,0.42);
+            background: rgba(32,33,36,.42);
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
         }
 
         .charter-dialog {
             width: 100%;
-            max-width: 680px;
+            max-width: 700px;
             background: #fff;
             border: 1px solid #dadce0;
             border-radius: 28px;
@@ -272,7 +296,7 @@
 
         .charter-content {
             padding: 16px 24px;
-            max-height: 320px;
+            max-height: 340px;
             overflow: auto;
             font-size: 13px;
             line-height: 1.7;
@@ -293,7 +317,7 @@
             border: 1px solid #dadce0;
             background: #fff;
             color: #3c4043;
-            border-radius: 20px;
+            border-radius: 999px;
             padding: 9px 14px;
             font-size: 13px;
             cursor: pointer;
@@ -303,7 +327,7 @@
             border: none;
             background: #1a73e8;
             color: #fff;
-            border-radius: 20px;
+            border-radius: 999px;
             padding: 10px 16px;
             font-size: 13px;
             cursor: pointer;
@@ -314,138 +338,96 @@
             cursor: not-allowed;
         }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin: 24px 0;
-            color: #5f6368;
-            font-size: 12px;
-            letter-spacing: 0.4px;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #dadce0;
-        }
-
-        .notice {
-            display: flex;
-            gap: 12px;
-            padding: 16px;
-            border-radius: 12px;
-            background: #fef7e0;
-        }
-
-        .notice-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: #feefc3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            color: #3c3000;
-        }
-
-        .notice-text {
-            font-size: 12px;
-            line-height: 1.6;
-            color: #5f6368;
-            letter-spacing: 0.4px;
-        }
-
-        .notice-text strong { color: #1f1f1f; font-weight: 600; }
-
         .footer {
             text-align: center;
-            padding: 16px 24px 28px;
+            padding: 10px 18px 24px;
             font-size: 12px;
             color: #5f6368;
-            letter-spacing: 0.4px;
+            letter-spacing: .3px;
         }
 
-        @media (max-width: 480px) {
-            .wrapper { padding: 24px 16px; }
-            .surface { padding: 32px 24px 24px; border-radius: 20px; }
-            h1 { font-size: 22px; }
+        @media (max-width: 900px) {
+            .shell { grid-template-columns: 1fr; max-width: 540px; }
+            .brand-pane { border-right: none; border-bottom: 1px solid #e8eaed; padding: 28px 24px; }
+            .brand-title { font-size: 26px; max-width: none; }
+            .brand-subtitle { max-width: none; }
+            .brand-notice { margin-top: 18px; }
+            .auth-pane { padding: 28px 24px; }
         }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <div class="surface">
-        <div class="logo">
-            <img src="/images/logo-dark.svg" alt="Groupe Speed Cloud">
-        </div>
-
-        <div class="chip">
-            <span class="chip-label"><span class="chip-dot"></span> Usage interne</span>
-        </div>
-
-        @if(session('error'))
-            <div class="alert alert-error">
-                <span class="material-symbols-rounded">error</span>
-                {{ session('error') }}
+    <div class="shell">
+        <aside class="brand-pane">
+            <div class="logo">
+                <img src="/images/logo-dark.svg" alt="Groupe Speed Cloud">
             </div>
-        @endif
+            <span class="chip"><span class="chip-dot"></span> Usage interne</span>
 
-        @if(session('success'))
-            <div class="alert alert-success">
-                <span class="material-symbols-rounded">check_circle</span>
-                {{ session('success') }}
-            </div>
-        @endif
+            <h2 class="brand-title">Portail d'administration technique</h2>
+            <p class="brand-subtitle">Authentification sécurisée via compte professionnel Google. L'accès est réservé aux personnes autorisées.</p>
 
-        <h1>Espace restreint</h1>
-        <p class="subtitle">Authentification requise via compte professionnel.</p>
-
-        <form action="{{ route('auth.google') }}" method="POST" class="auth-form">
-            @csrf
-            <input type="hidden" id="charter_read" name="charter_read" value="0">
-            <label class="charter-check" for="accept_charter">
-                <input id="accept_charter" type="checkbox" name="accept_charter" value="1" required disabled>
-                <span>
-                    J'ai lu et j'accepte la
-                    <a class="charter-link" href="#" id="open-charter-link">charte informatique</a>
-                    et je comprends que toute action est tracée.
-                </span>
-            </label>
-
-            <button type="button" id="open-charter" class="charter-read-btn">
-                Lire la charte informatique (obligatoire)
-            </button>
-
-            <div id="charter-ok" class="charter-badge">
-                <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>
-                Charte lue pour cette session
-            </div>
-
-            <button type="submit" class="btn-google" id="google-submit" disabled>
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" fill-opacity="0.9"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fill-opacity="0.7"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" fill-opacity="0.5"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" fill-opacity="0.8"/>
-                </svg>
-                Continuer avec Google
-            </button>
-        </form>
-
-        <div class="divider">Accès réglementé</div>
-
-        <div class="notice">
-            <div class="notice-icon">
+            <div class="brand-notice">
                 <span class="material-symbols-rounded" style="font-size:20px;">warning</span>
+                <div>
+                    Toute action est <strong>journalisée et auditable</strong>.
+                    Le non-respect des règles de sécurité engage votre responsabilité.
+                </div>
             </div>
-            <div class="notice-text">
-                Réservé au <strong>personnel autorisé</strong>. Toute connexion est <strong>enregistrée et auditable</strong>. Un usage non autorisé engage votre responsabilité.
-            </div>
-        </div>
+        </aside>
+
+        <section class="auth-pane">
+            @if(session('error'))
+                <div class="alert alert-error">
+                    <span class="material-symbols-rounded">error</span>
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    <span class="material-symbols-rounded">check_circle</span>
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <h1>Connexion</h1>
+            <p class="subtitle">Lisez la charte, validez-la, puis connectez-vous.</p>
+
+            <form action="{{ route('auth.google') }}" method="POST" class="auth-form">
+                @csrf
+                <input type="hidden" id="charter_read" name="charter_read" value="0">
+                <label class="charter-check" for="accept_charter">
+                    <input id="accept_charter" type="checkbox" name="accept_charter" value="1" required disabled>
+                    <span>
+                        J'ai lu et j'accepte la
+                        <a class="charter-link" href="#" id="open-charter-link">charte informatique</a>
+                        et je comprends que toute action est tracée.
+                    </span>
+                </label>
+
+                <button type="button" id="open-charter" class="charter-read-btn">
+                    Lire la charte informatique (obligatoire)
+                </button>
+
+                <div id="charter-ok" class="charter-badge">
+                    <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>
+                    Charte validée pour cette session
+                </div>
+
+                <button type="submit" class="btn-google" id="google-submit" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" fill-opacity="0.9"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fill-opacity="0.7"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" fill-opacity="0.5"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" fill-opacity="0.8"/>
+                    </svg>
+                    Continuer avec Google
+                </button>
+            </form>
+        </section>
     </div>
 </div>
 
@@ -468,10 +450,10 @@
             Les connexions, opérations sensibles, consultations de secrets, modifications techniques et actions d'administration sont journalisées et auditées.<br><br>
 
             <strong>3. Gestion des secrets</strong><br>
-            Le partage d'identifiants, de sessions, de mots de passe, de tokens ou de données sensibles est interdit hors cadre validé. Toute fuite potentielle doit être signalée immédiatement.<br><br>
+            Le partage d'identifiants, de sessions, de mots de passe, de tokens ou de données sensibles est interdit hors cadre valide. Toute fuite potentielle doit être signalée immédiatement.<br><br>
 
             <strong>4. Principe de moindre privilège</strong><br>
-            Les interventions doivent être limitées au strict nécessaire. Il est interdit d'accéder à des ressources non liées à la mission en cours.<br><br>
+            Les interventions doivent etre limitees au strict necessaire. Il est interdit d'acceder a des ressources non liees a la mission en cours.<br><br>
 
             <strong>5. Conformité et sécurité</strong><br>
             Toute opération doit respecter les politiques internes, les exigences contractuelles et les règles de sécurité en vigueur. En cas de doute, interrompez l'action et sollicitez un responsable.<br><br>
