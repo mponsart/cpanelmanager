@@ -42,4 +42,10 @@ return [
      * Chemin absolu vers le répertoire des associations MonAsso
      */
     'monasso_path' => env('MONASSO_PATH', ''),
+
+    /*
+     * Rotation automatique du mot de passe cPanel (en heures).
+     * Appliquée à la connexion cPanel, sans dépendre d'un cron système.
+     */
+    'rotation_hours' => (int) env('CPANEL_PASSWORD_ROTATION_HOURS', 4),
 ];

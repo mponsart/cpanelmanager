@@ -214,7 +214,7 @@
                 Rotation automatique
             </div>
             <p class="text-muted" style="font-size:12px;margin-bottom:12px;line-height:1.5;">
-                Le mot de passe est changé automatiquement <strong style="color:var(--text);">toutes les 4 heures</strong> via une tâche planifiée.
+                Le mot de passe est changé automatiquement <strong style="color:var(--text);">avant connexion cPanel</strong> si la dernière rotation a plus de {{ (int) config('cpanel.rotation_hours', 4) }} heure(s).
             </p>
 
             {{-- Dernière rotation --}}
@@ -223,7 +223,7 @@
                 @if($lastRotationAt)
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                     <span style="font-size:13px;font-weight:600;color:var(--text);">{{ $lastRotationAt->format('d/m/Y à H:i:s') }}</span>
-                    <span class="badge badge-{{ $lastRotationType === 'Planifiée (cron)' ? 'accent' : ($lastRotationType === 'Manuelle' ? 'warning' : 'success') }}" style="font-size:10px;">{{ $lastRotationType }}</span>
+                    <span class="badge badge-{{ $lastRotationType === 'Manuelle' ? 'warning' : 'success' }}" style="font-size:10px;">{{ $lastRotationType }}</span>
                 </div>
                 <div class="text-muted" style="font-size:11px;margin-top:2px;">{{ $lastRotationAt->diffForHumans() }}</div>
                 @else

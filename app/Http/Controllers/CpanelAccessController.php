@@ -34,7 +34,7 @@ class CpanelAccessController extends Controller
 
         // Dernière rotation du mot de passe
         $lastRotation = ActionLog::where('module', 'cpanel')
-            ->whereIn('action', ['cpanel_force_rotate_password', 'cpanel_scheduled_rotate_password', 'cpanel_end_session_rotate'])
+            ->whereIn('action', ['cpanel_force_rotate_password', 'cpanel_auto_rotate_password', 'cpanel_end_session_rotate'])
             ->where('status', 'success')
             ->latest('created_at')
             ->first();
@@ -42,7 +42,7 @@ class CpanelAccessController extends Controller
         $lastRotationAt   = $lastRotation?->created_at;
         $lastRotationType = match ($lastRotation?->action ?? '') {
             'cpanel_force_rotate_password'      => 'Manuelle',
-            'cpanel_scheduled_rotate_password'  => 'Planifiée (cron)',
+            'cpanel_auto_rotate_password'       => 'Automatique',
             'cpanel_end_session_rotate'         => 'Fin de session',
             default                             => null,
         };
@@ -85,6 +85,11 @@ class CpanelAccessController extends Controller
         if (empty($configuredPassword)) {
             return response()->json(['error' => 'CPANEL_PASSWORD n\'est pas configuré dans le fichier .env.'], 422);
         }
+
+        // Rotation automatique côté application (sans cron) si la dernière
+        // rotation réussie date de plus de N heures.
+        $this->rotateIfDue($request);
+        $configuredPassword = config('cpanel.password');
 
         try {
             $response = Http::withoutVerifying()
@@ -291,6 +296,26 @@ class CpanelAccessController extends Controller
             $this->logger->success('cpanel_auto_rotate_password', 'cpanel', null, [], $request);
         } catch (\Throwable $e) {
             $this->logger->error('cpanel_auto_rotate_password', 'cpanel', $e->getMessage(), null, [], $request);
+        }
+    }
+
+    private function rotateIfDue(Request $request): void
+    {
+        $hours = (int) config('cpanel.rotation_hours', 4);
+
+        $lastRotation = ActionLog::where('module', 'cpanel')
+            ->whereIn('action', ['cpanel_force_rotate_password', 'cpanel_auto_rotate_password', 'cpanel_end_session_rotate'])
+            ->where('status', 'success')
+            ->latest('created_at')
+            ->first();
+
+        if (! $lastRotation) {
+            $this->rotatePasswordSilently($request);
+            return;
+        }
+
+        if ($lastRotation->created_at->lte(now()->subHours(max(1, $hours)))) {
+            $this->rotatePasswordSilently($request);
         }
     }
 }

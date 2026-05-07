@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 // ─── Auth (non protégées) ─────────────────────────────────────────────────────
 Route::get('/',      [AuthController::class, 'showLogin'])->name('login');
 Route::get('/login', [AuthController::class, 'showLogin']);
-Route::get('/auth/google',          [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::post('/auth/google',         [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google',          fn () => redirect()->route('login')->with('error', 'Veuillez accepter la charte informatique avant de continuer.'));
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -92,6 +93,7 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::get('/associations',             [AssociationController::class, 'index'])->name('association.index')->middleware('permission:view_associations');
     Route::post('/associations',            [AssociationController::class, 'store'])->name('association.store')->middleware('permission:manage_associations');
     Route::patch('/associations/rename',    [AssociationController::class, 'rename'])->name('association.rename')->middleware('permission:manage_associations');
+    Route::post('/associations/storage-quota', [AssociationController::class, 'setStorageQuota'])->name('association.storage-quota')->middleware('permission:manage_associations');
     Route::post('/associations/suspend',    [AssociationController::class, 'suspend'])->name('association.suspend')->middleware('permission:manage_associations');
     Route::post('/associations/unsuspend',  [AssociationController::class, 'unsuspend'])->name('association.unsuspend')->middleware('permission:manage_associations');
     Route::delete('/associations',          [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');

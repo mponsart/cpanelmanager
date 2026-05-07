@@ -42,6 +42,7 @@ class AssociationController extends Controller
                         'name'         => $name,
                         'size'         => $this->dirSize($dir),
                         'modified'     => $stat['mtime'] ?? null,
+                        'quota_gb'     => $this->readStorageQuotaGb($dir),
                         'suspended'    => $suspendedData !== null,
                         'suspend_info' => $suspendedData,
                     ];
@@ -73,6 +74,7 @@ class AssociationController extends Controller
 
         try {
             File::makeDirectory($path, 0755, true);
+            $this->writeStorageQuotaGb($path, 10);
 
             $this->logger->success('create_association', 'association', $data['name'], $data, $request);
 
@@ -166,6 +168,31 @@ class AssociationController extends Controller
         }
     }
 
+    public function setStorageQuota(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'regex:/^[a-zA-Z0-9_-]+$/', 'max:100'],
+            'quota_gb' => ['required', 'integer', 'min:1', 'max:10'],
+        ]);
+
+        $path = $this->basePath . '/' . $data['name'];
+
+        if (! File::isDirectory($path)) {
+            return back()->with('error', 'Le dossier n\'existe pas.');
+        }
+
+        try {
+            $this->writeStorageQuotaGb($path, (int) $data['quota_gb']);
+
+            $this->logger->success('set_association_storage_quota', 'association', $data['name'], $data, $request);
+
+            return redirect()->route('association.index')->with('success', 'Quota de « ' . e($data['name']) . ' » défini à ' . (int) $data['quota_gb'] . ' Go.');
+        } catch (\Throwable $e) {
+            $this->logger->error('set_association_storage_quota', 'association', $e->getMessage(), null, $data, $request);
+            return back()->with('error', e($e->getMessage()));
+        }
+    }
+
     public function unsuspend(Request $request)
     {
         $data = $request->validate([
@@ -237,5 +264,51 @@ class AssociationController extends Controller
             $size += $file->getSize();
         }
         return $size;
+    }
+
+    private function readStorageQuotaGb(string $dir): ?int
+    {
+        $configPath = $dir . '/config.local.php';
+
+        if (! File::exists($configPath)) {
+            return null;
+        }
+
+        $content = File::get($configPath);
+
+        if (preg_match('/define\(\s*[\'\"]Paheko\\\\?FILE_STORAGE_QUOTA[\'\"]\s*,\s*(\d+)\s*\*\s*1024\s*\*\*\s*3\s*\)\s*;?/i', $content, $matches)) {
+            return (int) $matches[1];
+        }
+
+        if (preg_match('/define\(\s*[\'\"]Paheko\\\\?FILE_STORAGE_QUOTA[\'\"]\s*,\s*(\d+)\s*\)\s*;?/i', $content, $matches)) {
+            $bytes = (int) $matches[1];
+            if ($bytes > 0) {
+                return (int) floor($bytes / (1024 ** 3));
+            }
+        }
+
+        return null;
+    }
+
+    private function writeStorageQuotaGb(string $dir, int $quotaGb): void
+    {
+        $configPath = $dir . '/config.local.php';
+        $line = "define('Paheko\\\\FILE_STORAGE_QUOTA', {$quotaGb} * 1024 ** 3);";
+
+        if (! File::exists($configPath)) {
+            File::put($configPath, "<?php\n\n" . $line . "\n");
+            return;
+        }
+
+        $content = File::get($configPath);
+
+        if (preg_match('/define\(\s*[\'\"]Paheko\\\\?FILE_STORAGE_QUOTA[\'\"]\s*,.*?\)\s*;?/i', $content)) {
+            $content = preg_replace('/define\(\s*[\'\"]Paheko\\\\?FILE_STORAGE_QUOTA[\'\"]\s*,.*?\)\s*;?/i', $line, $content, 1);
+        } else {
+            $separator = str_ends_with($content, "\n") ? '' : "\n";
+            $content .= $separator . $line . "\n";
+        }
+
+        File::put($configPath, $content);
     }
 }

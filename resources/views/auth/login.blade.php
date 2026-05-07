@@ -146,6 +146,53 @@
 
         .btn-google svg { flex-shrink: 0; }
 
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .charter-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12px;
+            color: #3c4043;
+            background: #f8fafd;
+            border: 1px solid #d2e3fc;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .charter-check input[type='checkbox'] {
+            margin-top: 2px;
+            width: 16px;
+            height: 16px;
+            accent-color: #1a73e8;
+            flex-shrink: 0;
+        }
+
+        .charter-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .charter-link:hover { text-decoration: underline; }
+
+        .charter-panel {
+            margin-top: 4px;
+            padding: 12px;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            background: #fff;
+            max-height: 140px;
+            overflow: auto;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #5f6368;
+        }
+
         .divider {
             display: flex;
             align-items: center;
@@ -236,15 +283,36 @@
         <h1>Espace restreint</h1>
         <p class="subtitle">Authentification requise via compte professionnel.</p>
 
-        <a href="{{ route('auth.google') }}" class="btn-google">
-            <svg width="18" height="18" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" fill-opacity="0.9"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fill-opacity="0.7"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" fill-opacity="0.5"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" fill-opacity="0.8"/>
-            </svg>
-            Continuer avec Google
-        </a>
+        <form action="{{ route('auth.google') }}" method="POST" class="auth-form">
+            @csrf
+            <label class="charter-check" for="accept_charter">
+                <input id="accept_charter" type="checkbox" name="accept_charter" value="1" required>
+                <span>
+                    J'ai lu et j'accepte la
+                    <a class="charter-link" href="#charte">charte informatique</a>
+                    et je comprends que toute action est tracée.
+                </span>
+            </label>
+
+            <button type="submit" class="btn-google">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" fill-opacity="0.9"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fill-opacity="0.7"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" fill-opacity="0.5"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" fill-opacity="0.8"/>
+                </svg>
+                Continuer avec Google
+            </button>
+        </form>
+
+        <div id="charte" class="charter-panel">
+            <strong style="color:#1f1f1f;">Charte informatique (extrait)</strong><br>
+            1. L'accès est strictement réservé aux personnes autorisées.<br>
+            2. Toute action est journalisée et peut faire l'objet d'un audit.<br>
+            3. Il est interdit de partager les identifiants, sessions ou secrets.<br>
+            4. Toute intervention doit être réalisée dans un cadre professionnel et tracé.<br>
+            5. En cas d'incident de sécurité suspecté, l'équipe responsable doit être alertée immédiatement.
+        </div>
 
         <div class="divider">Accès réglementé</div>
 

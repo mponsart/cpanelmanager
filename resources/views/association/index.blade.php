@@ -30,8 +30,9 @@
                 <tr>
                     <th>Nom</th>
                     <th style="width:120px;text-align:right;">Taille</th>
+                    <th style="width:120px;text-align:center;">Quota</th>
                     <th style="width:170px;">Dernière modification</th>
-                    <th style="width:220px;text-align:right;">Actions</th>
+                    <th style="width:280px;text-align:right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -72,6 +73,20 @@
                                 else $display = $size . ' o';
                             @endphp
                             {{ $display }}
+                        </td>
+                        <td style="text-align:center;">
+                            <form action="{{ route('association.storage-quota') }}" method="POST" style="display:inline-flex;align-items:center;gap:6px;">
+                                @csrf
+                                <input type="hidden" name="name" value="{{ $asso['name'] }}">
+                                <select name="quota_gb" style="width:78px;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--panel,#fff);">
+                                    @for($q = 1; $q <= 10; $q++)
+                                        <option value="{{ $q }}" {{ (int) ($asso['quota_gb'] ?? 10) === $q ? 'selected' : '' }}>{{ $q }} Go</option>
+                                    @endfor
+                                </select>
+                                <button type="submit" class="btn btn-ghost btn-sm" title="Appliquer le quota" style="padding:4px 8px;">
+                                    Appliquer
+                                </button>
+                            </form>
                         </td>
                         <td class="text-muted text-sm">
                             {{ $asso['modified'] ? \Carbon\Carbon::createFromTimestamp($asso['modified'], 'Europe/Paris')->format('d/m/Y H:i') : '—' }}
@@ -132,7 +147,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="table-empty">Aucune association trouvée.</td></tr>
+                    <tr><td colspan="5" class="table-empty">Aucune association trouvée.</td></tr>
                 @endforelse
             </tbody>
         </table>

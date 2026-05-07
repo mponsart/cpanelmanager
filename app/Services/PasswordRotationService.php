@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Str;
-
 class PasswordRotationService
 {
     public function __construct(
@@ -17,12 +15,7 @@ class PasswordRotationService
      */
     public function rotate(): string
     {
-        // Éviter les caractères problématiques pour .env ($, ", \, #, espace)
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@%^&*()-_=+[]{}|;:,.<>?';
-        $newPassword = '';
-        for ($i = 0; $i < 16; $i++) {
-            $newPassword .= $chars[random_int(0, strlen($chars) - 1)];
-        }
+        $newPassword = $this->generateCpanelLikePassword();
         $oldPassword = config('cpanel.password');
 
         $this->cpanel->callApi2('Passwd', 'change_password', [
@@ -36,6 +29,41 @@ class PasswordRotationService
         config(['cpanel.password' => $newPassword]);
 
         return $newPassword;
+    }
+
+    /**
+     * Génère un mot de passe robuste au format "cPanel-like".
+     *
+     * - longueur 20
+     * - au moins 1 minuscule, 1 majuscule, 1 chiffre, 1 caractère spécial sûr
+     * - caractères volontairement limités pour éviter les soucis .env/phpMyAdmin
+     */
+    private function generateCpanelLikePassword(int $length = 20): string
+    {
+        $lower = 'abcdefghjkmnpqrstuvwxyz';
+        $upper = 'ABCDEFGHJKMNPQRSTUVWXYZ';
+        $digits = '23456789';
+        $special = '!@%^*()-_=+';
+        $all = $lower . $upper . $digits . $special;
+
+        $password = [
+            $lower[random_int(0, strlen($lower) - 1)],
+            $upper[random_int(0, strlen($upper) - 1)],
+            $digits[random_int(0, strlen($digits) - 1)],
+            $special[random_int(0, strlen($special) - 1)],
+        ];
+
+        for ($i = count($password); $i < $length; $i++) {
+            $password[] = $all[random_int(0, strlen($all) - 1)];
+        }
+
+        // Mélange cryptographiquement sûr (Fisher-Yates)
+        for ($i = count($password) - 1; $i > 0; $i--) {
+            $j = random_int(0, $i);
+            [$password[$i], $password[$j]] = [$password[$j], $password[$i]];
+        }
+
+        return implode('', $password);
     }
 
     private function updateEnv(string $key, string $value): void
