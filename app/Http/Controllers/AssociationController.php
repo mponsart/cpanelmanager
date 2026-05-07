@@ -146,7 +146,7 @@ class AssociationController extends Controller
             File::put($path . '/.suspended', json_encode([
                 'reason'       => $data['reason'],
                 'suspended_by' => auth()->user()->name ?? auth()->user()->email,
-                'suspended_at' => now()->toIso8601String(),
+                'suspended_at' => now('Europe/Paris')->toIso8601String(),
             ], JSON_UNESCAPED_UNICODE));
 
             $this->logger->success('suspend_association', 'association', $data['name'], $data, $request);

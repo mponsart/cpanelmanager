@@ -57,7 +57,7 @@
                                             <div style="color:var(--text-muted,#6b7280);"><strong>Par :</strong> {{ $si['suspended_by'] }}</div>
                                         @endif
                                         @if(!empty($si['suspended_at']))
-                                            <div style="color:var(--text-muted,#6b7280);"><strong>Le :</strong> {{ \Carbon\Carbon::parse($si['suspended_at'])->format('d/m/Y à H:i') }}</div>
+                                            <div style="color:var(--text-muted,#6b7280);"><strong>Le :</strong> {{ \Carbon\Carbon::parse($si['suspended_at'])->setTimezone('Europe/Paris')->format('d/m/Y à H:i') }}</div>
                                         @endif
                                     </div>
                                 @endif
