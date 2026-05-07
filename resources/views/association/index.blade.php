@@ -230,8 +230,6 @@
     </div>
 </div>
 
-
-
 {{-- ── Modale de renommage (clean) ───────────────────────────────────── --}}
 <div id="rename-modal"
      style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);
