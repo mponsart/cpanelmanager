@@ -616,14 +616,27 @@
     @endphp
 
     <nav class="sidebar-nav">
-        @if($navCan('view_associations'))
+        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <span class="icon"><span class="material-symbols-rounded">dashboard</span></span> Dashboard
+        </a>
         <a href="{{ route('association.index') }}" class="nav-link {{ request()->routeIs('association.*') ? 'active' : '' }}">
             <span class="icon"><span class="material-symbols-rounded">folder_shared</span></span> Associations
         </a>
-        @endif
         @if($navCan('access_cpanel'))
         <a href="{{ route('cpanel.index') }}" class="nav-link {{ request()->routeIs('cpanel.index') ? 'active' : '' }}">
             <span class="icon"><span class="material-symbols-rounded">open_in_new</span></span> Accès cPanel
+        </a>
+        @endif
+        @if($navCan('manage_users'))
+        <div class="nav-section">Administration</div>
+        <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+            <span class="icon"><span class="material-symbols-rounded">group</span></span> Utilisateurs
+        </a>
+        <a href="{{ route('permissions.index') }}" class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}">
+            <span class="icon"><span class="material-symbols-rounded">shield</span></span> Permissions
+        </a>
+        <a href="{{ route('logs.index') }}" class="nav-link {{ request()->routeIs('logs.*') ? 'active' : '' }}">
+            <span class="icon"><span class="material-symbols-rounded">receipt_long</span></span> Journaux
         </a>
         @endif
     </nav>

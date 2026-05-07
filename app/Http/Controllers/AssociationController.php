@@ -137,9 +137,17 @@ class AssociationController extends Controller
             }
 
             // Créer le .htaccess de redirection vers la page de suspension
+            // On utilise Redirect (mod_alias) plutôt que RewriteRule pour éviter
+            // tout effet de bord sur les autres répertoires frères.
             File::put($path . '/.htaccess', implode("\n", [
-                'RewriteEngine On',
-                'RewriteRule ^ https://monasso.eu/errors/suspended-instance [R=302,L]',
+                '<IfModule mod_alias.c>',
+                '    Redirect 302 / https://monasso.eu/errors/suspended-instance',
+                '</IfModule>',
+                '<IfModule !mod_alias.c>',
+                '    RewriteEngine On',
+                '    RewriteOptions InheritDownBefore',
+                '    RewriteRule ^ https://monasso.eu/errors/suspended-instance [R=302,L,END]',
+                '</IfModule>',
             ]));
 
             // Marqueur de suspension avec métadonnées
