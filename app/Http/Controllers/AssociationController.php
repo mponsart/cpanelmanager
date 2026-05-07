@@ -36,6 +36,7 @@ class AssociationController extends Controller
                         'name'       => $name,
                         'size'       => $this->dirSize($dir),
                         'modified'   => $stat['mtime'] ?? null,
+                        'suspended'  => File::exists($dir . '/.suspended'),
                     ];
                 }
 
@@ -101,6 +102,83 @@ class AssociationController extends Controller
             return redirect()->route('association.index')->with('success', 'Association renommée en « ' . e($data['new_name']) . ' ».');
         } catch (\Throwable $e) {
             $this->logger->error('rename_association', 'association', $e->getMessage(), null, $data, $request);
+            return back()->with('error', e($e->getMessage()));
+        }
+    }
+
+    public function suspend(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'regex:/^[a-zA-Z0-9_-]+$/', 'max:100'],
+        ]);
+
+        $path = $this->basePath . '/' . $data['name'];
+
+        if (! File::isDirectory($path)) {
+            return back()->with('error', 'Le dossier n\'existe pas.');
+        }
+
+        if (File::exists($path . '/.suspended')) {
+            return back()->with('error', 'Cette association est déjà suspendue.');
+        }
+
+        try {
+            // Sauvegarder l'éventuel .htaccess existant
+            if (File::exists($path . '/.htaccess')) {
+                File::move($path . '/.htaccess', $path . '/.htaccess.pre-suspend');
+            }
+
+            // Créer le .htaccess de redirection vers la page de suspension
+            File::put($path . '/.htaccess', implode("\n", [
+                'RewriteEngine On',
+                'RewriteRule ^ https://monasso.eu/errors/suspended-instance [R=302,L]',
+            ]));
+
+            // Marqueur de suspension
+            File::put($path . '/.suspended', '');
+
+            $this->logger->success('suspend_association', 'association', $data['name'], $data, $request);
+
+            return redirect()->route('association.index')->with('success', 'Association « ' . e($data['name']) . ' » suspendue.');
+        } catch (\Throwable $e) {
+            $this->logger->error('suspend_association', 'association', $e->getMessage(), null, $data, $request);
+            return back()->with('error', e($e->getMessage()));
+        }
+    }
+
+    public function unsuspend(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'regex:/^[a-zA-Z0-9_-]+$/', 'max:100'],
+        ]);
+
+        $path = $this->basePath . '/' . $data['name'];
+
+        if (! File::isDirectory($path)) {
+            return back()->with('error', 'Le dossier n\'existe pas.');
+        }
+
+        if (! File::exists($path . '/.suspended')) {
+            return back()->with('error', 'Cette association n\'est pas suspendue.');
+        }
+
+        try {
+            // Supprimer le .htaccess de suspension
+            File::delete($path . '/.htaccess');
+
+            // Restaurer l'éventuel .htaccess d'origine
+            if (File::exists($path . '/.htaccess.pre-suspend')) {
+                File::move($path . '/.htaccess.pre-suspend', $path . '/.htaccess');
+            }
+
+            // Supprimer le marqueur de suspension
+            File::delete($path . '/.suspended');
+
+            $this->logger->success('unsuspend_association', 'association', $data['name'], $data, $request);
+
+            return redirect()->route('association.index')->with('success', 'Association « ' . e($data['name']) . ' » réactivée.');
+        } catch (\Throwable $e) {
+            $this->logger->error('unsuspend_association', 'association', $e->getMessage(), null, $data, $request);
             return back()->with('error', e($e->getMessage()));
         }
     }

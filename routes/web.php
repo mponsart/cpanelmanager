@@ -89,10 +89,12 @@ Route::middleware(['auth.panel'])->group(function () {
     Route::get('/stats/{domain}', [StatsController::class, 'domainDetail'])->name('stats.domain')->middleware('permission:view_stats')->where('domain', '[a-zA-Z0-9._-]+');
 
     // ── Associations MonAsso ──────────────────────────────────────────────────
-    Route::get('/associations',           [AssociationController::class, 'index'])->name('association.index')->middleware('permission:view_associations');
-    Route::post('/associations',          [AssociationController::class, 'store'])->name('association.store')->middleware('permission:manage_associations');
-    Route::patch('/associations/rename',  [AssociationController::class, 'rename'])->name('association.rename')->middleware('permission:manage_associations');
-    Route::delete('/associations',        [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');
+    Route::get('/associations',             [AssociationController::class, 'index'])->name('association.index')->middleware('permission:view_associations');
+    Route::post('/associations',            [AssociationController::class, 'store'])->name('association.store')->middleware('permission:manage_associations');
+    Route::patch('/associations/rename',    [AssociationController::class, 'rename'])->name('association.rename')->middleware('permission:manage_associations');
+    Route::post('/associations/suspend',    [AssociationController::class, 'suspend'])->name('association.suspend')->middleware('permission:manage_associations');
+    Route::post('/associations/unsuspend',  [AssociationController::class, 'unsuspend'])->name('association.unsuspend')->middleware('permission:manage_associations');
+    Route::delete('/associations',          [AssociationController::class, 'destroy'])->name('association.destroy')->middleware('permission:manage_associations');
 
     // ── Accès cPanel ──────────────────────────────────────────────────────────
     Route::get('/acces-cpanel',               [CpanelAccessController::class, 'index'])->name('cpanel.index')->middleware('permission:access_cpanel');

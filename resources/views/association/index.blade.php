@@ -36,11 +36,14 @@
             </thead>
             <tbody>
                 @forelse($associations as $asso)
-                    <tr>
+                    <tr style="{{ $asso['suspended'] ? 'opacity:0.65;' : '' }}">
                         <td style="font-weight:500;">
                             <span style="display:inline-flex;align-items:center;gap:8px;">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{ $asso['suspended'] ? 'var(--warning)' : 'var(--accent)' }}" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
                                 {{ $asso['name'] }}
+                                @if($asso['suspended'])
+                                    <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;background:rgba(234,179,8,.15);color:#92400e;border:1px solid rgba(234,179,8,.35);">Suspendu</span>
+                                @endif
                             </span>
                         </td>
                         <td style="text-align:right;font-variant-numeric:tabular-nums;" class="text-muted">
@@ -73,6 +76,28 @@
                                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z"/></svg>
                                     </button>
                                 </form>
+                                {{-- Suspendre / Réactiver --}}
+                                @if($asso['suspended'])
+                                    <form action="{{ route('association.unsuspend') }}" method="POST"
+                                          data-confirm="Réactiver l'association « {{ e($asso['name']) }} » ?"
+                                          onsubmit="return confirm(this.dataset.confirm)">
+                                        @csrf
+                                        <input type="hidden" name="name" value="{{ $asso['name'] }}">
+                                        <button type="submit" class="btn btn-ghost btn-sm" title="Réactiver" style="color:var(--success,#16a34a);">
+                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8a6 6 0 1010.472-4M2 4v4h4"/></svg>
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('association.suspend') }}" method="POST"
+                                          data-confirm="Suspendre l'association « {{ e($asso['name']) }} » ? Les visiteurs seront redirigés vers la page de suspension."
+                                          onsubmit="return confirm(this.dataset.confirm)">
+                                        @csrf
+                                        <input type="hidden" name="name" value="{{ $asso['name'] }}">
+                                        <button type="submit" class="btn btn-ghost btn-sm" title="Suspendre" style="color:var(--warning,#d97706);">
+                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                                        </button>
+                                    </form>
+                                @endif
                                 {{-- Supprimer --}}
                                 <form action="{{ route('association.destroy') }}" method="POST"
                                       data-confirm="Supprimer définitivement l'association « {{ e($asso['name']) }} » et tout son contenu ?"
