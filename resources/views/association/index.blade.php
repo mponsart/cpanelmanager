@@ -92,20 +92,12 @@
                             <div style="display:inline-flex;gap:6px;">
                                 {{-- Renommer (désactivé si suspendu) --}}
                                 @if(!$asso['suspended'])
-                                <form action="{{ route('association.rename') }}" method="POST" style="display:inline-flex;align-items:center;gap:4px;"
-                                      onsubmit="
-                                        var newName = this.querySelector('[name=new_name]').value;
-                                        if (!newName) { event.preventDefault(); this.querySelector('[name=new_name]').style.display='inline'; this.querySelector('[name=new_name]').focus(); return; }
-                                      ">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="old_name" value="{{ $asso['name'] }}">
-                                    <input type="text" name="new_name" placeholder="Nouveau nom" maxlength="100" pattern="[a-zA-Z0-9_-]+"
-                                           style="display:none;width:140px;padding:4px 8px;font-size:0.85rem;border:1px solid var(--border);border-radius:6px;">
-                                    <button type="submit" class="btn btn-ghost btn-sm" title="Renommer">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-                                    </button>
-                                </form>
+                                <button type="button"
+                                    class="btn btn-ghost btn-sm"
+                                    title="Renommer"
+                                    onclick="openRenameModal('{{ e($asso['name']) }}')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                                </button>
                                 @endif
 
                                 {{-- Suspendre / Réactiver --}}
@@ -238,6 +230,96 @@
     </div>
 </div>
 
+{{-- ── Modale de renommage ───────────────────────────────────────────────── --}}
+<div id="rename-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:460px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#e3e3fd;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000091" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight:600;font-size:18px;line-height:1.2;color:#161616;">Renommer l'association</div>
+                    <div id="rename-modal-current" style="font-size:13px;color:#666;margin-top:2px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <form id="rename-form" action="{{ route('association.rename') }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" name="old_name" id="rename-old-name">
+            <div style="padding:20px 24px;">
+                <label for="rename-new-name" style="display:block;font-size:13px;font-weight:600;color:#161616;margin-bottom:7px;">
+                    Nouveau nom du dossier
+                </label>
+                <input
+                    type="text"
+                    id="rename-new-name"
+                    name="new_name"
+                    required
+                    maxlength="100"
+                    pattern="[a-zA-Z0-9_-]+"
+                    placeholder="nouveau-nom"
+                    autocomplete="off"
+                    style="width:100%;padding:10px 14px;border:2px solid #929292;border-radius:4px 4px 0 0;border-bottom-color:#161616;background:#fff;color:#161616;font-size:14px;font-family:Marianne,arial,sans-serif;box-sizing:border-box;outline:none;"
+                >
+                <p id="rename-error" style="display:none;font-size:12px;color:#ce0500;margin-top:6px;"></p>
+                <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.5;">Caractères autorisés : lettres, chiffres, tirets (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">-</code>) et tirets bas (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">_</code>).</p>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#f6f6f6;">
+                <button type="button" id="rename-cancel" class="btn btn-ghost">Annuler</button>
+                <button type="submit" id="rename-submit" class="btn btn-primary" disabled>Renommer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ── Modale de renommage ─────────────────────────────────────────────── --}}
+<div id="rename-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:460px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#e3e3fd;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000091" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight:500;font-size:20px;line-height:1.2;color:#202124;">Renommer l'association</div>
+                    <div id="rename-modal-current" style="font-size:13px;color:#5f6368;margin-top:2px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <form id="rename-form" action="{{ route('association.rename') }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" name="old_name" id="rename-old-name">
+            <div style="padding:20px 24px;">
+                <label for="rename-new-name" style="display:block;font-size:13px;font-weight:500;color:#3c4043;margin-bottom:7px;">
+                    Nouveau nom du dossier
+                </label>
+                <input
+                    type="text"
+                    id="rename-new-name"
+                    name="new_name"
+                    required
+                    maxlength="100"
+                    pattern="[a-zA-Z0-9_-]+"
+                    placeholder="nouveau-nom"
+                    autocomplete="off"
+                    style="width:100%;padding:10px 12px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#202124;font-size:14px;box-sizing:border-box;outline:none;"
+                >
+                <p id="rename-error" style="display:none;font-size:12px;color:#d93025;margin-top:6px;"></p>
+                <p style="font-size:12px;color:#5f6368;margin-top:8px;line-height:1.5;">Caractères autorisés : lettres, chiffres, tirets (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">-</code>) et tirets bas (<code style="background:#f0f0f0;padding:1px 4px;border-radius:2px;">_</code>).</p>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#fff;">
+                <button type="button" id="rename-cancel" class="btn btn-ghost">Annuler</button>
+                <button type="submit" id="rename-submit" class="btn btn-primary" disabled>Renommer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 (function () {
     var quotaModal     = document.getElementById('quota-modal');
@@ -294,6 +376,61 @@
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && quotaModal.style.display === 'flex') closeQuotaModal();
         if (e.key === 'Escape' && modal.style.display === 'flex') closeSuspendModal();
+        if (e.key === 'Escape' && renameModal.style.display === 'flex') closeRenameModal();
+    });
+
+    // ── Modale renommage ──────────────────────────────────────────────────
+    var renameModal   = document.getElementById('rename-modal');
+    var renameOldName = document.getElementById('rename-old-name');
+    var renameCurrent = document.getElementById('rename-modal-current');
+    var renameInput   = document.getElementById('rename-new-name');
+    var renameError   = document.getElementById('rename-error');
+    var renameSubmit  = document.getElementById('rename-submit');
+    var renameCancel  = document.getElementById('rename-cancel');
+
+    window.openRenameModal = function (name) {
+        renameOldName.value        = name;
+        renameCurrent.textContent  = name;
+        renameInput.value          = name;
+        renameError.style.display  = 'none';
+        renameSubmit.disabled      = true;
+        renameModal.style.display  = 'flex';
+        setTimeout(function () {
+            renameInput.focus();
+            renameInput.select();
+        }, 50);
+    };
+
+    window.closeRenameModal = function () {
+        renameModal.style.display = 'none';
+    };
+
+    renameInput.addEventListener('input', function () {
+        var val = renameInput.value.trim();
+        var valid = /^[a-zA-Z0-9_-]+$/.test(val);
+        var unchanged = val === renameOldName.value;
+
+        if (!val) {
+            renameError.textContent = 'Le nom ne peut pas être vide.';
+            renameError.style.display = 'block';
+            renameSubmit.disabled = true;
+        } else if (!valid) {
+            renameError.textContent = 'Caractères non autorisés. Utilisez uniquement lettres, chiffres, - et _.';
+            renameError.style.display = 'block';
+            renameSubmit.disabled = true;
+        } else if (unchanged) {
+            renameError.style.display = 'none';
+            renameSubmit.disabled = true;
+        } else {
+            renameError.style.display = 'none';
+            renameSubmit.disabled = false;
+        }
+    });
+
+    renameCancel.addEventListener('click', closeRenameModal);
+
+    renameModal.addEventListener('click', function (e) {
+        if (e.target === renameModal) closeRenameModal();
     });
 })();
 </script>
