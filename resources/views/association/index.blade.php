@@ -74,7 +74,7 @@
                             {{ $display }}
                         </td>
                         <td class="text-muted text-sm">
-                            {{ $asso['modified'] ? \Carbon\Carbon::createFromTimestamp($asso['modified'])->format('d/m/Y H:i') : '—' }}
+                            {{ $asso['modified'] ? \Carbon\Carbon::createFromTimestamp($asso['modified'], 'Europe/Paris')->format('d/m/Y H:i') : '—' }}
                         </td>
                         <td style="text-align:right;">
                             <div style="display:inline-flex;gap:6px;">
