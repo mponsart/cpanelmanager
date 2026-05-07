@@ -28,8 +28,10 @@ class AuthController extends Controller
     {
         $request->validate([
             'accept_charter' => ['accepted'],
+            'charter_read' => ['accepted'],
         ], [
             'accept_charter.accepted' => 'Vous devez accepter la charte informatique pour continuer.',
+            'charter_read.accepted' => 'Vous devez lire la charte informatique avant de continuer.',
         ]);
 
         $request->session()->put('auth_charter_accepted', true);

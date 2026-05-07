@@ -152,16 +152,16 @@
 </div>
 
 {{-- ── Modale de quota ─────────────────────────────────────────────────── --}}
-<div id="quota-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
-    <div style="background:var(--panel,#fff);border-radius:12px;width:100%;max-width:440px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;">
-        <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);">
+<div id="quota-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:460px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
             <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:36px;height:36px;border-radius:8px;background:rgba(59,130,246,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
                 </div>
                 <div>
-                    <div style="font-weight:600;font-size:15px;">Quota de stockage</div>
-                    <div id="quota-modal-name" style="font-size:12px;color:var(--text-muted,#6b7280);margin-top:1px;"></div>
+                    <div style="font-weight:500;font-size:20px;line-height:1.2;color:#202124;">Quota de stockage</div>
+                    <div id="quota-modal-name" style="font-size:13px;color:#5f6368;margin-top:2px;"></div>
                 </div>
             </div>
         </div>
@@ -170,19 +170,19 @@
             @csrf
             <input type="hidden" name="name" id="quota-input-name">
             <div style="padding:20px 24px;">
-                <label for="quota-gb" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">
+                <label for="quota-gb" style="display:block;font-size:13px;font-weight:500;color:#3c4043;margin-bottom:7px;">
                     Quota autorisé (entre 1 et 10 Go)
                 </label>
-                <select id="quota-gb" name="quota_gb" required style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft,#f9fafb);color:var(--text);font-size:13px;">
+                <select id="quota-gb" name="quota_gb" required style="width:100%;padding:11px 12px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#202124;font-size:14px;">
                     @for($q = 1; $q <= 10; $q++)
                         <option value="{{ $q }}">{{ $q }} Go</option>
                     @endfor
                 </select>
-                <p style="font-size:11px;color:var(--text-muted,#6b7280);margin-top:8px;line-height:1.5;">
+                <p style="font-size:12px;color:#5f6368;margin-top:9px;line-height:1.5;">
                     La valeur actuelle est chargée automatiquement à l'ouverture de cette modale.
                 </p>
             </div>
-            <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:var(--panel-soft,#f9fafb);">
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#fff;">
                 <button type="button" onclick="closeQuotaModal()" class="btn btn-ghost">Annuler</button>
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
             </div>
@@ -191,16 +191,16 @@
 </div>
 
 {{-- ── Modale de suspension ─────────────────────────────────────────────── --}}
-<div id="suspend-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
-    <div style="background:var(--panel,#fff);border-radius:12px;width:100%;max-width:480px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;">
-        <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);">
+<div id="suspend-modal" style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;width:100%;max-width:520px;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;">
             <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:36px;height:36px;border-radius:8px;background:rgba(234,179,8,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:38px;height:38px;border-radius:12px;background:#fef7e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
                 </div>
                 <div>
-                    <div style="font-weight:600;font-size:15px;">Suspendre l'association</div>
-                    <div id="suspend-modal-name" style="font-size:12px;color:var(--text-muted,#6b7280);margin-top:1px;"></div>
+                    <div style="font-weight:500;font-size:20px;line-height:1.2;color:#202124;">Suspendre l'association</div>
+                    <div id="suspend-modal-name" style="font-size:13px;color:#5f6368;margin-top:2px;"></div>
                 </div>
             </div>
         </div>
@@ -208,26 +208,26 @@
             @csrf
             <input type="hidden" name="name" id="suspend-input-name">
             <div style="padding:20px 24px;">
-                <p style="font-size:13px;color:var(--text-muted,#6b7280);margin:0 0 16px;">
+                <p style="font-size:13px;color:#5f6368;margin:0 0 16px;line-height:1.5;">
                     Les visiteurs seront automatiquement redirigés vers
-                    <strong style="color:var(--text);">https://monasso.eu/errors/suspended-instance</strong>.
+                    <strong style="color:#202124;">https://monasso.eu/errors/suspended-instance</strong>.
                     Aucun fichier ne sera supprimé.
                 </p>
                 <div class="form-group" style="margin:0;">
-                    <label style="font-size:13px;font-weight:600;">Raison de la suspension <span style="color:var(--danger);">*</span></label>
+                    <label style="font-size:13px;font-weight:500;color:#3c4043;">Raison de la suspension <span style="color:#d93025;">*</span></label>
                     <textarea id="suspend-reason" name="reason" rows="3" required minlength="5" maxlength="500"
                         placeholder="Ex : Non-respect des conditions d'utilisation, absence de paiement…"
-                        style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft,#f9fafb);color:var(--text);font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;box-sizing:border-box;margin-top:6px;"></textarea>
+                        style="width:100%;padding:11px 12px;border:1px solid #dadce0;border-radius:12px;background:#fff;color:#202124;font-size:14px;line-height:1.5;resize:vertical;font-family:inherit;box-sizing:border-box;margin-top:6px;"></textarea>
                     <div style="display:flex;justify-content:flex-end;margin-top:4px;">
-                        <span id="suspend-char-count" style="font-size:11px;color:var(--text-muted,#9ca3af);">0 / 500</span>
+                        <span id="suspend-char-count" style="font-size:11px;color:#5f6368;">0 / 500</span>
                     </div>
                 </div>
-                <div style="margin-top:14px;padding:12px 14px;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.3);border-radius:8px;display:flex;gap:10px;align-items:flex-start;">
+                <div style="margin-top:14px;padding:12px 14px;background:#fef7e0;border:1px solid #fce8b2;border-radius:12px;display:flex;gap:10px;align-items:flex-start;">
                     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="11" r=".5" fill="#d97706"/></svg>
-                    <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">La raison sera enregistrée et visible dans le panel. Elle ne sera <strong>pas</strong> affichée aux visiteurs.</p>
+                    <p style="font-size:12px;color:#8a5b00;margin:0;line-height:1.5;">La raison sera enregistrée et visible dans le panel. Elle ne sera <strong>pas</strong> affichée aux visiteurs.</p>
                 </div>
             </div>
-            <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:var(--panel-soft,#f9fafb);">
+            <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;justify-content:flex-end;gap:10px;background:#fff;">
                 <button type="button" onclick="closeSuspendModal()" class="btn btn-ghost">Annuler</button>
                 <button type="submit" id="suspend-submit" class="btn btn-warning" style="background:#d97706;color:#fff;border-color:#d97706;" disabled>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>

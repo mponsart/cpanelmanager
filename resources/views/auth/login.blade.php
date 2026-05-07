@@ -180,17 +180,138 @@
 
         .charter-link:hover { text-decoration: underline; }
 
-        .charter-panel {
-            margin-top: 4px;
-            padding: 12px;
+        .charter-read-btn {
+            width: 100%;
             border: 1px solid #dadce0;
-            border-radius: 12px;
             background: #fff;
-            max-height: 140px;
-            overflow: auto;
+            color: #1a73e8;
+            border-radius: 20px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+
+        .charter-read-btn:hover { background: #f8f9fa; }
+
+        .btn-google:disabled {
+            background: #9aa0a6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .charter-badge {
+            display: none;
+            align-items: center;
+            gap: 6px;
             font-size: 12px;
-            line-height: 1.6;
+            color: #137333;
+            background: #e6f4ea;
+            border: 1px solid #ceead6;
+            border-radius: 10px;
+            padding: 8px 10px;
+        }
+
+        .charter-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(32,33,36,0.42);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+
+        .charter-dialog {
+            width: 100%;
+            max-width: 680px;
+            background: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 28px;
+            box-shadow: 0 10px 24px rgba(60,64,67,.28), 0 1px 3px rgba(60,64,67,.2);
+            overflow: hidden;
+        }
+
+        .charter-header {
+            padding: 22px 24px 14px;
+            border-bottom: 1px solid #e8eaed;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .charter-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #e8f0fe;
+            color: #1a73e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .charter-title {
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            font-size: 22px;
+            font-weight: 500;
+            color: #202124;
+            line-height: 1.2;
+        }
+
+        .charter-subtitle {
+            margin-top: 2px;
+            font-size: 13px;
             color: #5f6368;
+        }
+
+        .charter-content {
+            padding: 16px 24px;
+            max-height: 320px;
+            overflow: auto;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #3c4043;
+        }
+
+        .charter-content strong { color: #202124; }
+
+        .charter-foot {
+            padding: 14px 24px;
+            border-top: 1px solid #e8eaed;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-tonal {
+            border: 1px solid #dadce0;
+            background: #fff;
+            color: #3c4043;
+            border-radius: 20px;
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-primary-google {
+            border: none;
+            background: #1a73e8;
+            color: #fff;
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-primary-google:disabled {
+            background: #9aa0a6;
+            cursor: not-allowed;
         }
 
         .divider {
@@ -285,16 +406,26 @@
 
         <form action="{{ route('auth.google') }}" method="POST" class="auth-form">
             @csrf
+            <input type="hidden" id="charter_read" name="charter_read" value="0">
             <label class="charter-check" for="accept_charter">
-                <input id="accept_charter" type="checkbox" name="accept_charter" value="1" required>
+                <input id="accept_charter" type="checkbox" name="accept_charter" value="1" required disabled>
                 <span>
                     J'ai lu et j'accepte la
-                    <a class="charter-link" href="#charte">charte informatique</a>
+                    <a class="charter-link" href="#" id="open-charter-link">charte informatique</a>
                     et je comprends que toute action est tracée.
                 </span>
             </label>
 
-            <button type="submit" class="btn-google">
+            <button type="button" id="open-charter" class="charter-read-btn">
+                Lire la charte informatique (obligatoire)
+            </button>
+
+            <div id="charter-ok" class="charter-badge">
+                <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>
+                Charte lue pour cette session
+            </div>
+
+            <button type="submit" class="btn-google" id="google-submit" disabled>
                 <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" fill-opacity="0.9"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" fill-opacity="0.7"/>
@@ -304,15 +435,6 @@
                 Continuer avec Google
             </button>
         </form>
-
-        <div id="charte" class="charter-panel">
-            <strong style="color:#1f1f1f;">Charte informatique (extrait)</strong><br>
-            1. L'accès est strictement réservé aux personnes autorisées.<br>
-            2. Toute action est journalisée et peut faire l'objet d'un audit.<br>
-            3. Il est interdit de partager les identifiants, sessions ou secrets.<br>
-            4. Toute intervention doit être réalisée dans un cadre professionnel et tracé.<br>
-            5. En cas d'incident de sécurité suspecté, l'équipe responsable doit être alertée immédiatement.
-        </div>
 
         <div class="divider">Accès réglementé</div>
 
@@ -327,9 +449,118 @@
     </div>
 </div>
 
+<div id="charter-modal" class="charter-modal" aria-hidden="true">
+    <div class="charter-dialog" role="dialog" aria-modal="true" aria-labelledby="charter-title">
+        <div class="charter-header">
+            <div class="charter-icon">
+                <span class="material-symbols-rounded">policy</span>
+            </div>
+            <div>
+                <div id="charter-title" class="charter-title">Charte informatique</div>
+                <div class="charter-subtitle">Lecture obligatoire à chaque nouvelle session</div>
+            </div>
+        </div>
+        <div id="charter-content" class="charter-content">
+            <strong>1. Accès et responsabilité</strong><br>
+            L'accès à cette plateforme est strictement réservé aux personnes autorisées. Toute action effectuée avec votre compte est réputée vous être imputable.<br><br>
+
+            <strong>2. Traçabilité et audit</strong><br>
+            Les connexions, opérations sensibles, consultations de secrets, modifications techniques et actions d'administration sont journalisées et auditées.<br><br>
+
+            <strong>3. Gestion des secrets</strong><br>
+            Le partage d'identifiants, de sessions, de mots de passe, de tokens ou de données sensibles est interdit hors cadre validé. Toute fuite potentielle doit être signalée immédiatement.<br><br>
+
+            <strong>4. Principe de moindre privilège</strong><br>
+            Les interventions doivent être limitées au strict nécessaire. Il est interdit d'accéder à des ressources non liées à la mission en cours.<br><br>
+
+            <strong>5. Conformité et sécurité</strong><br>
+            Toute opération doit respecter les politiques internes, les exigences contractuelles et les règles de sécurité en vigueur. En cas de doute, interrompez l'action et sollicitez un responsable.<br><br>
+
+            <strong>6. Incident et signalement</strong><br>
+            Tout comportement suspect, erreur critique, tentative d'accès non autorisé ou incident de sécurité doit être remonté sans délai.
+        </div>
+        <div class="charter-foot">
+            <button type="button" id="charter-cancel" class="btn-tonal">Fermer</button>
+            <button type="button" id="charter-confirm" class="btn-primary-google" disabled>J'ai lu la charte</button>
+        </div>
+    </div>
+</div>
+
 <footer class="footer">
     Sessions auditées · &copy; {{ date('Y') }} Groupe Speed Cloud
 </footer>
+
+<script>
+(function () {
+    var modal = document.getElementById('charter-modal');
+    var content = document.getElementById('charter-content');
+    var openBtn = document.getElementById('open-charter');
+    var openLink = document.getElementById('open-charter-link');
+    var cancelBtn = document.getElementById('charter-cancel');
+    var confirmBtn = document.getElementById('charter-confirm');
+    var readInput = document.getElementById('charter_read');
+    var acceptInput = document.getElementById('accept_charter');
+    var submitBtn = document.getElementById('google-submit');
+    var badge = document.getElementById('charter-ok');
+
+    function openModal() {
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+        content.scrollTop = 0;
+        confirmBtn.disabled = true;
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function onReadConfirmed() {
+        readInput.value = '1';
+        acceptInput.disabled = false;
+        acceptInput.checked = true;
+        submitBtn.disabled = false;
+        badge.style.display = 'inline-flex';
+        closeModal();
+    }
+
+    function canConfirmRead() {
+        return Math.ceil(content.scrollTop + content.clientHeight) >= content.scrollHeight;
+    }
+
+    openBtn.addEventListener('click', openModal);
+    openLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        openModal();
+    });
+    cancelBtn.addEventListener('click', closeModal);
+    confirmBtn.addEventListener('click', onReadConfirmed);
+
+    content.addEventListener('scroll', function () {
+        if (canConfirmRead()) {
+            confirmBtn.disabled = false;
+        }
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeModal();
+        }
+    });
+
+    acceptInput.addEventListener('change', function () {
+        if (!acceptInput.checked) {
+            submitBtn.disabled = true;
+        } else if (readInput.value === '1') {
+            submitBtn.disabled = false;
+        }
+    });
+})();
+</script>
 
 </body>
 </html>
