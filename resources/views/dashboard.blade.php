@@ -6,6 +6,9 @@
 @section('content')
 
 @php
+    $user = auth()->user();
+    $can = fn (string $permission) => $user && ($user->isSuperAdmin() || $user->hasPermission($permission));
+
     $incidents = $recentLogs->whereIn('status', ['error', 'denied'])->take(8);
     $recentActivity = $recentLogs->reject(fn ($log) => in_array($log->status, ['error', 'denied'], true))->take(10);
 @endphp
@@ -60,6 +63,7 @@
 </div>
 
 <div class="shortcuts-grid">
+    @if($can('create_email'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
@@ -74,6 +78,9 @@
             <a href="{{ route('email.forwarders') }}" class="btn btn-ghost btn-sm">Redirections</a>
         </div>
     </div>
+    @endif
+
+    @if($can('view_db'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
@@ -88,6 +95,9 @@
             <a href="{{ route('database.index') }}#database-privileges" class="btn btn-ghost btn-sm">Privilèges</a>
         </div>
     </div>
+    @endif
+
+    @if($can('view_domain'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
@@ -101,6 +111,24 @@
             <a href="{{ route('domain.index') }}#create-subdomain" class="btn btn-ghost btn-sm">Sous-domaine</a>
         </div>
     </div>
+    @endif
+
+    @if($can('view_associations'))
+    <div class="shortcut-card">
+        <div class="shortcut-header">
+            <div class="shortcut-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
+            </div>
+            <div class="shortcut-title">Associations</div>
+        </div>
+        <p class="shortcut-desc">Créer, suspendre et gérer les quotas.</p>
+        <div class="shortcut-links">
+            <a href="{{ route('association.index') }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        </div>
+    </div>
+    @endif
+
+    @if($can('view_ftp'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
@@ -114,6 +142,9 @@
             <a href="{{ route('ftp.index') }}#ftp-accounts-list" class="btn btn-ghost btn-sm">Supprimer</a>
         </div>
     </div>
+    @endif
+
+    @if($can('manage_cron'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
@@ -127,6 +158,9 @@
             <a href="{{ route('cron.index') }}#cron-jobs-list" class="btn btn-ghost btn-sm">Supprimer</a>
         </div>
     </div>
+    @endif
+
+    @if($can('manage_users'))
     <div class="shortcut-card">
         <div class="shortcut-header">
             <div class="shortcut-icon">
@@ -141,6 +175,7 @@
             <a href="{{ route('permissions.index') }}" class="btn btn-ghost btn-sm">Permissions</a>
         </div>
     </div>
+    @endif
 </div>
 
 <div class="activity-grid">
