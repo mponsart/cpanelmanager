@@ -128,41 +128,36 @@
 </div>
 
 {{-- ── Modal rapport de session ──────────────────────────────────────────── --}}
-<div id="end-session-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
-    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:0;box-shadow:0 12px 40px rgba(15,23,42,0.20);max-width:540px;width:92%;overflow:hidden;">
-        {{-- Header --}}
-        <div style="background:linear-gradient(135deg,#fef2f2,#fecaca);padding:20px 24px;border-bottom:1px solid #fecaca;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div style="width:42px;height:42px;border-radius:11px;background:#fff5f5;border:1px solid #fca5a5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+<div id="end-session-modal" class="cp-modal" aria-hidden="true">
+    <div class="cp-modal-dialog cp-modal-dialog-lg" role="dialog" aria-modal="true" aria-labelledby="end-modal-title">
+        <div class="cp-modal-head cp-modal-head-danger">
+            <div class="cp-modal-head-row">
+                <div class="cp-modal-icon cp-modal-icon-danger">
                     <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M14 2H2v12h12V2z"/><path d="M5 5h6M5 8h4"/></svg>
                 </div>
                 <div>
-                    <div style="font-size:16px;font-weight:700;color:#991b1b;">Rapport de session</div>
-                    <div style="font-size:12px;color:#b91c1c;margin-top:2px;">Décrivez les actions effectuées sur cPanel</div>
+                    <div id="end-modal-title" class="cp-modal-title">Rapport de session</div>
+                    <div class="cp-modal-subtitle">Décrivez les actions effectuées sur cPanel</div>
                 </div>
             </div>
         </div>
-        {{-- Body --}}
+
         <form id="end-session-form" action="{{ route('cpanel.end-session') }}" method="POST">
             @csrf
-            <div style="padding:24px;">
-                <label for="session-description" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">
-                    Que avez-vous fait sur cPanel ?
-                </label>
-                <textarea id="session-description" name="description" rows="4" required minlength="10" maxlength="2000"
-                    placeholder="Ex : Modification des enregistrements DNS du domaine example.com, ajout d'un sous-domaine api.example.com…"
-                    style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft);color:var(--text);font-size:13px;line-height:1.6;resize:vertical;font-family:inherit;box-sizing:border-box;min-height:100px;"></textarea>
-                <p class="text-muted" style="font-size:11px;margin-top:6px;">Minimum 10 caractères. Soyez précis : domaines, comptes, fichiers modifiés, etc.</p>
+            <div class="cp-modal-body">
+                <label for="session-description" class="cp-field-label">Qu'avez-vous fait sur cPanel ?</label>
+                <textarea id="session-description" name="description" rows="4" required minlength="10" maxlength="2000" placeholder="Ex : Modification des enregistrements DNS du domaine example.com, ajout d'un sous-domaine api.example.com…" class="cp-textarea"></textarea>
+                <p class="cp-help">Minimum 10 caractères. Soyez précis : domaines, comptes, fichiers modifiés, etc.</p>
 
-                <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;color:var(--text);font-weight:500;margin-top:16px;padding:12px 14px;background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.12);border-radius:8px;">
-                    <input type="checkbox" id="end-session-attest" style="margin-top:3px;width:16px;height:16px;accent-color:#dc2626;flex-shrink:0;">
+                <label class="cp-attest cp-attest-danger">
+                    <input type="checkbox" id="end-session-attest">
                     <span>J'atteste sur l'honneur que la description ci-dessus est exacte et complète. Je suis conscient(e) que toute fausse déclaration pourra entraîner des sanctions.</span>
                 </label>
             </div>
-            {{-- Footer --}}
-            <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:10px;background:var(--panel-soft);">
+
+            <div class="cp-modal-foot">
                 <button type="button" class="btn btn-ghost" id="end-modal-cancel">Annuler</button>
-                <button type="submit" class="btn btn-danger" id="end-modal-confirm" disabled style="opacity:0.5;">
+                <button type="submit" class="btn btn-danger" id="end-modal-confirm" disabled>
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
                     Terminer et sécuriser
                 </button>
@@ -245,40 +240,38 @@
 </div>
 
 {{-- ── Modal d'avertissement avant connexion ─────────────────────────────── --}}
-<div id="login-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
-    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:0;box-shadow:0 12px 40px rgba(15,23,42,0.20);max-width:480px;width:92%;overflow:hidden;">
-        {{-- Header rouge/warning --}}
-        <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:20px 24px;border-bottom:1px solid #fde68a;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div style="width:42px;height:42px;border-radius:11px;background:#fffbeb;border:1px solid #fcd34d;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+<div id="login-modal" class="cp-modal" aria-hidden="true">
+    <div class="cp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+        <div class="cp-modal-head cp-modal-head-warning">
+            <div class="cp-modal-head-row">
+                <div class="cp-modal-icon cp-modal-icon-warning">
                     <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><path d="M8 1l6 3v4c0 3.5-2.5 6.5-6 7.5C4.5 14.5 2 11.5 2 8V4l6-3z"/><line x1="8" y1="5.5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.5" fill="#d97706" stroke="none"/></svg>
                 </div>
                 <div>
-                    <div style="font-size:16px;font-weight:700;color:#92400e;">Accès limité</div>
-                    <div style="font-size:12px;color:#a16207;margin-top:2px;">Connexion directe à cPanel</div>
+                    <div id="login-modal-title" class="cp-modal-title">Accès limité</div>
+                    <div class="cp-modal-subtitle">Connexion directe à cPanel</div>
                 </div>
             </div>
         </div>
-        {{-- Body --}}
-        <div style="padding:24px;">
-            <p style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:16px;">
-                Ces identifiants donnent accès à l'ensemble de cPanel. Merci de respecter ces règles :
-            </p>
-            <ul style="font-size:13px;color:var(--text-muted);line-height:1.7;margin:0 0 20px 0;padding-left:18px;">
-                <li style="margin-bottom:6px;">Utiliser <strong style="color:var(--text);">uniquement</strong> pour les fonctionnalités non disponibles dans ce panneau</li>
-                <li style="margin-bottom:6px;">Limiter la durée de la session au strict nécessaire</li>
-                <li style="margin-bottom:6px;">Ne jamais partager ou enregistrer les identifiants</li>
+
+        <div class="cp-modal-body">
+            <p class="cp-modal-text">Ces identifiants donnent accès à l'ensemble de cPanel. Merci de respecter ces règles :</p>
+            <ul class="cp-rules">
+                <li>Utiliser <strong>uniquement</strong> pour les fonctionnalités non disponibles dans ce panneau</li>
+                <li>Limiter la durée de la session au strict nécessaire</li>
+                <li>Ne jamais partager ou enregistrer les identifiants</li>
                 <li>Toute action est journalisée et auditée</li>
             </ul>
-            <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;color:var(--text);font-weight:500;margin-bottom:0;">
-                <input type="checkbox" id="modal-accept" style="margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;">
-                J'ai lu et j'accepte ces conditions d'utilisation
+            <label class="cp-check">
+                <input type="checkbox" id="modal-accept">
+                <span>J'ai lu et j'accepte ces conditions d'utilisation</span>
             </label>
+            <div id="login-modal-error" class="alert alert-error" style="display:none;margin-top:14px;"></div>
         </div>
-        {{-- Footer --}}
-        <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:10px;background:var(--panel-soft);">
+
+        <div class="cp-modal-foot">
             <button type="button" class="btn btn-ghost" id="modal-cancel">Annuler</button>
-            <button type="button" class="btn btn-primary" id="modal-confirm" disabled style="opacity:0.5;">
+            <button type="button" class="btn btn-primary" id="modal-confirm" disabled>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
                 Continuer vers cPanel
             </button>
@@ -287,28 +280,26 @@
 </div>
 
 {{-- ── Modal confirmation rotation ───────────────────────────────────────── --}}
-<div id="rotate-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
-    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;padding:0;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);max-width:460px;width:92%;overflow:hidden;">
-        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;gap:12px;">
-            <div style="width:40px;height:40px;border-radius:12px;background:#fef7e0;color:#a16207;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <span class="material-symbols-rounded" style="font-size:22px;">warning</span>
-            </div>
-            <div>
-                <div style="font-size:20px;font-weight:500;color:#202124;line-height:1.2;">Confirmer la rotation</div>
-                <div style="font-size:13px;color:#5f6368;margin-top:2px;">Changement immédiat du mot de passe cPanel</div>
+<div id="rotate-modal" class="cp-modal" aria-hidden="true">
+    <div class="cp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="rotate-modal-title">
+        <div class="cp-modal-head cp-modal-head-warning-soft">
+            <div class="cp-modal-head-row">
+                <div class="cp-modal-icon cp-modal-icon-warning">
+                    <span class="material-symbols-rounded" style="font-size:22px;">warning</span>
+                </div>
+                <div>
+                    <div id="rotate-modal-title" class="cp-modal-title">Confirmer la rotation</div>
+                    <div class="cp-modal-subtitle">Changement immédiat du mot de passe cPanel</div>
+                </div>
             </div>
         </div>
 
-        <div style="padding:18px 24px 20px;">
-            <p style="font-size:14px;color:#3c4043;line-height:1.6;margin:0;">
-                Voulez-vous vraiment forcer la rotation maintenant ?
-            </p>
-            <p style="font-size:13px;color:#5f6368;line-height:1.6;margin:8px 0 0;">
-                Le mot de passe actuel deviendra immédiatement invalide.
-            </p>
+        <div class="cp-modal-body">
+            <p class="cp-modal-text">Voulez-vous vraiment forcer la rotation maintenant ?</p>
+            <p class="cp-help">Le mot de passe actuel deviendra immédiatement invalide.</p>
         </div>
 
-        <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;align-items:center;justify-content:flex-end;gap:10px;background:#fff;">
+        <div class="cp-modal-foot cp-modal-foot-plain">
             <button type="button" class="btn btn-ghost" id="rotate-modal-cancel">Annuler</button>
             <button type="button" class="btn btn-warning" id="rotate-modal-confirm">
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
@@ -326,7 +317,212 @@
         <p id="overlay-desc" style="font-size:.85rem;color:var(--text-muted);margin:0;">Veuillez patienter.</p>
     </div>
 </div>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.cp-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15,23,42,0.50);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.cp-modal-dialog {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(15,23,42,0.20);
+    width: 100%;
+    max-width: 500px;
+    overflow: hidden;
+}
+
+.cp-modal-dialog-lg {
+    max-width: 560px;
+}
+
+.cp-modal-head {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.cp-modal-head-warning {
+    background: linear-gradient(135deg,#fef3c7,#fde68a);
+    border-bottom-color: #fde68a;
+}
+
+.cp-modal-head-warning-soft {
+    background: linear-gradient(135deg,#fff8e1,#ffefbf);
+    border-bottom-color: #f8e5ac;
+}
+
+.cp-modal-head-danger {
+    background: linear-gradient(135deg,#fef2f2,#fecaca);
+    border-bottom-color: #fecaca;
+}
+
+.cp-modal-head-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cp-modal-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cp-modal-icon-warning {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    color: #d97706;
+}
+
+.cp-modal-icon-danger {
+    background: #fff5f5;
+    border: 1px solid #fca5a5;
+}
+
+.cp-modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.cp-modal-subtitle {
+    font-size: 12px;
+    margin-top: 2px;
+    color: var(--text-muted);
+}
+
+.cp-modal-body {
+    padding: 22px 24px;
+}
+
+.cp-modal-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.cp-rules {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin: 14px 0 18px;
+    padding-left: 18px;
+}
+
+.cp-rules li { margin-bottom: 6px; }
+.cp-rules li:last-child { margin-bottom: 0; }
+.cp-rules strong { color: var(--text); }
+
+.cp-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.cp-check input,
+.cp-attest input {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    accent-color: var(--accent);
+}
+
+.cp-field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.cp-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel-soft);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+    min-height: 100px;
+}
+
+.cp-help {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    line-height: 1.55;
+}
+
+.cp-attest {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+}
+
+.cp-attest-danger {
+    background: rgba(220,38,38,0.04);
+    border: 1px solid rgba(220,38,38,0.12);
+}
+
+.cp-attest-danger input {
+    accent-color: #dc2626;
+}
+
+.cp-modal-foot {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    background: var(--panel-soft);
+}
+
+.cp-modal-foot-plain {
+    background: var(--panel);
+}
+
+@media (max-width: 680px) {
+    .cp-modal-head,
+    .cp-modal-body,
+    .cp-modal-foot {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+</style>
 
 <script>
 (function () {
@@ -346,43 +542,71 @@
         if (overlay) overlay.style.display = 'none';
     }
 
+    function setActionEnabled(button, enabled) {
+        if (!button) return;
+        button.disabled = !enabled;
+        button.style.opacity = enabled ? '1' : '0.5';
+    }
+
+    function openModal(modal) {
+        if (!modal) return;
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal(modal) {
+        if (!modal) return;
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function bindBackdropClose(modal, closeButton) {
+        if (closeButton) {
+            closeButton.addEventListener('click', function () {
+                closeModal(modal);
+            });
+        }
+
+        if (modal) {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+    }
+
     // ── Modal d'avertissement ────────────────────────────────────────────────
     var loginModal   = document.getElementById('login-modal');
     var openBtn      = document.getElementById('open-login-modal');
     var cancelBtn    = document.getElementById('modal-cancel');
     var confirmBtn   = document.getElementById('modal-confirm');
     var acceptCb     = document.getElementById('modal-accept');
+    var loginErrorEl = document.getElementById('login-modal-error');
     var sessionPanel = document.getElementById('session-panel');
     var sessionTimer = document.getElementById('session-timer');
     var timerInterval = null;
 
     if (openBtn && loginModal) {
         openBtn.addEventListener('click', function () {
-            loginModal.style.display = 'flex';
+            openModal(loginModal);
+            if (loginErrorEl) {
+                loginErrorEl.style.display = 'none';
+                loginErrorEl.textContent = '';
+            }
             if (acceptCb) { acceptCb.checked = false; }
-            if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.style.opacity = '0.5'; }
+            setActionEnabled(confirmBtn, false);
         });
 
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', function () {
-                loginModal.style.display = 'none';
-            });
-        }
-
-        loginModal.addEventListener('click', function (e) {
-            if (e.target === loginModal) loginModal.style.display = 'none';
-        });
+        bindBackdropClose(loginModal, cancelBtn);
 
         if (acceptCb && confirmBtn) {
             acceptCb.addEventListener('change', function () {
-                confirmBtn.disabled = !acceptCb.checked;
-                confirmBtn.style.opacity = acceptCb.checked ? '1' : '0.5';
+                setActionEnabled(confirmBtn, acceptCb.checked);
             });
         }
 
         if (confirmBtn) {
             confirmBtn.addEventListener('click', function () {
-                loginModal.style.display = 'none';
+                closeModal(loginModal);
                 showOverlay('Connexion en cours…', 'Ouverture de cPanel dans un nouvel onglet.');
                 openBtn.disabled = true;
 
@@ -403,7 +627,10 @@
                     if (!res.ok || !res.data.url) {
                         if (cpanelTab) cpanelTab.close();
                         openBtn.disabled = false;
-                        alert(res.data.error || 'Erreur lors de la connexion.');
+                        if (loginErrorEl) {
+                            loginErrorEl.textContent = res.data.error || 'Erreur lors de la connexion.';
+                            loginErrorEl.style.display = 'flex';
+                        }
                         return;
                     }
 
@@ -421,7 +648,10 @@
                     hideOverlay();
                     if (cpanelTab) cpanelTab.close();
                     openBtn.disabled = false;
-                    alert('Erreur réseau lors de la connexion.');
+                    if (loginErrorEl) {
+                        loginErrorEl.textContent = 'Erreur réseau lors de la connexion.';
+                        loginErrorEl.style.display = 'flex';
+                    }
                 });
             });
         }
@@ -471,25 +701,14 @@
 
     if (openEndBtn && endModal) {
         openEndBtn.addEventListener('click', function () {
-            endModal.style.display = 'flex';
+            openModal(endModal);
         });
 
-        if (endCancelBtn) {
-            endCancelBtn.addEventListener('click', function () {
-                endModal.style.display = 'none';
-            });
-        }
-
-        endModal.addEventListener('click', function (e) {
-            if (e.target === endModal) endModal.style.display = 'none';
-        });
+        bindBackdropClose(endModal, endCancelBtn);
 
         function updateEndConfirm() {
             var valid = endAttest && endAttest.checked && endDesc && endDesc.value.trim().length >= 10;
-            if (endConfirmBtn) {
-                endConfirmBtn.disabled = !valid;
-                endConfirmBtn.style.opacity = valid ? '1' : '0.5';
-            }
+            setActionEnabled(endConfirmBtn, !!valid);
         }
 
         if (endAttest) endAttest.addEventListener('change', updateEndConfirm);
@@ -501,7 +720,7 @@
                 if (endConfirmBtn.disabled) return;
                 endConfirmBtn.disabled = true;
                 if (timerInterval) clearInterval(timerInterval);
-                endModal.style.display = 'none';
+                closeModal(endModal);
                 showOverlay('Sécurisation en cours…', 'Enregistrement du rapport et changement du mot de passe.');
                 endForm.submit();
             });
@@ -517,34 +736,27 @@
 
     if (rotateForm && rotateBtn && rotateModal) {
         rotateBtn.addEventListener('click', function () {
-            rotateModal.style.display = 'flex';
+            openModal(rotateModal);
         });
 
-        if (rotateModalCancel) {
-            rotateModalCancel.addEventListener('click', function () {
-                rotateModal.style.display = 'none';
-            });
-        }
+        bindBackdropClose(rotateModal, rotateModalCancel);
 
         if (rotateModalConfirm) {
             rotateModalConfirm.addEventListener('click', function () {
-                rotateModal.style.display = 'none';
+                closeModal(rotateModal);
                 rotateBtn.disabled = true;
                 showOverlay('Rotation en cours…', 'Le mot de passe cPanel est en cours de changement.');
                 rotateForm.submit();
             });
         }
-
-        rotateModal.addEventListener('click', function (e) {
-            if (e.target === rotateModal) rotateModal.style.display = 'none';
-        });
-
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && rotateModal.style.display === 'flex') {
-                rotateModal.style.display = 'none';
-            }
-        });
     }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        [loginModal, endModal, rotateModal].forEach(function (modal) {
+            if (modal && modal.style.display === 'flex') closeModal(modal);
+        });
+    });
 
     // ── Password toggle ─────────────────────────────────────────────────────
     var _pw       = @json($password);
