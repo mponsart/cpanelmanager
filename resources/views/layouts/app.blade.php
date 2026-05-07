@@ -616,36 +616,6 @@
     @endphp
 
     <nav class="sidebar-nav">
-        <div class="nav-section">Général</div>
-        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">dashboard</span></span> Dashboard
-        </a>
-        <a href="{{ route('logs.index') }}" class="nav-link {{ request()->routeIs('logs.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">receipt_long</span></span> Journaux
-        </a>
-        @if($navCan('view_stats'))
-        <a href="{{ route('stats.index') }}" class="nav-link {{ request()->routeIs('stats.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">monitoring</span></span> Statistiques
-        </a>
-        @endif
-
-        @if($hasCpanelAccess)
-        <div class="nav-section">cPanel</div>
-        @if($navCan('view_db'))
-        <a href="{{ route('database.index') }}" class="nav-link {{ request()->routeIs('database.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">database</span></span> Bases de données
-        </a>
-        @endif
-        @if($navCan('view_domain'))
-        <a href="{{ route('domain.index') }}" class="nav-link {{ request()->routeIs('domain.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">language</span></span> Domaines
-        </a>
-        @endif
-        @if($navCan('view_ftp'))
-        <a href="{{ route('ftp.index') }}" class="nav-link {{ request()->routeIs('ftp.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">dns</span></span> FTP
-        </a>
-        @endif
         @if($navCan('view_associations'))
         <a href="{{ route('association.index') }}" class="nav-link {{ request()->routeIs('association.*') ? 'active' : '' }}">
             <span class="icon"><span class="material-symbols-rounded">folder_shared</span></span> Associations
@@ -655,25 +625,6 @@
         <a href="{{ route('cpanel.index') }}" class="nav-link {{ request()->routeIs('cpanel.index') ? 'active' : '' }}">
             <span class="icon"><span class="material-symbols-rounded">open_in_new</span></span> Accès cPanel
         </a>
-        <a href="{{ route('cpanel.logs') }}" class="nav-link {{ request()->routeIs('cpanel.logs') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">timeline</span></span> Journaux cPanel
-        </a>
-        @endif
-        @endif
-
-        @if($hasAdminAccess)
-        <div class="nav-section">Administration</div>
-        <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">group</span></span> Utilisateurs
-        </a>
-        <a href="{{ route('permissions.index') }}" class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">shield</span></span> Permissions
-        </a>
-        @if($navCan('view_credentials'))
-        <a href="{{ route('credentials.index') }}" class="nav-link {{ request()->routeIs('credentials.*') ? 'active' : '' }}">
-            <span class="icon"><span class="material-symbols-rounded">key</span></span> Identifiants
-        </a>
-        @endif
         @endif
     </nav>
 
