@@ -275,43 +275,51 @@
     </div>
 </div>
 
-{{-- ── Modale de renommage (clean) ───────────────────────────────────── --}}
+{{-- ── Modale rename (Google Material style) ─────────────────────────── --}}
 <div id="rename-modal"
-     style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);
-     backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:18px;">
+     style="display:none;position:fixed;inset:0;background:rgba(32,33,36,.55);
+     backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px;">
 
     <div style="
         width:100%;
-        max-width:480px;
+        max-width:460px;
         background:#fff;
-        border-radius:18px;
-        box-shadow:0 20px 60px rgba(0,0,0,.2);
+        border-radius:16px;
+        box-shadow:0 12px 28px rgba(60,64,67,.3),0 2px 4px rgba(60,64,67,.15);
         overflow:hidden;
-        font-family:system-ui,-apple-system,Segoe UI,Roboto;
+        font-family:Roboto,Arial,sans-serif;
     ">
 
-        {{-- Header --}}
-        <div style="padding:20px 22px;border-bottom:1px solid #eee;display:flex;gap:12px;align-items:center;">
-            <div style="width:40px;height:40px;border-radius:12px;background:#eef2ff;display:flex;align-items:center;justify-content:center;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
-                    <path d="M17 3a2.8 2.8 0 1 1 4 4L7 21l-5 1 1-5L17 3z"/>
-                </svg>
-            </div>
-            <div>
-                <div style="font-size:16px;font-weight:600;color:#111;">Renommer l’association</div>
-                <div id="rename-modal-current" style="font-size:12px;color:#666;"></div>
+        {{-- HEADER --}}
+        <div style="padding:18px 20px 10px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:36px;height:36px;border-radius:50%;background:#e8f0fe;
+                            display:flex;align-items:center;justify-content:center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="#1a73e8" stroke-width="2">
+                        <path d="M17 3a2.8 2.8 0 1 1 4 4L7 21l-5 1 1-5L17 3z"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <div style="font-size:16px;font-weight:500;color:#202124;">
+                        Renommer l’association
+                    </div>
+                    <div id="rename-modal-current"
+                         style="font-size:12px;color:#5f6368;margin-top:2px;"></div>
+                </div>
             </div>
         </div>
 
-        {{-- Body --}}
+        {{-- FORM --}}
         <form id="rename-form" action="{{ route('association.rename') }}" method="POST">
             @csrf
             @method('PATCH')
 
             <input type="hidden" name="old_name" id="rename-old-name">
 
-            <div style="padding:18px 22px;">
-                <label style="font-size:13px;font-weight:600;color:#333;">
+            <div style="padding:10px 20px 6px;">
+                <label style="font-size:12px;color:#5f6368;">
                     Nouveau nom
                 </label>
 
@@ -326,41 +334,59 @@
                        style="
                             width:100%;
                             margin-top:8px;
-                            padding:10px 12px;
-                            border:1px solid #ddd;
-                            border-radius:10px;
-                            font-size:14px;
+                            padding:10px 0;
+                            border:none;
+                            border-bottom:1px solid #dadce0;
                             outline:none;
-                            transition:.2s;
-                       ">
+                            font-size:14px;
+                            color:#202124;
+                            background:transparent;
+                       "
+                       onfocus="this.style.borderBottom='2px solid #1a73e8'"
+                       onblur="this.style.borderBottom='1px solid #dadce0'">
 
                 <p id="rename-error"
-                   style="display:none;font-size:12px;color:#dc2626;margin-top:8px;"></p>
+                   style="display:none;font-size:12px;color:#d93025;margin-top:8px;"></p>
 
-                <p style="font-size:11px;color:#666;margin-top:8px;line-height:1.4;">
-                    Lettres, chiffres, tirets (-) et underscores (_) uniquement.
+                <p style="font-size:11px;color:#5f6368;margin-top:8px;">
+                    Lettres, chiffres, tirets (-) et underscores (_)
                 </p>
             </div>
 
-            {{-- Footer --}}
+            {{-- FOOTER --}}
             <div style="
-                padding:14px 22px;
-                border-top:1px solid #eee;
+                padding:14px 20px;
                 display:flex;
                 justify-content:flex-end;
-                gap:10px;
-                background:#fafafa;
+                gap:8px;
             ">
                 <button type="button"
                         id="rename-cancel"
-                        class="btn btn-ghost">
+                        style="
+                            background:transparent;
+                            border:none;
+                            color:#1a73e8;
+                            font-weight:500;
+                            padding:8px 12px;
+                            border-radius:6px;
+                            cursor:pointer;
+                        ">
                     Annuler
                 </button>
 
                 <button type="submit"
                         id="rename-submit"
-                        class="btn btn-primary"
-                        disabled>
+                        disabled
+                        style="
+                            background:#1a73e8;
+                            color:#fff;
+                            border:none;
+                            padding:8px 16px;
+                            border-radius:6px;
+                            font-weight:500;
+                            cursor:pointer;
+                            opacity:.4;
+                        ">
                     Renommer
                 </button>
             </div>
