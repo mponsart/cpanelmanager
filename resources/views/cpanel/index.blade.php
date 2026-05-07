@@ -234,7 +234,7 @@
             @if($isSuperAdmin)
             <form id="rotate-form" action="{{ route('cpanel.rotate-password') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-warning btn-sm" id="rotate-btn">
+                <button type="button" class="btn btn-warning btn-sm" id="rotate-btn">
                     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="rotate-icon"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
                     Forcer la rotation
                 </button>
@@ -281,6 +281,38 @@
             <button type="button" class="btn btn-primary" id="modal-confirm" disabled style="opacity:0.5;">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-3"/><polyline points="9,1 15,1 15,7"/><line x1="15" y1="1" x2="7" y2="9"/></svg>
                 Continuer vers cPanel
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- ── Modal confirmation rotation ───────────────────────────────────────── --}}
+<div id="rotate-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.50);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);justify-content:center;align-items:center;">
+    <div style="background:#fff;border:1px solid #dadce0;border-radius:28px;padding:0;box-shadow:0 10px 24px rgba(60,64,67,.28),0 1px 3px rgba(60,64,67,.2);max-width:460px;width:92%;overflow:hidden;">
+        <div style="padding:22px 24px 14px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;border-radius:12px;background:#fef7e0;color:#a16207;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span class="material-symbols-rounded" style="font-size:22px;">warning</span>
+            </div>
+            <div>
+                <div style="font-size:20px;font-weight:500;color:#202124;line-height:1.2;">Confirmer la rotation</div>
+                <div style="font-size:13px;color:#5f6368;margin-top:2px;">Changement immédiat du mot de passe cPanel</div>
+            </div>
+        </div>
+
+        <div style="padding:18px 24px 20px;">
+            <p style="font-size:14px;color:#3c4043;line-height:1.6;margin:0;">
+                Voulez-vous vraiment forcer la rotation maintenant ?
+            </p>
+            <p style="font-size:13px;color:#5f6368;line-height:1.6;margin:8px 0 0;">
+                Le mot de passe actuel deviendra immédiatement invalide.
+            </p>
+        </div>
+
+        <div style="padding:14px 24px;border-top:1px solid #e8eaed;display:flex;align-items:center;justify-content:flex-end;gap:10px;background:#fff;">
+            <button type="button" class="btn btn-ghost" id="rotate-modal-cancel">Annuler</button>
+            <button type="button" class="btn btn-warning" id="rotate-modal-confirm">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
+                Forcer la rotation
             </button>
         </div>
     </div>
@@ -476,15 +508,41 @@
         }
     }
 
-    // ── Rotation overlay ────────────────────────────────────────────────────
+    // ── Rotation via modale ─────────────────────────────────────────────────
     var rotateForm = document.getElementById('rotate-form');
-    if (rotateForm) {
-        rotateForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            if (!confirm('Êtes-vous sûr de vouloir changer le mot de passe cPanel immédiatement ?\n\nLe mot de passe actuel deviendra invalide.')) return;
-            document.getElementById('rotate-btn').disabled = true;
-            showOverlay('Rotation en cours…', 'Le mot de passe cPanel est en cours de changement.');
-            rotateForm.submit();
+    var rotateBtn = document.getElementById('rotate-btn');
+    var rotateModal = document.getElementById('rotate-modal');
+    var rotateModalCancel = document.getElementById('rotate-modal-cancel');
+    var rotateModalConfirm = document.getElementById('rotate-modal-confirm');
+
+    if (rotateForm && rotateBtn && rotateModal) {
+        rotateBtn.addEventListener('click', function () {
+            rotateModal.style.display = 'flex';
+        });
+
+        if (rotateModalCancel) {
+            rotateModalCancel.addEventListener('click', function () {
+                rotateModal.style.display = 'none';
+            });
+        }
+
+        if (rotateModalConfirm) {
+            rotateModalConfirm.addEventListener('click', function () {
+                rotateModal.style.display = 'none';
+                rotateBtn.disabled = true;
+                showOverlay('Rotation en cours…', 'Le mot de passe cPanel est en cours de changement.');
+                rotateForm.submit();
+            });
+        }
+
+        rotateModal.addEventListener('click', function (e) {
+            if (e.target === rotateModal) rotateModal.style.display = 'none';
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && rotateModal.style.display === 'flex') {
+                rotateModal.style.display = 'none';
+            }
         });
     }
 

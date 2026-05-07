@@ -26,17 +26,6 @@ class AuthController extends Controller
      */
     public function redirectToGoogle(Request $request)
     {
-        $request->validate([
-            'accept_charter' => ['accepted'],
-            'charter_read' => ['accepted'],
-        ], [
-            'accept_charter.accepted' => 'Vous devez accepter la charte informatique pour continuer.',
-            'charter_read.accepted' => 'Vous devez lire la charte informatique avant de continuer.',
-        ]);
-
-        $request->session()->put('auth_charter_accepted', true);
-        $request->session()->put('auth_charter_accepted_at', now()->toIso8601String());
-
         return Socialite::driver('google')->redirect();
     }
 
@@ -45,15 +34,6 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
-        $charterAccepted = (bool) $request->session()->pull('auth_charter_accepted', false);
-        $request->session()->forget('auth_charter_accepted_at');
-
-        if (! $charterAccepted) {
-            $this->logger->auth('login', 'error', 'Charte informatique non acceptée avant OAuth', $request);
-
-            return redirect()->route('login')->with('error', 'Vous devez accepter la charte informatique avant de vous connecter.');
-        }
-
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $e) {
