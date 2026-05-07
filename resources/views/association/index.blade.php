@@ -31,18 +31,35 @@
                     <th>Nom</th>
                     <th style="width:120px;text-align:right;">Taille</th>
                     <th style="width:170px;">Dernière modification</th>
-                    <th style="width:200px;text-align:right;">Actions</th>
+                    <th style="width:220px;text-align:right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($associations as $asso)
-                    <tr style="{{ $asso['suspended'] ? 'opacity:0.65;' : '' }}">
+                    <tr style="{{ $asso['suspended'] ? 'background:rgba(234,179,8,.04);' : '' }}">
                         <td style="font-weight:500;">
-                            <span style="display:inline-flex;align-items:center;gap:8px;">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{ $asso['suspended'] ? 'var(--warning)' : 'var(--accent)' }}" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
-                                {{ $asso['name'] }}
+                            <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{ $asso['suspended'] ? '#d97706' : 'var(--accent)' }}" stroke-width="1.5"><path d="M2 3.5A1.5 1.5 0 013.5 2h3l1.5 2h4.5A1.5 1.5 0 0114 5.5v7a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 12.5v-9z"/></svg>
+                                <span style="{{ $asso['suspended'] ? 'opacity:.7;' : '' }}">{{ $asso['name'] }}</span>
                                 @if($asso['suspended'])
-                                    <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;background:rgba(234,179,8,.15);color:#92400e;border:1px solid rgba(234,179,8,.35);">Suspendu</span>
+                                    @php $si = $asso['suspend_info']; @endphp
+                                    <button type="button"
+                                        onclick="document.getElementById('suspend-info-{{ $loop->index }}').style.display = document.getElementById('suspend-info-{{ $loop->index }}').style.display === 'none' ? 'block' : 'none'"
+                                        style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:4px;background:rgba(234,179,8,.15);color:#92400e;border:1px solid rgba(234,179,8,.4);cursor:pointer;line-height:1.5;">
+                                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                                        Suspendu
+                                    </button>
+                                    <div id="suspend-info-{{ $loop->index }}" style="display:none;width:100%;margin-top:6px;padding:10px 12px;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.3);border-radius:8px;font-size:12px;color:var(--text);line-height:1.6;">
+                                        @if(!empty($si['reason']))
+                                            <div style="margin-bottom:4px;"><strong>Raison :</strong> {{ $si['reason'] }}</div>
+                                        @endif
+                                        @if(!empty($si['suspended_by']))
+                                            <div style="color:var(--text-muted,#6b7280);"><strong>Par :</strong> {{ $si['suspended_by'] }}</div>
+                                        @endif
+                                        @if(!empty($si['suspended_at']))
+                                            <div style="color:var(--text-muted,#6b7280);"><strong>Le :</strong> {{ \Carbon\Carbon::parse($si['suspended_at'])->format('d/m/Y à H:i') }}</div>
+                                        @endif
+                                    </div>
                                 @endif
                             </span>
                         </td>
@@ -61,7 +78,8 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:inline-flex;gap:6px;">
-                                {{-- Renommer --}}
+                                {{-- Renommer (désactivé si suspendu) --}}
+                                @if(!$asso['suspended'])
                                 <form action="{{ route('association.rename') }}" method="POST" style="display:inline-flex;align-items:center;gap:4px;"
                                       onsubmit="
                                         var newName = this.querySelector('[name=new_name]').value;
@@ -76,6 +94,8 @@
                                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z"/></svg>
                                     </button>
                                 </form>
+                                @endif
+
                                 {{-- Suspendre / Réactiver --}}
                                 @if($asso['suspended'])
                                     <form action="{{ route('association.unsuspend') }}" method="POST"
@@ -83,21 +103,20 @@
                                           onsubmit="return confirm(this.dataset.confirm)">
                                         @csrf
                                         <input type="hidden" name="name" value="{{ $asso['name'] }}">
-                                        <button type="submit" class="btn btn-ghost btn-sm" title="Réactiver" style="color:var(--success,#16a34a);">
+                                        <button type="submit" class="btn btn-ghost btn-sm" title="Réactiver" style="color:#16a34a;">
                                             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8a6 6 0 1010.472-4M2 4v4h4"/></svg>
+                                            <span style="font-size:11px;margin-left:2px;">Réactiver</span>
                                         </button>
                                     </form>
                                 @else
-                                    <form action="{{ route('association.suspend') }}" method="POST"
-                                          data-confirm="Suspendre l'association « {{ e($asso['name']) }} » ? Les visiteurs seront redirigés vers la page de suspension."
-                                          onsubmit="return confirm(this.dataset.confirm)">
-                                        @csrf
-                                        <input type="hidden" name="name" value="{{ $asso['name'] }}">
-                                        <button type="submit" class="btn btn-ghost btn-sm" title="Suspendre" style="color:var(--warning,#d97706);">
-                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        onclick="openSuspendModal('{{ e($asso['name']) }}')"
+                                        class="btn btn-ghost btn-sm" title="Suspendre" style="color:#d97706;">
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                                        <span style="font-size:11px;margin-left:2px;">Suspendre</span>
+                                    </button>
                                 @endif
+
                                 {{-- Supprimer --}}
                                 <form action="{{ route('association.destroy') }}" method="POST"
                                       data-confirm="Supprimer définitivement l'association « {{ e($asso['name']) }} » et tout son contenu ?"
@@ -119,5 +138,92 @@
         </table>
     </div>
 </div>
+
+{{-- ── Modale de suspension ─────────────────────────────────────────────── --}}
+<div id="suspend-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:var(--panel,#fff);border-radius:12px;width:100%;max-width:480px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;">
+        <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:8px;background:rgba(234,179,8,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight:600;font-size:15px;">Suspendre l'association</div>
+                    <div id="suspend-modal-name" style="font-size:12px;color:var(--text-muted,#6b7280);margin-top:1px;"></div>
+                </div>
+            </div>
+        </div>
+        <form id="suspend-form" action="{{ route('association.suspend') }}" method="POST">
+            @csrf
+            <input type="hidden" name="name" id="suspend-input-name">
+            <div style="padding:20px 24px;">
+                <p style="font-size:13px;color:var(--text-muted,#6b7280);margin:0 0 16px;">
+                    Les visiteurs seront automatiquement redirigés vers
+                    <strong style="color:var(--text);">https://monasso.eu/errors/suspended-instance</strong>.
+                    Aucun fichier ne sera supprimé.
+                </p>
+                <div class="form-group" style="margin:0;">
+                    <label style="font-size:13px;font-weight:600;">Raison de la suspension <span style="color:var(--danger);">*</span></label>
+                    <textarea id="suspend-reason" name="reason" rows="3" required minlength="5" maxlength="500"
+                        placeholder="Ex : Non-respect des conditions d'utilisation, absence de paiement…"
+                        style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft,#f9fafb);color:var(--text);font-size:13px;line-height:1.5;resize:vertical;font-family:inherit;box-sizing:border-box;margin-top:6px;"></textarea>
+                    <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+                        <span id="suspend-char-count" style="font-size:11px;color:var(--text-muted,#9ca3af);">0 / 500</span>
+                    </div>
+                </div>
+                <div style="margin-top:14px;padding:12px 14px;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.3);border-radius:8px;display:flex;gap:10px;align-items:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="11" r=".5" fill="#d97706"/></svg>
+                    <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">La raison sera enregistrée et visible dans le panel. Elle ne sera <strong>pas</strong> affichée aux visiteurs.</p>
+                </div>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:var(--panel-soft,#f9fafb);">
+                <button type="button" onclick="closeSuspendModal()" class="btn btn-ghost">Annuler</button>
+                <button type="submit" id="suspend-submit" class="btn btn-warning" style="background:#d97706;color:#fff;border-color:#d97706;" disabled>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:5px;"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                    Suspendre
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    var modal        = document.getElementById('suspend-modal');
+    var inputName    = document.getElementById('suspend-input-name');
+    var modalName    = document.getElementById('suspend-modal-name');
+    var reasonTA     = document.getElementById('suspend-reason');
+    var charCount    = document.getElementById('suspend-char-count');
+    var submitBtn    = document.getElementById('suspend-submit');
+
+    window.openSuspendModal = function (name) {
+        inputName.value  = name;
+        modalName.textContent = name;
+        reasonTA.value   = '';
+        charCount.textContent = '0 / 500';
+        submitBtn.disabled = true;
+        modal.style.display = 'flex';
+        setTimeout(function () { reasonTA.focus(); }, 50);
+    };
+
+    window.closeSuspendModal = function () {
+        modal.style.display = 'none';
+    };
+
+    reasonTA.addEventListener('input', function () {
+        var len = reasonTA.value.length;
+        charCount.textContent = len + ' / 500';
+        submitBtn.disabled = len < 5;
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeSuspendModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') closeSuspendModal();
+    });
+})();
+</script>
 
 @endsection

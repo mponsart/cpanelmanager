@@ -32,11 +32,18 @@ class AssociationController extends Controller
                 foreach ($dirs as $dir) {
                     $name = basename($dir);
                     $stat = stat($dir);
+                    $suspendedFile = $dir . '/.suspended';
+                    $suspendedData = null;
+                    if (File::exists($suspendedFile)) {
+                        $raw = File::get($suspendedFile);
+                        $suspendedData = json_decode($raw, true) ?: [];
+                    }
                     $associations[] = [
-                        'name'       => $name,
-                        'size'       => $this->dirSize($dir),
-                        'modified'   => $stat['mtime'] ?? null,
-                        'suspended'  => File::exists($dir . '/.suspended'),
+                        'name'         => $name,
+                        'size'         => $this->dirSize($dir),
+                        'modified'     => $stat['mtime'] ?? null,
+                        'suspended'    => $suspendedData !== null,
+                        'suspend_info' => $suspendedData,
                     ];
                 }
 
@@ -109,7 +116,8 @@ class AssociationController extends Controller
     public function suspend(Request $request)
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'regex:/^[a-zA-Z0-9_-]+$/', 'max:100'],
+            'name'   => ['required', 'string', 'regex:/^[a-zA-Z0-9_-]+$/', 'max:100'],
+            'reason' => ['required', 'string', 'min:5', 'max:500'],
         ]);
 
         $path = $this->basePath . '/' . $data['name'];
@@ -134,8 +142,12 @@ class AssociationController extends Controller
                 'RewriteRule ^ https://monasso.eu/errors/suspended-instance [R=302,L]',
             ]));
 
-            // Marqueur de suspension
-            File::put($path . '/.suspended', '');
+            // Marqueur de suspension avec métadonnées
+            File::put($path . '/.suspended', json_encode([
+                'reason'       => $data['reason'],
+                'suspended_by' => auth()->user()->name ?? auth()->user()->email,
+                'suspended_at' => now()->toIso8601String(),
+            ], JSON_UNESCAPED_UNICODE));
 
             $this->logger->success('suspend_association', 'association', $data['name'], $data, $request);
 
