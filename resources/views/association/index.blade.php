@@ -91,7 +91,7 @@
                                     <input type="text" name="new_name" placeholder="Nouveau nom" maxlength="100" pattern="[a-zA-Z0-9_-]+"
                                            style="display:none;width:140px;padding:4px 8px;font-size:0.85rem;border:1px solid var(--border);border-radius:6px;">
                                     <button type="submit" class="btn btn-ghost btn-sm" title="Renommer">
-                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z"/></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                                     </button>
                                 </form>
                                 @endif
@@ -104,7 +104,7 @@
                                         @csrf
                                         <input type="hidden" name="name" value="{{ $asso['name'] }}">
                                         <button type="submit" class="btn btn-ghost btn-sm" title="Réactiver" style="color:#16a34a;">
-                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8a6 6 0 1010.472-4M2 4v4h4"/></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                                             <span style="font-size:11px;margin-left:2px;">Réactiver</span>
                                         </button>
                                     </form>
@@ -112,7 +112,7 @@
                                     <button type="button"
                                         onclick="openSuspendModal('{{ e($asso['name']) }}')"
                                         class="btn btn-ghost btn-sm" title="Suspendre" style="color:#d97706;">
-                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
                                         <span style="font-size:11px;margin-left:2px;">Suspendre</span>
                                     </button>
                                 @endif
@@ -125,7 +125,7 @@
                                     @method('DELETE')
                                     <input type="hidden" name="name" value="{{ $asso['name'] }}">
                                     <button type="submit" class="btn btn-ghost btn-sm" title="Supprimer" style="color:var(--danger);">
-                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,5 13,5"/><path d="M5.5 5V3.5a1 1 0 011-1h3a1 1 0 011 1V5"/><path d="M4 5l.5 8.5a1 1 0 001 1h5a1 1 0 001-1L12 5"/></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                                     </button>
                                 </form>
                             </div>
@@ -179,7 +179,7 @@
             <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:var(--panel-soft,#f9fafb);">
                 <button type="button" onclick="closeSuspendModal()" class="btn btn-ghost">Annuler</button>
                 <button type="submit" id="suspend-submit" class="btn btn-warning" style="background:#d97706;color:#fff;border-color:#d97706;" disabled>
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right:5px;"><rect x="4" y="2" width="3" height="12" rx="1"/><rect x="9" y="2" width="3" height="12" rx="1"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
                     Suspendre
                 </button>
             </div>
