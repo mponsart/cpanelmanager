@@ -75,18 +75,15 @@
                             {{ $display }}
                         </td>
                         <td style="text-align:center;">
-                            <form action="{{ route('association.storage-quota') }}" method="POST" style="display:inline-flex;align-items:center;gap:6px;">
-                                @csrf
-                                <input type="hidden" name="name" value="{{ $asso['name'] }}">
-                                <select name="quota_gb" style="width:78px;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--panel,#fff);">
-                                    @for($q = 1; $q <= 10; $q++)
-                                        <option value="{{ $q }}" {{ (int) ($asso['quota_gb'] ?? 10) === $q ? 'selected' : '' }}>{{ $q }} Go</option>
-                                    @endfor
-                                </select>
-                                <button type="submit" class="btn btn-ghost btn-sm" title="Appliquer le quota" style="padding:4px 8px;">
-                                    Appliquer
-                                </button>
-                            </form>
+                            @php $currentQuota = (int) ($asso['quota_gb'] ?? 10); @endphp
+                            <button type="button"
+                                class="btn btn-ghost btn-sm"
+                                title="Configurer le quota"
+                                onclick="openQuotaModal('{{ e($asso['name']) }}', {{ $currentQuota }})"
+                                style="padding:4px 8px;display:inline-flex;align-items:center;gap:6px;">
+                                <span style="font-size:11px;color:var(--text-muted);">{{ $currentQuota }} Go</span>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                            </button>
                         </td>
                         <td class="text-muted text-sm">
                             {{ $asso['modified'] ? \Carbon\Carbon::createFromTimestamp($asso['modified'], 'Europe/Paris')->format('d/m/Y H:i') : '—' }}
@@ -154,6 +151,45 @@
     </div>
 </div>
 
+{{-- ── Modale de quota ─────────────────────────────────────────────────── --}}
+<div id="quota-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:var(--panel,#fff);border-radius:12px;width:100%;max-width:440px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;">
+        <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:8px;background:rgba(59,130,246,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight:600;font-size:15px;">Quota de stockage</div>
+                    <div id="quota-modal-name" style="font-size:12px;color:var(--text-muted,#6b7280);margin-top:1px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <form id="quota-form" action="{{ route('association.storage-quota') }}" method="POST">
+            @csrf
+            <input type="hidden" name="name" id="quota-input-name">
+            <div style="padding:20px 24px;">
+                <label for="quota-gb" style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">
+                    Quota autorisé (entre 1 et 10 Go)
+                </label>
+                <select id="quota-gb" name="quota_gb" required style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel-soft,#f9fafb);color:var(--text);font-size:13px;">
+                    @for($q = 1; $q <= 10; $q++)
+                        <option value="{{ $q }}">{{ $q }} Go</option>
+                    @endfor
+                </select>
+                <p style="font-size:11px;color:var(--text-muted,#6b7280);margin-top:8px;line-height:1.5;">
+                    La valeur actuelle est chargée automatiquement à l'ouverture de cette modale.
+                </p>
+            </div>
+            <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:var(--panel-soft,#f9fafb);">
+                <button type="button" onclick="closeQuotaModal()" class="btn btn-ghost">Annuler</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {{-- ── Modale de suspension ─────────────────────────────────────────────── --}}
 <div id="suspend-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
     <div style="background:var(--panel,#fff);border-radius:12px;width:100%;max-width:480px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;">
@@ -204,12 +240,28 @@
 
 <script>
 (function () {
+    var quotaModal     = document.getElementById('quota-modal');
+    var quotaInputName = document.getElementById('quota-input-name');
+    var quotaModalName = document.getElementById('quota-modal-name');
+    var quotaSelect    = document.getElementById('quota-gb');
+
     var modal        = document.getElementById('suspend-modal');
     var inputName    = document.getElementById('suspend-input-name');
     var modalName    = document.getElementById('suspend-modal-name');
     var reasonTA     = document.getElementById('suspend-reason');
     var charCount    = document.getElementById('suspend-char-count');
     var submitBtn    = document.getElementById('suspend-submit');
+
+    window.openQuotaModal = function (name, quotaGb) {
+        quotaInputName.value = name;
+        quotaModalName.textContent = name;
+        quotaSelect.value = String(quotaGb || 10);
+        quotaModal.style.display = 'flex';
+    };
+
+    window.closeQuotaModal = function () {
+        quotaModal.style.display = 'none';
+    };
 
     window.openSuspendModal = function (name) {
         inputName.value  = name;
@@ -231,11 +283,16 @@
         submitBtn.disabled = len < 5;
     });
 
+    quotaModal.addEventListener('click', function (e) {
+        if (e.target === quotaModal) closeQuotaModal();
+    });
+
     modal.addEventListener('click', function (e) {
         if (e.target === modal) closeSuspendModal();
     });
 
     document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && quotaModal.style.display === 'flex') closeQuotaModal();
         if (e.key === 'Escape' && modal.style.display === 'flex') closeSuspendModal();
     });
 })();
