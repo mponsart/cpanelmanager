@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PhpMyAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\CronController;
@@ -109,5 +110,10 @@ Route::middleware(['auth.panel'])->group(function () {
 
     // ── Identifiants ──────────────────────────────────────────────────────────
     Route::get('/credentials', [CredentialsController::class, 'index'])->name('credentials.index')->middleware('permission:view_credentials');
+
+    // ── phpMyAdmin ────────────────────────────────────────────────────────────
+    Route::get('/phpmyadmin',         [PhpMyAdminController::class, 'index'])->name('phpmyadmin.index')->middleware('permission:view_db');
+    Route::post('/phpmyadmin/setup',  [PhpMyAdminController::class, 'setup'])->name('phpmyadmin.setup')->middleware('permission:create_db');
+    Route::get('/phpmyadmin/connect', [PhpMyAdminController::class, 'connect'])->name('phpmyadmin.connect')->middleware('permission:view_db');
 
 });
