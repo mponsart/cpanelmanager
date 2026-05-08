@@ -627,6 +627,11 @@
             <span class="icon"><span class="material-symbols-rounded">open_in_new</span></span> Accès cPanel
         </a>
         @endif
+        @if($navCan('view_db'))
+        <a href="{{ route('phpmyadmin.index') }}" class="nav-link {{ request()->routeIs('phpmyadmin.*') ? 'active' : '' }}">
+            <span class="icon"><span class="material-symbols-rounded">database</span></span> phpMyAdmin
+        </a>
+        @endif
         @if($navCan('manage_users'))
         <div class="nav-section">Administration</div>
         <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
