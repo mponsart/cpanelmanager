@@ -15,15 +15,35 @@ class PasswordRotationService
      */
     public function rotate(): string
     {
-        $newPassword = $this->generateCpanelLikePassword();
         $oldPassword = config('cpanel.password');
+        $newPassword = $this->generateCpanelLikePassword();
 
-        // callApi2 lève déjà une exception en cas d'erreur API
-        $this->cpanel->callApi2('Passwd', 'change_password', [
-            'oldpass' => $oldPassword,
-            'newpass' => $newPassword,
-        ]);
+        if (empty($oldPassword)) {
+            throw new \Exception('Ancien mot de passe cPanel non configuré. Vérifiez CPANEL_PASSWORD dans .env.');
+        }
 
+        // Utilise UAPI (moderne) au lieu d'API2 (legacy) pour le changement de mot de passe
+        // Documentation: https://api.docs.cpanel.net/
+        // Module: Passwd, Fonction: change_password
+        // Paramètres: old_password, new_password
+        try {
+            $this->cpanel->call('Passwd', 'change_password', [
+                'old_password' => $oldPassword,
+                'new_password' => $newPassword,
+            ]);
+        } catch (\Throwable $e) {
+            // En cas d'erreur UAPI, essayer API2 (fallback)
+            \Log::warning('UAPI Passwd::change_password échoué, essai API2', [
+                'error' => $e->getMessage()
+            ]);
+            
+            $this->cpanel->callApi2('Passwd', 'change_password', [
+                'oldpass' => $oldPassword,
+                'newpass' => $newPassword,
+            ]);
+        }
+
+        // Si l'appel API a réussi, met à jour le fichier .env et la config
         $this->updateEnv('CPANEL_PASSWORD', $newPassword);
 
         // Refresh the runtime config so subsequent code sees the new password

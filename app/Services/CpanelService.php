@@ -75,10 +75,10 @@ class CpanelService
         );
 
         $payload = array_merge([
-            'cpanel_jsonapi_user'    => $this->username,
+            'cpanel_jsonapi_user'       => $this->username,
             'cpanel_jsonapi_apiversion' => '2',
-            'cpanel_jsonapi_module'  => $module,
-            'cpanel_jsonapi_func'    => $function,
+            'cpanel_jsonapi_module'     => $module,
+            'cpanel_jsonapi_func'       => $function,
         ], $params);
 
         $response = Http::withHeaders([
