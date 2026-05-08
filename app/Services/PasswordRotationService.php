@@ -37,14 +37,14 @@ class PasswordRotationService
      *
      * - longueur 20
      * - au moins 1 minuscule, 1 majuscule, 1 chiffre, 1 caractère spécial sûr
-     * - caractères volontairement limités pour éviter les soucis .env/phpMyAdmin
+     * - caractères volontairement limités pour éviter les soucis .env/phpMyAdmin/cPanel
      */
     private function generateCpanelLikePassword(int $length = 20): string
     {
         $lower = 'abcdefghjkmnpqrstuvwxyz';
         $upper = 'ABCDEFGHJKMNPQRSTUVWXYZ';
         $digits = '23456789';
-        $special = '!@%^*()-_=+';
+        $special = '._-+='; // Caractères spéciaux sûrs pour .env, URLs et MySQL
         $all = $lower . $upper . $digits . $special;
 
         $password = [

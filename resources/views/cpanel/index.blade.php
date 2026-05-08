@@ -188,16 +188,14 @@
             @if($password)
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <code id="val-password" style="font-size:13px;padding:7px 12px;background:var(--panel-soft);border:1px solid var(--border);border-radius:6px;letter-spacing:.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,monospace;user-select:none;-webkit-user-select:none;">●●●●●●●●●●●●●●●●</code>
-                @auth
+                @if($activeSessionUser && $activeSessionUser->id === auth()->id())
                 <button type="button" class="btn btn-ghost btn-sm copy-btn" id="copy-password" title="Copier" style="padding:4px 6px;">
                     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
                 </button>
-                @endauth
+                @endif
             </div>
             <p class="text-muted" style="font-size:11px;margin-top:8px;">
-                Le mot de passe ne peut pas être affiché. @auth
-Vous pouvez le copier si besoin.
-@endauth
+                Le mot de passe ne peut pas être affiché.@if($activeSessionUser && $activeSessionUser->id === auth()->id()) Vous pouvez le copier si besoin.@endif
             </p>
             @else
             <p class="text-muted" style="font-style:italic;font-size:13px;">Non configuré — définir <code class="code">CPANEL_PASSWORD</code> dans <code class="code">.env</code></p>
