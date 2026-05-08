@@ -228,15 +228,7 @@ Vous pouvez le copier si besoin.
                 @endif
             </div>
 
-            @if($isSuperAdmin)
-            <form id="rotate-form" action="{{ route('cpanel.rotate-password') }}" method="POST">
-                @csrf
-                <button type="button" class="btn btn-warning btn-sm" id="rotate-btn">
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="rotate-icon"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
-                    Forcer la rotation
-                </button>
-            </form>
-            @endif
+            {{-- Rotation manuelle supprimée - rotation uniquement en début et fin de session --}}
         </div>
     </div>
 </div>
@@ -281,33 +273,7 @@ Vous pouvez le copier si besoin.
     </div>
 </div>
 
-{{-- ── Modal confirmation rotation ───────────────────────────────────────── --}}
-<div id="rotate-modal" class="cp-modal" aria-hidden="true">
-    <div class="cp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="rotate-modal-title">
-        <div class="cp-modal-head cp-modal-head-warning-soft">
-            <div class="cp-modal-head-row">
-                <div class="cp-modal-icon cp-modal-icon-warning">
-                    <span class="material-symbols-rounded" style="font-size:22px;">warning</span>
-                </div>
-                <div>
-                    <div id="rotate-modal-title" class="cp-modal-title">Confirmer la rotation</div>
-                    <div class="cp-modal-subtitle">Changement immédiat du mot de passe cPanel</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="cp-modal-body">
-            <p class="cp-modal-text">Voulez-vous vraiment forcer la rotation maintenant ?</p>
-            <p class="cp-help">Le mot de passe actuel deviendra immédiatement invalide.</p>
-        </div>
-
-        <div class="cp-modal-foot cp-modal-foot-plain">
-            <button type="button" class="btn btn-ghost" id="rotate-modal-cancel">Annuler</button>
-            <button type="button" class="btn btn-warning" id="rotate-modal-confirm">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 8a6.5 6.5 0 0112.48-2.5M14.5 8a6.5 6.5 0 01-12.48 2.5"/><polyline points="14,2 14,5.5 10.5,5.5"/><polyline points="2,14 2,10.5 5.5,10.5"/></svg>
-                Forcer la rotation
-            </button>
-        </div>
+{{-- Modal de rotation manuelle supprimée --}}
     </div>
 </div>
 
@@ -729,33 +695,10 @@ Vous pouvez le copier si besoin.
         }
     }
 
-    // ── Rotation via modale ─────────────────────────────────────────────────
-    var rotateForm = document.getElementById('rotate-form');
-    var rotateBtn = document.getElementById('rotate-btn');
-    var rotateModal = document.getElementById('rotate-modal');
-    var rotateModalCancel = document.getElementById('rotate-modal-cancel');
-    var rotateModalConfirm = document.getElementById('rotate-modal-confirm');
-
-    if (rotateForm && rotateBtn && rotateModal) {
-        rotateBtn.addEventListener('click', function () {
-            openModal(rotateModal);
-        });
-
-        bindBackdropClose(rotateModal, rotateModalCancel);
-
-        if (rotateModalConfirm) {
-            rotateModalConfirm.addEventListener('click', function () {
-                closeModal(rotateModal);
-                rotateBtn.disabled = true;
-                showOverlay('Rotation en cours…', 'Le mot de passe cPanel est en cours de changement.');
-                rotateForm.submit();
-            });
-        }
-    }
-
+    // Rotation manuelle supprimée - rotation uniquement en début et fin de session
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;
-        [loginModal, endModal, rotateModal].forEach(function (modal) {
+        [loginModal, endModal].forEach(function (modal) {
             if (modal && modal.style.display === 'flex') closeModal(modal);
         });
     });

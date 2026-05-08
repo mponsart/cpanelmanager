@@ -169,21 +169,7 @@ class CpanelAccessController extends Controller
         }
     }
 
-    public function forceRotate(Request $request): RedirectResponse
-    {
-        abort_unless(auth()->user()?->isSuperAdmin(), 403);
-
-        try {
-            $this->rotator->rotate();
-            $this->logger->success('cpanel_force_rotate_password', 'cpanel', null, [], $request);
-
-            return back()->with('success', 'Mot de passe cPanel changé avec succès.');
-        } catch (\Throwable $e) {
-            $this->logger->error('cpanel_force_rotate_password', 'cpanel', $e->getMessage(), null, [], $request);
-
-            return back()->with('error', 'Échec de la rotation du mot de passe : ' . $e->getMessage());
-        }
-    }
+    // Rotation manuelle supprimée - rotation uniquement en début et fin de session
 
     public function logs(Request $request)
     {
