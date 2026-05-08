@@ -195,7 +195,9 @@
                 @endauth
             </div>
             <p class="text-muted" style="font-size:11px;margin-top:8px;">
-                Le mot de passe ne peut pas être affiché. @authVous pouvez le copier si besoin.@endauth
+                Le mot de passe ne peut pas être affiché. @auth
+Vous pouvez le copier si besoin.
+@endauth
             </p>
             @else
             <p class="text-muted" style="font-style:italic;font-size:13px;">Non configuré — définir <code class="code">CPANEL_PASSWORD</code> dans <code class="code">.env</code></p>
