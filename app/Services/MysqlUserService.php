@@ -88,7 +88,7 @@ class MysqlUserService
         // URL vers l'installation locale de phpMyAdmin
         // Les identifiants sont passés en tant que paramètres de formulaire
         $url = sprintf(
-            '/phpmyadmin/index.php?pma_username=%s&pma_password=%s',
+            '/admindb/index.php?pma_username=%s&pma_password=%s',
             urlencode($username),
             urlencode($password)
         );
