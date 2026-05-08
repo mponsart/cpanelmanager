@@ -18,17 +18,24 @@ class PasswordRotationService
         $newPassword = $this->generateCpanelLikePassword();
         $oldPassword = config('cpanel.password');
 
-        $this->cpanel->callApi2('Passwd', 'change_password', [
+        $response = $this->cpanel->callApi2('Passwd', 'change_password', [
             'oldpass' => $oldPassword,
             'newpass' => $newPassword,
         ]);
 
-        $this->updateEnv('CPANEL_PASSWORD', $newPassword);
-
-        // Refresh the runtime config so subsequent code sees the new password
-        config(['cpanel.password' => $newPassword]);
-
-        return $newPassword;
+        // Vérifie le succès de l'API (à adapter selon le format de retour réel)
+        if (isset($response['cpanelresult']['data'][0]['result']) && $response['cpanelresult']['data'][0]['result'] == 1) {
+            $this->updateEnv('CPANEL_PASSWORD', $newPassword);
+            // Refresh the runtime config so subsequent code sees the new password
+            config(['cpanel.password' => $newPassword]);
+            return $newPassword;
+        } else {
+            // Log l'erreur pour diagnostic
+            \Log::error('Changement de mot de passe cPanel échoué', [
+                'response' => $response
+            ]);
+            throw new \Exception('Le changement de mot de passe cPanel a échoué. Vérifiez les logs pour plus de détails.');
+        }
     }
 
     /**

@@ -187,16 +187,9 @@
             </div>
             @if($password)
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <code id="val-password" style="font-size:13px;padding:7px 12px;background:var(--panel-soft);border:1px solid var(--border);border-radius:6px;letter-spacing:.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,monospace;">●●●●●●●●●●●●●●●●</code>
-                <button type="button" class="btn btn-ghost btn-sm" id="toggle-password" title="Afficher / Masquer" style="padding:4px 6px;">
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-eye"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/></svg>
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="icon-eye-off" style="display:none;"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/><line x1="2" y1="2" x2="14" y2="14" stroke-width="1.5"/></svg>
-                </button>
-                <button type="button" class="btn btn-ghost btn-sm copy-btn" id="copy-password" title="Copier" style="padding:4px 6px;">
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/></svg>
-                </button>
+                <code id="val-password" style="font-size:13px;padding:7px 12px;background:var(--panel-soft);border:1px solid var(--border);border-radius:6px;letter-spacing:.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,monospace;user-select:none;-webkit-user-select:none;">●●●●●●●●●●●●●●●●</code>
             </div>
-            <p class="text-muted" style="font-size:11px;margin-top:8px;">Ne partagez jamais ce mot de passe en dehors de cette interface.</p>
+            <p class="text-muted" style="font-size:11px;margin-top:8px;">Le mot de passe ne peut pas être affiché ni copié pour des raisons de sécurité.</p>
             @else
             <p class="text-muted" style="font-style:italic;font-size:13px;">Non configuré — définir <code class="code">CPANEL_PASSWORD</code> dans <code class="code">.env</code></p>
             @endif
@@ -758,29 +751,7 @@
         });
     });
 
-    // ── Password toggle ─────────────────────────────────────────────────────
-    var _pw       = @json($password);
-    var pwEl      = document.getElementById('val-password');
-    var toggleBtn = document.getElementById('toggle-password');
-    if (pwEl && toggleBtn && _pw) {
-        var visible = false;
-        var eyeOn  = toggleBtn.querySelector('.icon-eye');
-        var eyeOff = toggleBtn.querySelector('.icon-eye-off');
-        toggleBtn.addEventListener('click', function () {
-            visible = !visible;
-            pwEl.textContent = visible ? _pw : '●●●●●●●●●●●●●●●●';
-            eyeOn.style.display  = visible ? 'none' : '';
-            eyeOff.style.display = visible ? '' : 'none';
-        });
-    }
-
-    // ── Copy password ───────────────────────────────────────────────────────
-    var copyPwBtn = document.getElementById('copy-password');
-    if (copyPwBtn && _pw) {
-        copyPwBtn.addEventListener('click', function () {
-            navigator.clipboard.writeText(_pw).then(function () { showCopyFeedback(copyPwBtn); });
-        });
-    }
+    // Affichage/copie du mot de passe désactivés pour la sécurité
 
     // ── Generic copy buttons ────────────────────────────────────────────────
     document.querySelectorAll('.copy-btn:not(#copy-password)').forEach(function (btn) {
